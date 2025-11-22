@@ -101,6 +101,26 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-6">
+            <div class="box">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Role</h3>
+                </div>
+                <div class="box-body">
+                    <div class="form-group">
+                        <label for="role" class="control-label">Role</label>
+                        <div>
+                            <select name="role_id" class="form-control">
+                                <option value="">None</option>
+                                @foreach($roles as $role)
+                                    <option value="{{ $role->id }}" @if($user->role_id === $role->id) selected @endif>{{ $role->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </form>
     <div class="col-xs-12">
         <div class="box box-danger">

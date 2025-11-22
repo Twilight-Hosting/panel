@@ -21,6 +21,8 @@ use Pterodactyl\Services\Users\UserDeletionService;
 use Pterodactyl\Http\Requests\Admin\UserFormRequest;
 use Pterodactyl\Http\Requests\Admin\NewUserFormRequest;
 use Pterodactyl\Contracts\Repository\UserRepositoryInterface;
+use Pterodactyl\Models\PermissionRole;
+
 
 class UserController extends Controller
 {
@@ -78,6 +80,7 @@ class UserController extends Controller
         return $this->view->make('admin.users.view', [
             'user' => $user,
             'languages' => $this->getAvailableLanguages(true),
+            'roles' => PermissionRole::all()
         ]);
     }
 

@@ -287,3 +287,23 @@ Route::group(['prefix' => 'nests'], function () {
     Route::delete('/egg/{egg:id}', [Admin\Nests\EggController::class, 'destroy']);
     Route::delete('/egg/{egg:id}/variables/{variable:id}', [Admin\Nests\EggVariableController::class, 'destroy']);
 });
+
+/*
+|--------------------------------------------------------------------------
+| Permission Manager Routes
+|--------------------------------------------------------------------------
+|
+| Endpoint: /admin/permission-manager/
+|
+*/
+Route::group(['prefix' => 'permission-manager'], function() {
+    Route::get('/', [Admin\AktiCubeDevelopmentTeam\PermissionManagerController::class, 'index'])->name('admin.akticube.permission-manager');
+    Route::get('/new', [Admin\AktiCubeDevelopmentTeam\PermissionManagerController::class, 'createRole'])->name('admin.akticube.permission-manager.roles.new');
+    Route::get('/view/{role:id}', [Admin\AktiCubeDevelopmentTeam\PermissionManagerController::class, 'viewRole'])->name('admin.akticube.permission-manager.roles.view');
+
+    Route::post('/new', [Admin\AktiCubeDevelopmentTeam\PermissionManagerController::class, 'storeRole']);
+
+    Route::patch('/view/{role:id}', [Admin\AktiCubeDevelopmentTeam\PermissionManagerController::class, 'updateRole']);
+
+    Route::delete('/delete/{role:id}', [Admin\AktiCubeDevelopmentTeam\PermissionManagerController::class, 'deleteRole'])->name('admin.akticube.permission-manager.roles.delete');
+});

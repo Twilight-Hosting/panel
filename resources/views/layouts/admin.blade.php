@@ -116,6 +116,11 @@
                                 <i data-lucide="users"></i> <span>Users</span>
                             </a>
                         </li>
+                        <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.akticube.permission-manager') ?: 'active' }}">
+                            <a href="{{ route('admin.akticube.permission-manager') }}">
+                                <i class="fa fa-shield"></i> <span>Roles</span>
+                            </a>
+                        </li>
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.domain') ?: 'active' }}">
                             <a href="{{ route('admin.domain') }}">
                                 <i data-lucide="globe"></i> <span>Domain</span>

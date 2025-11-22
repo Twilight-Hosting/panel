@@ -12,12 +12,27 @@ class ServerPolicy
      */
     protected function checkPermission(User $user, Server $server, string $permission): bool
     {
-        $subuser = $server->subusers->where('user_id', $user->id)->first();
-        if (!$subuser || empty($permission)) {
+        if (empty($permission)) {
             return false;
         }
 
-        return in_array($permission, $subuser->permissions);
+        $subuser = $server->subusers->where('user_id', $user->id)->first();
+
+        if ($subuser) {
+            if (in_array($permission, $subuser->permissions)) {
+                return true;
+            }
+        }
+
+        if ($role = $user->role()) {
+            if (!in_array($server->id, $role->excluded_servers)) {
+                if ($role->hasPermission($permission)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
