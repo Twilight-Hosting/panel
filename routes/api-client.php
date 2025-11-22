@@ -16,6 +16,43 @@ use Pterodactyl\Http\Middleware\Api\Client\Server\AuthenticateServerAccess;
 | Endpoint: /api/client
 |
 */
+
+Route::get('domain/zones', [Client\SubdomainsAddon\DomainController::class, 'index']);
+Route::get('domain/rules/{nest_id}', [Client\SubdomainsAddon\DomainController::class, 'getSRVrecordRulesForNest']);
+Route::group([
+    'prefix' => '/{server}',
+    'middleware' => [
+        ServerSubject::class,
+        AuthenticateServerAccess::class,
+        ResourceBelongsToServer::class,
+    ],
+], function () {
+    Route::group(['prefix' => 'domain'], function () {
+        Route::get('/', [Client\SubdomainsAddon\DomainController::class, 'getSubdomainsForServer']);
+        Route::post('/', [Client\SubdomainsAddon\DomainController::class, 'createSubDomainForServer']);
+        Route::delete('/{subdomain_id}', [Client\SubdomainsAddon\DomainController::class, 'deleteSubdomainForServer']);
+    });
+
+    Route::group(['prefix' => 'plugin'], function () {
+        Route::get('/filters', [Client\PluginsAddon\PluginsController::class, 'getFilters']);
+        Route::get('/', [Client\PluginsAddon\PluginsController::class, 'index']);
+        Route::get('/installed', [Client\PluginsAddon\PluginsController::class, 'getInstalled']);
+        Route::get('/{service}/{plugin?}', [Client\PluginsAddon\PluginsController::class, 'getService']);
+        Route::post('/install', [Client\PluginsAddon\PluginsController::class, 'store']);
+        Route::delete('/{plugin_id}', [Client\PluginsAddon\PluginsController::class, 'destroy']);
+        Route::patch('/{plugin_id}', [Client\PluginsAddon\PluginsController::class, 'rename']);
+
+        Route::group(['prefix' => 'file'], function () {
+            Route::post('/prepare', [Client\PluginsAddon\PluginsController::class, 'prepareFile']);
+        });
+    });
+
+    Route::group(['prefix' => 'versions'], function () {
+        Route::get('/{service?}', [Client\VersionsAddon\VersionsController::class, 'getServices']);
+        Route::post('/{service}/{version}', [Client\VersionsAddon\VersionsController::class, 'store']);
+    });
+});
+
 Route::get('/', [Client\ClientController::class, 'index'])->name('api:client.index');
 Route::get('/permissions', [Client\ClientController::class, 'permissions']);
 
@@ -138,5 +175,10 @@ Route::group([
         Route::post('/rename', [Client\Servers\SettingsController::class, 'rename']);
         Route::post('/reinstall', [Client\Servers\SettingsController::class, 'reinstall']);
         Route::put('/docker-image', [Client\Servers\SettingsController::class, 'dockerImage']);
+    });
+    Route::group(['prefix' => '/minecraft-modpacks'], function () {
+        Route::get('/', [Client\Servers\ModpackController::class, 'index']);
+        Route::get('/versions', [Client\Servers\ModpackController::class, 'versions']);
+        Route::post('/install', [Client\Servers\ModpackController::class, 'install']);
     });
 });
