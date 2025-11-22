@@ -120,6 +120,11 @@
                                 <i data-lucide="users"></i> <span>Users</span>
                             </a>
                         </li>
+                        <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.moderation') ?: 'active' }}">
+                            <a href="{{ route('admin.moderation') }}">
+                                <i class="fa fa-gavel"></i> Moderation
+                            </a>
+                        </li>
                         <li class="{{ ! starts_with(Route::currentRouteName(), 'admin.akticube.permission-manager') ?: 'active' }}">
                             <a href="{{ route('admin.akticube.permission-manager') }}">
                                 <i class="fa fa-shield"></i> <span>Roles</span>

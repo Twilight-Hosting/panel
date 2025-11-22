@@ -153,6 +153,30 @@ Route::group(['prefix' => 'users'], function () {
 
     Route::patch('/view/{user:id}', [Admin\UserController::class, 'update']);
     Route::delete('/view/{user:id}', [Admin\UserController::class, 'delete']);
+
+    Route::group(['prefix' => 'moderation'], function () {
+        Route::get('/', [Admin\Moderation\ModerationController::class, 'index'])->name('admin.moderation');
+        Route::get('/create', [Admin\Moderation\ModerationController::class, 'create'])->name('admin.moderation.create');
+        Route::post('/', [Admin\Moderation\ModerationController::class, 'store'])->name('admin.moderation.store');
+        Route::put('/{ban}/unban', [Admin\Moderation\ModerationController::class, 'unban'])->name('admin.moderation.unban');
+        Route::delete('/{ban}', [Admin\Moderation\ModerationController::class, 'destroy'])->name('admin.moderation.destroy');
+        Route::get('/warn', [Admin\Moderation\ModerationController::class, 'warnForm'])->name('admin.moderation.warn');
+        Route::post('/warn', [Admin\Moderation\ModerationController::class, 'warn'])->name('admin.moderation.warn.store');
+        Route::delete('/warnings/{warning}', [Admin\Moderation\ModerationController::class, 'destroyWarning'])->name('admin.moderation.warning.destroy');
+        Route::get('/block', [Admin\Moderation\ModerationController::class, 'blockForm'])->name('admin.moderation.block');
+        Route::post('/block', [Admin\Moderation\ModerationController::class, 'block'])->name('admin.moderation.block.store');
+        Route::put('/blocks/{block}/unblock', [Admin\Moderation\ModerationController::class, 'unblock'])->name('admin.moderation.unblock');
+        Route::delete('/blocks/{block}', [Admin\Moderation\ModerationController::class, 'destroyBlock'])->name('admin.moderation.block.destroy');
+        Route::get('/ip-ban', [Admin\Moderation\ModerationController::class, 'ipBanForm'])->name('admin.moderation.ip-ban');
+        Route::post('/ip-ban', [Admin\Moderation\ModerationController::class, 'ipBan'])->name('admin.moderation.ip-ban.store');
+        Route::post('/users/{user}/logout', [Admin\Moderation\ModerationController::class, 'forceLogout'])->name('admin.moderation.logout');
+        Route::put('/settings', [Admin\Moderation\ModerationController::class, 'updateSettings'])->name('admin.moderation.settings');
+        Route::get('/login-history', [Admin\Moderation\ModerationController::class, 'loginHistory'])->name('admin.moderation.login-history');
+        Route::get('/failed-attempts', [Admin\Moderation\ModerationController::class, 'failedAttempts'])->name('admin.moderation.failed-attempts');
+        Route::post('/failed-attempts/clear', [Admin\Moderation\ModerationController::class, 'clearFailedAttempts'])->name('admin.moderation.clear-failed-attempts');
+        Route::put('/failed-attempts/{id}/unblock', [Admin\Moderation\ModerationController::class, 'unblockFailedAttempt'])->name('admin.moderation.unblock-failed-attempt');
+        Route::get('/users/search', [Admin\Moderation\ModerationController::class, 'searchUsers'])->name('admin.moderation.users.search');
+    });
 });
 
 /*

@@ -6,6 +6,9 @@ use Illuminate\Auth\Middleware\Authorize;
 use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Http\Middleware\TrustProxies;
+use Pterodactyl\Http\Middleware\CheckBan;
+use Pterodactyl\Http\Middleware\CheckLoginBan;
+use Pterodactyl\Http\Middleware\TrackLoginAttempts;
 use Pterodactyl\Http\Middleware\TrimStrings;
 use Illuminate\Session\Middleware\StartSession;
 use Pterodactyl\Http\Middleware\EncryptCookies;
@@ -63,6 +66,9 @@ class Kernel extends HttpKernel
             TrackLastActivity::class,
             SubstituteBindings::class,
             LanguageMiddleware::class,
+            CheckBan::class,
+            CheckLoginBan::class,
+            TrackLoginAttempts::class
         ],
         'api' => [
             EnsureStatefulRequests::class,
