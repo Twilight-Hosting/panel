@@ -195,8 +195,12 @@ Route::group(['prefix' => 'servers'], function () {
     Route::patch('/view/{server:id}/database', [Admin\ServersController::class, 'resetDatabasePassword']);
 
     Route::delete('/view/{server:id}/database/{database:id}/delete', [Admin\ServersController::class, 'deleteDatabase'])->name('admin.servers.view.database.delete');
-    Route::delete('/view/{server:id}/mounts/{mount:id}', [Admin\ServersController::class, 'deleteMount'])
-        ->name('admin.servers.view.mounts.delete');
+    Route::delete('/view/{server:id}/mounts/{mount:id}', [Admin\ServersController::class, 'deleteMount'])->name('admin.servers.view.mounts.delete');
+    Route::post('/view/{server:id}/start', [Admin\Servers\ServerPowerController::class, 'start'])->name('admin.servers.start');
+    Route::post('/view/{server:id}/stop', [Admin\Servers\ServerPowerController::class, 'stop'])->name('admin.servers.stop');
+    Route::post('/view/{server:id}/restart', [Admin\Servers\ServerPowerController::class, 'restart'])->name('admin.servers.restart');
+    Route::post('/view/{server:id}/kill', [Admin\Servers\ServerPowerController::class, 'kill'])->name('admin.servers.kill');
+
 });
 
 /*

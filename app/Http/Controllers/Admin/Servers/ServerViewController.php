@@ -16,6 +16,7 @@ use Pterodactyl\Repositories\Eloquent\MountRepository;
 use Pterodactyl\Repositories\Eloquent\ServerRepository;
 use Pterodactyl\Traits\Controllers\JavascriptInjection;
 use Pterodactyl\Repositories\Eloquent\LocationRepository;
+use Pterodactyl\Repositories\Wings\DaemonServerRepository;
 use Pterodactyl\Repositories\Eloquent\DatabaseHostRepository;
 
 class ServerViewController extends Controller
@@ -33,7 +34,8 @@ class ServerViewController extends Controller
         private NodeRepository $nodeRepository,
         private ServerRepository $repository,
         private EnvironmentService $environmentService,
-        private ViewFactory $view
+        private ViewFactory $view,
+        private DaemonServerRepository $daemonServerRepository
     ) {
     }
 
@@ -42,8 +44,21 @@ class ServerViewController extends Controller
      */
     public function index(Request $request, Server $server): View
     {
-        return $this->view->make('admin.servers.view.index', compact('server'));
+        $server->loadMissing(['egg.nest', 'location', 'node', 'user']);
+
+        try {
+            $details = $this->daemonServerRepository->setServer($server)->getDetails();
+            $status = $details['state'] ?? 'offline';
+        } catch (\Exception $exception) {
+            $status = 'offline';
+        }
+
+        return $this->view->make('admin.servers.view.index', [
+            'server' => $server,
+            'status' => $status,
+        ]);
     }
+
 
     /**
      * Returns the server details page.
