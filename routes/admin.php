@@ -319,3 +319,5 @@ Route::group(['prefix' => 'laravel-logs'], function () {
     Route::get('/', [Admin\LaravelController::class, 'showLogs'])->name('admin.laravel-logs.laravel');
     Route::get('/download', [Admin\LaravelController::class, 'downloadLogs'])->name('admin.laravel-logs.download');
 });
+
+include 'admin-eggchanger.php';

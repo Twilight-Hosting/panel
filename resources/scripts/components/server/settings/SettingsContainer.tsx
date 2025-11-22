@@ -5,6 +5,7 @@ import { useStoreState } from 'easy-peasy';
 import RenameServerBox from '@/components/server/settings/RenameServerBox';
 import FlashMessageRender from '@/components/FlashMessageRender';
 import Can from '@/components/elements/Can';
+import EggChangerBox from './EggChangerBox';
 import ReinstallServerBox from '@/components/server/settings/ReinstallServerBox';
 import tw from 'twin.macro';
 import Input from '@/components/elements/Input';
@@ -84,6 +85,7 @@ export default () => {
                     </Can>
                 </div>
             </div>
+        <EggChangerBox />
         </ServerContentBlock>
     );
 };

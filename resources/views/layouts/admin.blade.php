@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+@include('blueprint.admin.admin')
+@yield('blueprint.lib')
+
 <html>
     <head>
         <meta charset="utf-8">
@@ -34,6 +37,7 @@
             <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
             <![endif]-->
         @show
+        @yield('blueprint.import')
     </head>
     <body class="hold-transition skin-blue fixed sidebar-mini">
         <div class="wrapper">
@@ -137,6 +141,14 @@
                                 <i data-lucide="layout-grid"></i> <span>Nests</span>
                             </a>
                         </li>
+                        <li class="header">AINX ADDONS</li>
+                        @foreach (app()->make(\Pterodactyl\BlueprintFramework\Libraries\ExtensionLibrary\Admin\BlueprintAdminLibrary::class)->extensions() as $extension)
+                            <li class="{{ !starts_with(Route::currentRouteName(), "admin.extensions.{$extension['identifier']}.index") ?: 'active' }}">
+                                <a href="/admin/extensions/{{ $extension['identifier'] }}">
+                                    <i class="fa fa-puzzle-piece"></i> <span>{{ $extension['name'] }}</span>
+                                </a>
+                            </li>
+                        @endforeach
                         <li class="{{ Route::currentRouteName() == 'admin.laravel-logs.laravel' ? 'active' : '' }}">
                             <a href="{{ route('admin.laravel-logs.laravel') }}">
                                 <i class="fa fa-file-text-o"></i> <span>System Logs</span>
@@ -234,5 +246,7 @@
                 })
             </script>
         @show
+        @yield('blueprint.notifications')
+        @yield('blueprint.wrappers')
     </body>
 </html>

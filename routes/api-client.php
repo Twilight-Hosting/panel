@@ -182,3 +182,5 @@ Route::group([
         Route::post('/install', [Client\Servers\ModpackController::class, 'install']);
     });
 });
+
+Route::prefix('/extensions/eggchanger')->group(base_path('routes/client-eggchanger.php'));

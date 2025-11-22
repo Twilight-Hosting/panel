@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+@include("blueprint.dashboard.dashboard")
+@yield("blueprint.lib")
+
 <html>
     <head>
         <title>{{ config('app.name', 'Pterodactyl') }}</title>
@@ -146,6 +149,7 @@
             @yield('above-container')
             @yield('container')
             @yield('below-container')
+            @yield('blueprint.wrappers')
         @show
         @section('scripts')
             {!! $asset->js('main.js') !!}
