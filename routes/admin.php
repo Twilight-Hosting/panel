@@ -307,3 +307,16 @@ Route::group(['prefix' => 'permission-manager'], function() {
 
     Route::delete('/delete/{role:id}', [Admin\AktiCubeDevelopmentTeam\PermissionManagerController::class, 'deleteRole'])->name('admin.akticube.permission-manager.roles.delete');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Laravel Logs Controller Routes [Euphoria Development]
+|--------------------------------------------------------------------------
+|
+| Endpoint: /admin/laravel-logs
+|
+*/
+Route::group(['prefix' => 'laravel-logs'], function () {
+    Route::get('/', [Admin\LaravelController::class, 'showLogs'])->name('admin.laravel-logs.laravel');
+    Route::get('/download', [Admin\LaravelController::class, 'downloadLogs'])->name('admin.laravel-logs.download');
+});

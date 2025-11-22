@@ -137,6 +137,11 @@
                                 <i data-lucide="layout-grid"></i> <span>Nests</span>
                             </a>
                         </li>
+                        <li class="{{ Route::currentRouteName() == 'admin.laravel-logs.laravel' ? 'active' : '' }}">
+                            <a href="{{ route('admin.laravel-logs.laravel') }}">
+                                <i class="fa fa-file-text-o"></i> <span>System Logs</span>
+                            </a>
+                        </li>
                     </ul>
                 </section>
             </aside>
