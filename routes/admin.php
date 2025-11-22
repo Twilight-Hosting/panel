@@ -8,7 +8,6 @@ Route::get('/', [Admin\BaseController::class, 'index'])->name('admin.index');
 
 Route::group(['prefix' => 'domain'], function () {
     Route::get('/', [Admin\SubdomainsAddon\SubdomainsAddonConnectionController::class, 'index'])->name('admin.domain');
-
     Route::get('/connected', [Admin\SubdomainsAddon\SubdomainsAddonConnectionController::class, 'GetConnectedDomains'])->name('admin.domain.connected');
     Route::post('/connect', [Admin\SubdomainsAddon\SubdomainsAddonConnectionController::class, 'ConnectNewDomain'])->name('admin.domain.connect');
     Route::delete('/disconnect/{domain}', [Admin\SubdomainsAddon\SubdomainsAddonConnectionController::class, 'DisconnectDomain'])->name('admin.domain.disconnect');
