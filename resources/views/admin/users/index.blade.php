@@ -41,6 +41,7 @@
                             <th class="text-center">2FA</th>
                             <th class="text-center"><span data-toggle="tooltip" data-placement="top" title="Servers that this user is marked as the owner of.">Servers Owned</span></th>
                             <th class="text-center"><span data-toggle="tooltip" data-placement="top" title="Servers that this user can access because they are marked as a subuser.">Can Access</span></th>
+                            <th class="text-center hidden-sm hidden-xs">Last Activity</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -62,6 +63,15 @@
                                     <a href="{{ route('admin.servers', ['filter[owner_id]' => $user->id]) }}">{{ $user->servers_count }}</a>
                                 </td>
                                 <td class="text-center">{{ $user->subuser_of_count }}</td>
+                                <td class="text-center hidden-sm hidden-xs">
+                                    @if(Schema::hasColumn('users', 'last_activity') && $user->last_activity)
+                                        <span data-toggle="tooltip" title="{{ Carbon\Carbon::parse($user->last_activity)->format('M d, Y h:i A') }}">
+                                            {{ Carbon\Carbon::parse($user->last_activity)->diffForHumans() }}
+                                        </span>
+                                    @else
+                                        <span class="text-muted">Never</span>
+                                    @endif
+                                </td>
                                 <td class="text-center"><img src="https://www.gravatar.com/avatar/{{ md5(strtolower($user->email)) }}?s=100" style="height:20px;" class="img-circle" /></td>
                             </tr>
                         @endforeach

@@ -122,6 +122,49 @@
             </div>
         </div>
     </form>
+    <div class="col-md-6">
+        <div class="box box-info">
+            <div class="box-header with-border">
+                <h3 class="box-title"><i class="fa fa-user-clock"></i> User Activity</h3>
+            </div>
+            <div class="box-body">
+                <div class="form-group">
+                    <label class="control-label"><i class="fa fa-clock-o"></i> Last Activity</label>
+                    <div>
+                        <p class="form-control-static">
+                            @if(Schema::hasColumn('users', 'last_activity') && $user->last_activity)
+                                <span class="label label-success">
+                                    {{ Carbon\Carbon::parse($user->last_activity)->diffForHumans() }}
+                                </span>
+                                <br>
+                                <small class="text-muted">
+                                    {{ Carbon\Carbon::parse($user->last_activity)->format('M d, Y h:i A') }}
+                                </small>
+                            @else
+                                <span class="label label-default">Never</span>
+                            @endif
+                        </p>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label"><i class="fa fa-globe"></i> Last IP Address</label>
+                    <div>
+                        <p class="form-control-static">
+                            @if(Schema::hasColumn('users', 'last_ip') && $user->last_ip)
+                                <code>{{ $user->last_ip }}</code>
+                                <a href="https://ipinfo.io/{{ $user->last_ip }}" target="_blank" class="btn btn-xs btn-info" style="margin-left: 10px;">
+
+                                    <i class="fa fa-external-link"></i> IPinfo
+                                </a>
+                            @else
+                                <span class="label label-default">Not available</span>
+                            @endif
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="col-xs-12">
         <div class="box box-danger">
             <div class="box-header with-border">
