@@ -23,6 +23,7 @@ use Pterodactyl\Http\Requests\Api\Client\Servers\Files\DecompressFilesRequest;
 use Pterodactyl\Http\Requests\Api\Client\Servers\Files\GetFileContentsRequest;
 use Pterodactyl\Http\Requests\Api\Client\Servers\Files\WriteFileContentRequest;
 use Pterodactyl\Http\Controllers\Api\Client\PluginsAddon\PluginsController;
+use Pterodactyl\Http\Controllers\Api\Client\SLPlugins\SLPluginsController;
 
 class FileController extends ClientApiController
 {
@@ -229,6 +230,8 @@ class FileController extends ClientApiController
         if (count($addonFiles) > 0) {
             $pluginsAddon->removeAddonByFileNames($server->id, $addonFiles);
         }
+
+        SLPluginsController::tryRemovePlugin($request->input('root'), $server->id, $request->input('files'));
 
         $this->fileRepository->setServer($server)->deleteFiles(
             $request->input('root'),

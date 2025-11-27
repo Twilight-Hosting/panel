@@ -10,7 +10,7 @@ import Spinner from '@/components/elements/Spinner';
 import Features from '@feature/Features';
 import Console from '@/components/server/console/Console';
 import ServerDetailsBlock from '@/components/server/console/ServerDetailsBlock';
-import { Alert } from '@/components/elements/alert';
+import Alert from '@/components/elements/alert/Alert';
 import { TerminalIcon } from '@heroicons/react/outline';
 import { useTranslation } from 'react-i18next';
 

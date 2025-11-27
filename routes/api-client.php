@@ -47,6 +47,19 @@ Route::group([
         });
     });
 
+    Route::group(['prefix' => 'plugin-sl'], function () {
+        Route::get('/filters', [Client\SLPlugins\SLPluginsController::class, 'getFilters']);
+        Route::get('/installed', [Client\SLPlugins\SLPluginsController::class, 'getInstalled']);
+        Route::get('/installable/{plugin?}', [Client\SLPlugins\SLPluginsController::class, 'getService']);
+        Route::post('/install', [Client\SLPlugins\SLPluginsController::class, 'store']);
+        Route::delete('/{plugin_id}', [Client\SLPlugins\SLPluginsController::class, 'destroy']);
+        Route::patch('/{plugin_id}', [Client\SLPlugins\SLPluginsController::class, 'rename']);
+
+        Route::group(['prefix' => 'file'], function () {
+            Route::post('/prepare', [Client\SLPlugins\SLPluginsController::class, 'prepareFile']);
+        });
+    });
+
     Route::group(['prefix' => 'versions'], function () {
         Route::get('/{service?}', [Client\VersionsAddon\VersionsController::class, 'getServices']);
         Route::post('/{service}/{version}', [Client\VersionsAddon\VersionsController::class, 'store']);

@@ -11,7 +11,7 @@ import Sftp from '@/components/server/dashboard/SFTP';
 import Banner from '@/components/server/dashboard/Banner';
 import InfoCardAdvanced from '@/components/server/dashboard/InfoCardAdvanced';
 import InfoCard from '@/components/server/dashboard/InfoCard';
-import { Alert } from '@/components/elements/alert';
+import Alert from '@/components/elements/alert/Alert';
 import Spinner from '@/components/elements/Spinner';
 import Console from '@/components/server/console/Console';
 import { useTranslation } from 'react-i18next';

@@ -17,6 +17,7 @@ import ServerActivityLogContainer from '@/components/server/ServerActivityLogCon
 import PropertiesContainer from '@/components/server/properties/PropertiesContainer';
 import DomainsContainer from '@/components/server/subdomains/SubdomainsContainer';
 import PluginsContainer from '@/components/server/plugins/PluginsContainer';
+import SLPluginsContainer from '@/components/server/plugins-sl/PluginsContainer';
 import VersionsContainer from '@/components/server/versions/VersionsContainer';
 import { UserIcon, EyeIcon, CollectionIcon, ViewGridIcon, TerminalIcon, FolderOpenIcon, DatabaseIcon, CalendarIcon, UserGroupIcon, ArchiveIcon, GlobeIcon, GlobeAltIcon, AdjustmentsIcon, DocumentTextIcon, CogIcon, DocumentDownloadIcon, ViewGridAddIcon } from '@heroicons/react/outline'
 
@@ -193,6 +194,14 @@ export default {
                 component: NetworkContainer,
             },
             {
+                path: '/plugins',
+                permission: 'file.*',
+                name: 'plugins',
+                nestId: 16,
+                icon: DocumentDownloadIcon,
+                component: SLPluginsContainer,
+            },
+                        {
                 path: '/plugins',
                 permission: 'file.*',
                 name: 'plugins',
