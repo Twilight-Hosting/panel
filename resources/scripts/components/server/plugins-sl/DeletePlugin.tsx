@@ -12,12 +12,13 @@ import FlashMessageRender from '@/components/FlashMessageRender';
 import { Dialog } from '@/components/elements/dialog';
 import tw from 'twin.macro';
 import { useTranslation } from 'react-i18next';
+import getDirectory from '@/api/server/plugins-sl/getDirectory';
 
-export default function DeletePlugin({ plugin_id, file_name }: { plugin_id: number, file_name: string }){
+export default function DeletePlugin({ plugin_id, plugin_name, framework, file_names }: { plugin_id: number, plugin_name: string, framework: string, file_names: string[] }){
     const { t } = useTranslation('arix/server/addons/plugins');
     const [isOpen, setIsOpen] = useState(false);
     const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
-    const removePlugin = ServerContext.useStoreActions((actions) => actions.plugins.removePlugin);
+    const removePlugin = ServerContext.useStoreActions((actions) => actions.slPlugins.removePlugin);
     const { clearFlashes, addFlash } = useStoreActions((actions: Actions<ApplicationStore>) => actions.flashes);
     const [loading, setLoading] = useState(false);
 
@@ -25,8 +26,8 @@ export default function DeletePlugin({ plugin_id, file_name }: { plugin_id: numb
         setLoading(true);
         clearFlashes('plugins');
         
-        deleteFiles(    
-            uuid, '/plugins', [file_name]
+        deleteFiles(
+            uuid, getDirectory(framework), file_names
         )
         .then(() => {
             removePlugin(plugin_id)
@@ -57,7 +58,7 @@ export default function DeletePlugin({ plugin_id, file_name }: { plugin_id: numb
             confirm={t('delete.continue')}
             onConfirmed={Delete}
         >
-            {t('delete.are-you-sure')} <code>{file_name}</code>?
+            {t('delete.are-you-sure-sl')} <code>{plugin_name}</code>?
         </Dialog.Confirm>
 
         <Can action={'file.delete'}>

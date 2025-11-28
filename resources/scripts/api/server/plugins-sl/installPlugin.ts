@@ -1,67 +1,74 @@
 import http from '@/api/http';
 import pullFile from '@/api/server/files/pullFile';
-import { InstalledPlugin } from '@/api/server/plugins-sl/Plugins';
-import prepareDownload from '@/api/server/plugins-sl/prepareDownload';
+import { ExternalAsset, ExternalRelease, InstalledPlugin } from '@/api/server/plugins-sl/Plugins';
+import getDirectory from '@/api/server/plugins-sl/getDirectory';
 
 export interface InstallProps {
     id: string, 
     uuid: string, 
-    service: string, 
+    framework: string, 
     plugin_id: string, 
     plugin_name: string, 
     plugin_icon: string, 
-    version: string, 
-    download: string
+    release: ExternalRelease, 
+    assets: ExternalAsset[]
 }
 
 const installPlugin = async ({ 
     id, 
     uuid, 
-    service, 
+    framework, 
     plugin_id, 
     plugin_name, 
     plugin_icon, 
-    version, 
-    download
+    release,
+    assets
 }: InstallProps ): Promise<InstalledPlugin> => {
-    const formatedVersion = version.replace(/[^a-zA-Z0-9._-]/g, '');
-    const formatedName = plugin_name.replace(/[^a-zA-Z0-9._-]/g, '');
-    const formatFile = `${service.slice(0,1)}-${formatedVersion}-${formatedName.slice(0, 5)}.jar`;
 
-    const PrepareDownload = async (): Promise<string> => {
-        if (service !== 'spigot') {
-            return download;
-        } else {
-            try {
-                const rep: string = await prepareDownload({
-                    id,
-                    url: download,
-                    name: formatedName,
-                    version: formatedVersion
-                });
-
-                return `https://arix.gg/arix-api/v1/${rep}`;
-            } catch (error) {
-                throw new Error(`Failed to prepare download: ${error instanceof Error ? error.message : 'Unknown error'}`);
-            }
-        }
+    const FormatFile = (plugin_id: string, asset: string): string =>
+    {
+        return `${plugin_id}-${asset}`;
     };
 
     try {
-        const downloadUrl = await PrepareDownload();
-        await pullFile(uuid, downloadUrl, '/plugins', formatFile);
+        var fileNames: string[] = [];
+        for (const asset of assets)
+        {
+            var downloadUrl = asset.downloadUrl;
+            const formattedFile = FormatFile(plugin_id, asset.name);
+            fileNames = fileNames.concat(formattedFile);
+
+            if (downloadUrl.startsWith('https://github.com/'))
+            {
+                const response = await fetch(downloadUrl, {
+                    method: 'GET',
+                    redirect: 'follow',
+                    headers: { 'range': 'bytes=0-0' }
+                })
+
+                if (!response.ok) {
+                    throw new Error()
+                }
+
+                await pullFile(uuid, response.url, getDirectory(framework), formattedFile);
+            }
+            else
+            {
+                await pullFile(uuid, downloadUrl, getDirectory(framework), formattedFile);
+            }
+        }
     } catch (error) {
         throw new Error(`Plugin installation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
 
     return new Promise((resolve, reject) => {
-        http.post(`/api/client/${id}/plugin/install`, {
+        http.post(`/api/client/${id}/plugin-sl/install`, {
             plugin_icon,
             plugin_name,
-            plugin_service: service,
-            plugin_version: version,
-            plugin_service_id: plugin_id,
-            file_name: formatFile
+            plugin_framework: framework,
+            plugin_version: release.name,
+            plugin_id: plugin_id,
+            file_names: fileNames
         })
         .then(({ data }) => resolve(data))
         .catch(reject);

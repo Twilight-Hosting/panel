@@ -1,8 +1,8 @@
 import React from 'react';
 import { numify } from "numify";
-import { Plugin, QueryParams } from '@/api/server/plugins-sl/Plugins';
+import { ExternalPlugin, QueryParams } from '@/api/server/plugins-sl/Plugins';
 import { differenceInCalendarMonths, format, formatDistanceToNow } from 'date-fns';
-import { ExternalLinkIcon, DownloadIcon, StarIcon, CalendarIcon } from '@heroicons/react/outline';
+import { ExternalLinkIcon, DownloadIcon, ChevronUpIcon, CalendarIcon, ViewGridAddIcon } from '@heroicons/react/outline';
 import { useDeepMemoize } from '@/plugins/useDeepMemoize';
 import { ServerContext } from '@/state/server';
 import GreyRowBox from '@/components/elements/GreyRowBox';
@@ -22,40 +22,47 @@ const getLocale = (localeKey: keyof typeof locales) => {
     }
 };
 
-export default function PluginRow({ plugin, filters }: { plugin: Plugin; filters: QueryParams }) {
+export default function PluginRow({ plugin, filters }: { plugin: ExternalPlugin; filters: QueryParams }) {
     const { t } = useTranslation('arix/server/addons/plugins');
     const { i18n } = useTranslation();
     const currentLang = i18n.language;
     const localeKey = currentLang as keyof typeof locales;
-    const installedPlugins = useDeepMemoize(ServerContext.useStoreState((state) => state.plugins.data));
+    const installedPlugins = useDeepMemoize(ServerContext.useStoreState((state) => state.slPlugins.data));
     const isInstalled = installedPlugins.find((installed) => (
-        installed.plugin_service_id === plugin.id && installed.plugin_service === filters.framework
+        installed.plugin_id === plugin.id && installed.plugin_framework === filters.framework
     ));
 
     return(
         <GreyRowBox key={plugin.id} className={'flex-col !items-start gap-3'} $hoverable={false}>
             <div className={'flex items-center gap-x-5'}>
                 <div className={'p-1 bg-gray-600 rounded-lg overflow-hidden'}>
+                    {plugin.icon === null ?
+                    <ViewGridAddIcon
+                        width={64}
+                        height={64}
+                        className={'shrink-0'}
+                    />
+                    :
                     <img 
-                        src={plugin.icon === 'https://www.spigotmc.org/' ? '/arix/Arix.png' : plugin.icon} 
+                        src={`https://plugins.scpslgame.com/api/uploads/${plugin.icon}`}
                         width={64} 
                         height={64} 
                         alt={`${plugin.name.slice(0, 5)} Icon`}
                         className={'shrink-0'}
-                    />
+                    />}
                 </div>
                 <div>
                     <p className={'text-xl font-medium text-gray-50 flex items-center gap-x-2'}>
                         {plugin.name}
-                        <a href={plugin.project.projectUrl} target={'_blank'}>
+                        <a href={`https://github.com/${plugin.repository}`} target={'_blank'}>
                             <ExternalLinkIcon className={'w-6'}/>
                         </a>
                     </p>
                     <div className={'text-gray-400 text-sm'}>
                         <p>
                             {t('by')}&nbsp;
-                            <a href={plugin.project.authorUrl} target={'_blank'} className={'underline'}>
-                                {plugin.project.author}
+                            <a href={`https://github.com/${plugin.author.username}`} target={'_blank'} className={'underline'}>
+                                {plugin.author.displayName}
                             </a>
                         </p>
                     </div>
@@ -67,9 +74,9 @@ export default function PluginRow({ plugin, filters }: { plugin: Plugin; filters
             <p className={'flex items-center gap-x-1'}>
                 <CalendarIcon className={'w-4 text-arix'} />
                 {t('last-updated')}&nbsp;
-                {plugin.stats.lastUpdated
+                {plugin.repoUpdatedAt
                     ? (() => {
-                        const lastUpdated = new Date(plugin.stats.lastUpdated);
+                        const lastUpdated = new Date(plugin.repoUpdatedAt);
                         const monthsDifference = Math.abs(differenceInCalendarMonths(lastUpdated, new Date()));
                         return monthsDifference > 12
                             ? format(lastUpdated, 'MMM do, yyyy', { locale: getLocale(localeKey) })
@@ -83,14 +90,14 @@ export default function PluginRow({ plugin, filters }: { plugin: Plugin; filters
                     <Tooltip content={`${t('downloads')}`} placement={'top'}>
                         <p className={'flex items-center gap-x-1'}>
                             <DownloadIcon className={'w-4 text-gray-300'} />
-                            {numify(plugin.stats.downloads)}
+                            {numify(plugin.downloads)}
                         </p>
                     </Tooltip>
-                    {plugin.stats.upvotes > 0 && (
+                    {plugin.upvotes > 0 && (
                         <Tooltip content={`${t('upvotes')}`} placement={'top'}>
                             <p className={'flex items-center gap-x-1'}>
-                                <StarIcon className={'w-4 text-gray-300'} />
-                                {numify(plugin.stats.upvotes)}
+                                <ChevronUpIcon className={'w-4 text-gray-300'} />
+                                {numify(plugin.upvotes)}
                             </p>
                         </Tooltip>
                     )}

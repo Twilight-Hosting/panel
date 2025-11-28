@@ -197,7 +197,7 @@ export default {
                 path: '/plugins',
                 permission: 'file.*',
                 name: 'plugins',
-                nestId: 16,
+                eggIds: [16],
                 icon: DocumentDownloadIcon,
                 component: SLPluginsContainer,
             },

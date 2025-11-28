@@ -25,7 +25,9 @@ export default function InstalledPluginRow({ ...props}: InstalledPlugin){
 
             <DeletePlugin 
                 plugin_id={props.id}
-                file_name={props.file_name}
+                plugin_name={props.plugin_name}
+                framework={props.plugin_framework}
+                file_names={props.file_names}
             />
         </GreyRowBox>
     )

@@ -22,13 +22,15 @@ return[
         'installed-successfully' => 'Plugin Installed successfully',
         'select-a-version' => 'Select a version',
         'select-version' => 'Select Version',
-        'install-plugin' => 'Install plugin'
+        'install-plugin' => 'Install plugin',
+        'no-release-selected' => 'No release selected.'
     ],
 
     'delete' => [
         'delete-plugin' => 'Delete plugin',
         'deleted-succesfully' => 'Plugin Deleted succesfully',
         'are-you-sure' => 'Are you sure you want to delete',
+        'are-you-sure-sl' => 'Are you sure you want to remove',
         'continue' => 'Continue'
     ]
 ];

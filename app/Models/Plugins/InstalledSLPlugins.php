@@ -27,6 +27,6 @@ class InstalledSLPlugins extends Model {
         'server_id',
         'plugin_name',
         'plugin_icon',
-        'file_name'
+        'file_names'
     ];
 }

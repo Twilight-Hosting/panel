@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import getPlugins from '@/api/server/plugins-sl/getPlugins';
-import getFilters from '@/api/server/plugins-sl/getFilters';
 import getInstalledPlugins from '@/api/server/plugins-sl/getInstalledPlugins';
-import { Plugin, QueryParams } from '@/api/server/plugins-sl/Plugins';
+import { ExternalPlugin, QueryParams } from '@/api/server/plugins-sl/Plugins';
 import PluginRow from '@/components/server/plugins-sl/PluginRow';
 import PluginInstalledRow from '@/components/server/plugins-sl/PluginInstalledRow';
 import { ServerContext } from '@/state/server';
@@ -50,7 +49,7 @@ const TagCheckbox: React.FC<{
     return (
         <div className='flex items-center gap-x-2 cursor-pointer'>
             <Input
-                id={'category-${id}'}
+                id={`category-${id}`}
                 type="checkbox"
                 checked={active.includes(id)}
                 onChange={(e) => {
@@ -60,7 +59,7 @@ const TagCheckbox: React.FC<{
                         updateFilter(newCategories);
                 }}
             />
-            <label htmlFor={'category-${id}'} className={'capitalize text-sm'}>
+            <label htmlFor={`category-${id}`} className={'capitalize text-sm'}>
                 {id.replace(/(A-Z)/g, ' $1').trim()}
             </label>
         </div>
@@ -75,9 +74,9 @@ const PluginsContainer = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const { addError, clearFlashes } = useFlash();
     const [filters, setFilters] = useState<QueryParams>({ page: 1, framework: 'labapi', tags: [], search: '' });
-    const [plugins, setPlugins] = useState<PaginatedResult<Plugin>>();
-    const setInstalledPlugins = ServerContext.useStoreActions((state) => state.plugins.setPlugins);
-    const installedPlugins = useDeepMemoize(ServerContext.useStoreState((state) => state.plugins.data));
+    const [plugins, setPlugins] = useState<PaginatedResult<ExternalPlugin>>();
+    const setInstalledPlugins = ServerContext.useStoreActions((state) => state.slPlugins.setPlugins);
+    const installedPlugins = useDeepMemoize(ServerContext.useStoreState((state) => state.slPlugins.data));
 
     const resetFilters = () => {
         setSearchTerm('');
@@ -134,7 +133,7 @@ const PluginsContainer = () => {
         clearFlashes('plugins');
 
         getPlugins({id, ...filters })
-            .then((response: PaginatedResult<Plugin>) => {
+            .then((response: PaginatedResult<ExternalPlugin>) => {
                 setPlugins(response);
             })
             .catch((error) => {
@@ -178,7 +177,7 @@ const PluginsContainer = () => {
                     </div>
                     <div className={'grid lg:grid-cols-2 gap-4'}>
                         {(plugins?.items?.length ?? 0) > 0 ? (
-                            plugins?.items?.map((plugin: Plugin) => (
+                            plugins?.items?.map((plugin: ExternalPlugin) => (
                                 <PluginRow
                                     plugin={plugin}
                                     filters={filters}
