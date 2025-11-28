@@ -11,7 +11,7 @@ const getPlugins = ({ id, ...params }: QueryParams & { id: string }): Promise<Pa
             .then(({ data }) => {
                 resolve({
                     items: data?.data || [],
-                    pagination: getPaginationSet(data?.meta || {}),
+                    pagination: getPaginationSet(data.meta.pagination),
                 });
             })
             .catch(reject);

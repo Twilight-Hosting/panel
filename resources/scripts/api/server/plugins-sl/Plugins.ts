@@ -109,4 +109,5 @@ export interface ExternalPlugin {
   upvotes: number;
   organization: null;
   dependencies: ExternalDependency[];
+  framework: string;
 }

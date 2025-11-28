@@ -67,15 +67,22 @@ class SLPluginsController extends ClientApiController
                     return $b['downloads'] - $a['downloads'];
                 });
 
+                $count = count($response);
                 $response = array_slice($response, ($queryParameters['page'] - 1) * 20, 20);
+
+                foreach($response as $plugin)
+                {
+                    $plugin['framework'] = 'labapi';
+                }
+
                 return response()->json([
                     'data' => $response,
-                    'meta' => [
-                        'total' => count($plugins),
+                    'meta' => ['pagination' => [
+                        'total' => $count,
                         'count' => count($response),
-                        'perPage' => 20,
-                        'currentPage' => $queryParameters['page'],
-                        'totalPages' => ceil(count($plugins) / 20)
+                        'per_page' => 20,
+                        'current_page' => $queryParameters['page'],
+                        'total_pages' => ceil($count / 20)]
                     ],
                 ]);
             }

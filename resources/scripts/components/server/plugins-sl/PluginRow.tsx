@@ -11,6 +11,7 @@ import InstallButton from '@/components/server/plugins-sl/InstallButton';
 import Tooltip from '@/components/elements/tooltip/Tooltip';
 import { useTranslation } from 'react-i18next';
 import * as locales from 'date-fns/locale';
+import PluginDetails from './PluginDetails';
 
 const getLocale = (localeKey: keyof typeof locales) => {
     if (locales[localeKey]) {
@@ -102,11 +103,11 @@ export default function PluginRow({ plugin, filters }: { plugin: ExternalPlugin;
                         </Tooltip>
                     )}
                 </div>
+                <PluginDetails plugin={plugin} />
                 {!isInstalled ?
                         <Can action={'file.create'}>
                             <InstallButton 
                                 plugin={plugin}
-                                service={filters.framework}
                             />
                         </Can>
                     :

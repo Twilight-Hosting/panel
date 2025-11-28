@@ -76,7 +76,7 @@ export interface CheckboxProps {
     children?: React.ReactNode;
 }
 
-const Container = styled.label`
+const CheckboxContainer = styled.label`
     ${tw`flex items-center border border-transparent rounded md:p-2 transition-colors duration-75`};
     text-transform: none;
 
@@ -112,7 +112,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
     children
 }) => {
     return (
-        <Container className={`flex items-start gap-x-3 p-3 rounded-lg border transition-colors cursor-pointer
+        <CheckboxContainer className={`flex items-start gap-x-3 p-3 rounded-lg border transition-colors cursor-pointer
          ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`} htmlFor={id}>
             <div className="flex items-center h-5 relative">
 
@@ -144,11 +144,11 @@ const Checkbox: React.FC<CheckboxProps> = ({
             >
                 {children}
             </label>
-        </Container>
+        </CheckboxContainer>
     );
 };
 
-const ModalContent = ({ plugin, framework, visible, onDismissed, ...props }: RequiredModalProps & { plugin: ExternalPlugin; framework: string }) => {
+const ModalContent = ({ plugin, visible, onDismissed, ...props }: RequiredModalProps & { plugin: ExternalPlugin; }) => {
     const { t } = useTranslation('arix/server/addons/plugins');
     const { i18n } = useTranslation();
     const currentLang = i18n.language;
@@ -170,14 +170,20 @@ const ModalContent = ({ plugin, framework, visible, onDismissed, ...props }: Req
             message: message ?? t('install.download-not-available'),
         });
     }
-    
+
+    const SetSelectedRelease = (release: ExternalRelease | undefined) => {
+        setSelectedRelease(release);
+        setSelectedAssets([]);
+    }
+
     const InstallPlugin = async () => {
         try {
             if (selectedRelease && selectedAssets && releases) {
                 if (selectedRelease?.htmlUrl) {
                     setLoading(true);
                     installPlugin({
-                        id, uuid, framework,
+                        id, uuid,
+                        framework: plugin.framework,
                         plugin_id: plugin.id,
                         plugin_name: plugin.name,
                         plugin_icon: plugin.icon || '',
@@ -213,10 +219,10 @@ const ModalContent = ({ plugin, framework, visible, onDismissed, ...props }: Req
         if(visible) {
             clearFlashes('plugins');
             setReleases(plugin.releases);
-            setSelectedRelease(plugin.releases[0]);
+            SetSelectedRelease(plugin.releases[0]);
         }
 
-    }, [id, plugin, framework, visible]);
+    }, [id, plugin, plugin.framework, visible]);
 
     return (
         <Modal visible={visible} onDismissed={onDismissed} {...props}>
@@ -289,9 +295,9 @@ const ModalContent = ({ plugin, framework, visible, onDismissed, ...props }: Req
                 </p>
             </div>
             <div>
-                <div className="space-y-3">
+                <div className="space-y-2">
                     <p className={'mb-1 mt-4'}>{t('install.select-a-version')}:</p>
-                        <Select onChange={e => setSelectedRelease(releases?.find((release) => release.name === e.target.value))}>
+                        <Select onChange={e => SetSelectedRelease(releases?.find((release) => release.name === e.target.value))}>
                             {releases?.map((release) => (
                                 <option value={release.name} key={release.name}>
                                     {release.name}
@@ -301,34 +307,34 @@ const ModalContent = ({ plugin, framework, visible, onDismissed, ...props }: Req
                     {
                         selectedRelease
                         ?
-                            <Container className={'bg-neutral-500'}>
+                            <div className={'space-y-1'}>
                                 {selectedRelease.assets.map((asset) => (
-                                    <Checkbox
-                                        key={asset.name}
-                                        id={asset.name}
-                                        checked={selectedAssets.includes(asset.name)}
-                                        onChange={(checked) => {
-                                            const newAssets = checked
-                                                ? [...selectedAssets, asset.name]
-                                                : selectedAssets.filter(name => name !== asset.name);
-                                            setSelectedAssets(newAssets);
-                                        }}
-                                    >
-                                        <div className="flex flex-col">
-                                            <p className="font-medium text-gray-100 mb-1">
-                                                {asset.name}
-                                            </p>
-                                            <div className="flex items-center gap-x-4 text-sm text-gray-400">
-                                                <div className="flex items-center gap-x-1">
-                                                    <DownloadIcon className="w-4 h-4" />
-                                                    <span>{numify(asset.downloadCount)}</span>
+                                        <Checkbox
+                                            key={asset.name}
+                                            id={asset.name}
+                                            checked={selectedAssets.includes(asset.name)}
+                                            onChange={(checked) => {
+                                                const newAssets = checked
+                                                    ? [...selectedAssets, asset.name]
+                                                    : selectedAssets.filter(name => name !== asset.name);
+                                                setSelectedAssets(newAssets);
+                                            }}
+                                        >
+                                            <div className="flex flex-col">
+                                                <p className="font-medium text-gray-100 mb-1">
+                                                    {asset.name}
+                                                </p>
+                                                <div className="flex items-center gap-x-4 text-sm text-gray-400">
+                                                    <div className="flex items-center gap-x-1">
+                                                        <DownloadIcon className="w-4 h-4" />
+                                                        <span>{numify(asset.downloadCount)}</span>
+                                                    </div>
+                                                    <span>{bytesToString(asset.size)}</span>
                                                 </div>
-                                                <span>{bytesToString(asset.size)}</span>
                                             </div>
-                                        </div>
-                                    </Checkbox>
+                                        </Checkbox>
                                 ))}
-                            </Container>
+                            </div>
                         :
                         null
                     }
@@ -344,7 +350,7 @@ const ModalContent = ({ plugin, framework, visible, onDismissed, ...props }: Req
     )
 }
 
-export default function InstallButton({ plugin, service: framework }: { plugin: ExternalPlugin; service: string }) {
+export default function InstallButton({ plugin }: { plugin: ExternalPlugin; }) {
     const { t } = useTranslation('arix/server/addons/plugins');
     const [visible, setVisible] = useState(false);
 
@@ -352,7 +358,6 @@ export default function InstallButton({ plugin, service: framework }: { plugin: 
         <div>
             <ModalContent 
                 plugin={plugin}
-                framework={framework}
                 appear 
                 visible={visible} 
                 onDismissed={() => setVisible(false)}
