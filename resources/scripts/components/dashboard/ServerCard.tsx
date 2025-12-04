@@ -52,7 +52,7 @@ export default ({ server }: { server: Server }) => {
     const diskLimit = server.limits.disk !== 0 ? bytesToString(mbToBytes(server.limits.disk)) : t('unlimited');
     const memoryLimit = server.limits.memory !== 0 ? bytesToString(mbToBytes(server.limits.memory)) : t('unlimited');
     const cpuLimit = server.limits.cpu !== 0 ? server.limits.cpu + '%' : t('unlimited');
-    
+
     return (
         <>
         <div className="bg-gray-700 backdrop px-6 py-5 rounded-box">
@@ -61,9 +61,9 @@ export default ({ server }: { server: Server }) => {
                 <span className={`py-1 px-2 rounded
                     ${stats?.status === 'offline'
                         ? 'text-danger-50'
-                        : stats?.status === 'running' 
+                        : stats?.status === 'running'
                         ? 'text-success-50'
-                        : stats?.status === 'starting' 
+                        : stats?.status === 'starting'
                         ? 'text-yellow-50 bg-yellow-500/40'
                         : stats?.status === 'stopping'
                         ? 'text-red-50 bg-red-500/40'
@@ -77,7 +77,7 @@ export default ({ server }: { server: Server }) => {
                         : ''
                     }`}
                 >
-                    {stats?.status === 'offline' 
+                    {stats?.status === 'offline'
                         ? t('offline')
                         : stats?.status === 'running'
                         ? t('online')
@@ -144,7 +144,7 @@ export default ({ server }: { server: Server }) => {
                 </React.Fragment>
                 )}
             </div>
-            <Link to={`/server/${server.id}`} className={'text-secondary-50 bg-secondary-200 border border-secondary-100 hover:bg-secondary-100 rounded-component px-3 py-3 w-full block text-center duration-300'}>
+            <Link to={`/server/${server.id}/console`} className={'text-secondary-50 bg-secondary-200 border border-secondary-100 hover:bg-secondary-100 rounded-component px-3 py-3 w-full block text-center duration-300'}>
                 {t('manage-server', { ns: 'arix/dashboard'})}
             </Link>
         </div>
