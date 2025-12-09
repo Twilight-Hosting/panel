@@ -51,7 +51,8 @@
         "symfony/mailgun-mailer": "~6.4.10",
         "symfony/postmark-mailer": "~6.4.8",
         "symfony/yaml": "~6.4.8",
-        "webmozart/assert": "~1.11.0"
+        "webmozart/assert": "~1.11.0",
+        "wemx/sso-pterodactyl": "^1.2"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "~2.15.1",

@@ -1,6 +1,6 @@
 import React, { lazy } from 'react';
-import DashboardContainer from '@/components/server/dashboard/DashboardContainer';
 import ServerConsole from '@/components/server/console/ServerConsoleContainer';
+import DashboardContainer from '@/components/server/dashboard/DashboardContainer';
 import FullConsoleContainer from '@/components/server/console/FullConsoleContainer';
 import DatabasesContainer from '@/components/server/databases/DatabasesContainer';
 import ScheduleContainer from '@/components/server/schedules/ScheduleContainer';
@@ -120,14 +120,6 @@ export default {
     server: {
         general: [
             {
-                path: '/',
-                permission: null,
-                name: 'dashboard',
-                icon: ViewGridIcon,
-                component: DashboardContainer,
-                exact: true,
-            },
-            {
                 path: '/console',
                 permission: null,
                 name: 'console',
@@ -155,6 +147,14 @@ export default {
                 name: 'activity',
                 icon: EyeIcon,
                 component: ServerActivityLogContainer,
+            },
+            {
+                path: '/',
+                permission: null,
+                name: 'dashboard',
+                icon: ViewGridIcon,
+                component: DashboardContainer,
+                exact: true,
             },
         ],
         management: [

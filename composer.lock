@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5cefbd287c43ced95fe3d3635ea730eb",
+    "content-hash": "11c34afa87d18d162a96e2772949b1f7",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -8010,6 +8010,54 @@
                 "source": "https://github.com/webmozarts/assert/tree/1.11.0"
             },
             "time": "2022-06-03T18:03:27+00:00"
+        },
+        {
+            "name": "wemx/sso-pterodactyl",
+            "version": "v1.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/WemXPro/sso-pterodactyl.git",
+                "reference": "a9c350b39dad0d4788583cd0c83dbc03f95f5034"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/WemXPro/sso-pterodactyl/zipball/a9c350b39dad0d4788583cd0c83dbc03f95f5034",
+                "reference": "a9c350b39dad0d4788583cd0c83dbc03f95f5034",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^10.0|^11.0",
+                "php": "^8.0|^8.1|^8.2|^8.3"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "WemX\\Sso\\SsoServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "WemX\\Sso\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mubeen Ullah",
+                    "email": "mubeen@wemx.net"
+                }
+            ],
+            "description": "Allows clients from WemX login to their Pterodactyl account with a single redirect",
+            "support": {
+                "issues": "https://github.com/WemXPro/sso-pterodactyl/issues",
+                "source": "https://github.com/WemXPro/sso-pterodactyl/tree/v1.2.1"
+            },
+            "time": "2025-02-01T14:17:57+00:00"
         }
     ],
     "packages-dev": [
@@ -12143,7 +12191,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
@@ -12155,7 +12203,7 @@
         "ext-posix": "*",
         "ext-zip": "*"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "platform-overrides": {
         "php": "8.2.23"
     },

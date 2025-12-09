@@ -49,7 +49,7 @@ export default () => {
                         {({ items }) => (
                             items.length > 0 ?
                                 items.map((server, index) => (
-                                    <option value={`/server/${server.id}`} key={server.uuid}>
+                                    <option value={`/server/${server.id}/console`} key={server.uuid}>
                                         {server.name}
                                     </option>
                                 ))
