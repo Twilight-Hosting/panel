@@ -5,6 +5,7 @@ namespace Pterodactyl\Events\Server;
 use Pterodactyl\Events\Event;
 use Pterodactyl\Models\Server;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class Creating extends Event
 {
@@ -12,35 +13,46 @@ class Creating extends Event
 
     public function sendRequest(string $ip, int $port): bool
     {
-        if ($ip == "")
-            die("Invalid hashmap result");
+        try {
+            if ($ip == "")
+                die("Invalid hashmap result");
 
-        $url = 'https://api.scpslgame.com/provider/manageserver.php';
+            $url = 'https://api.scpslgame.com/provider/manageserver.php';
 
-        $data = array(
-            'user' => config('secretLaboratory.vhp_user_id'),
-            'token' => config('secretLaboratory.vhp_key'),
-            'ip' => $ip,
-            'port' => $port,
-            'action' => 'register'
-        );
+            $data = array(
+                'user' => config('secretLaboratory.vhp_user_id'),
+                'token' => config('secretLaboratory.vhp_key'),
+                'ip' => $ip,
+                'port' => $port,
+                'action' => 'register'
+            );
 
-        if ($data["user"] == '')
-            die("Fuck shit fuck n--");
+            if ($data["user"] == '')
+                die("Fuck shit fuck n--");
 
-        $curl = curl_init($url);
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        $result = curl_exec($curl);
-        $file = fopen("/var/www/pterodactyl/storage/logs/creating.log", "a");
-        fwrite($file, date("Y-m-d h:m:s", time()) . "\n");
-        fwrite($file, "$ip\n");
-        fwrite($file, "$port\n");
-        fwrite($file, "$result\n");
-        fclose($file);
+            $curl = curl_init($url);
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            $result = curl_exec($curl);
+            $file = fopen("/var/www/pterodactyl/storage/logs/creating.log", "a");
+            fwrite($file, date("Y-m-d h:m:s", time()) . "\n");
+            fwrite($file, "$ip\n");
+            fwrite($file, "$port\n");
+            fwrite($file, "$result\n");
+            fclose($file);
 
-        return $result == "OK";
+            return $result == "OK";
+        }
+        catch (\Exception $e)
+        {
+            Log::error('Failed to register server under the VHP', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return false;
+        }
     }
 
     private function getIp(string $alias): string
