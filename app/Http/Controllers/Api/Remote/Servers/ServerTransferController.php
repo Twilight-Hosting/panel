@@ -55,7 +55,7 @@ class ServerTransferController extends Controller
             throw new ConflictHttpException('Server is not being transferred.');
         }
 
-        if ($server->nest_id == 6)
+        if ($server->egg_id == 16)
         {
             $oldAlias = "";
             $newAlias = "";

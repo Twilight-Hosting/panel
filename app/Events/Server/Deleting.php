@@ -66,7 +66,7 @@ class Deleting extends Event
      */
     public function __construct(public Server $server)
     {
-        if ($server->nest_id == 6)
+        if ($server->egg_id == 16)
             $this->tryRemoveToServerList($server);
     }
 }
