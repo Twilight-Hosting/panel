@@ -18,8 +18,8 @@ class Deleting extends Event
         $url = 'https://api.scpslgame.com/provider/manageserver.php';
 
         $data = array(
-            'user' => '',
-            'token' => '',
+            'user' => config('secretLaboratory.vhp_user_id'),
+            'token' => config('secretLaboratory.vhp_key'),
             'ip' => $ip,
             'port' => $port,
             'action' => 'reset'

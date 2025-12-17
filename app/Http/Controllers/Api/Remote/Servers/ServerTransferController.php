@@ -144,8 +144,8 @@ class ServerTransferController extends Controller
     {
         $url = 'https://api.scpslgame.com/provider/manageserver.php';
         $data = array(
-            'user' => '',
-            'token' => '',
+            'user' => config('secretLaboratory.vhp_user_id'),
+            'token' => config('secretLaboratory.vhp_key'),
             'ip' => $oldIp,
             'port' => $oldPort,
             'action' => 'reassign',
