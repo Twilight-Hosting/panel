@@ -14,9 +14,6 @@ class Creating extends Event
     public function sendRequest(string $ip, int $port): bool
     {
         try {
-            if ($ip == "")
-                die("Invalid hashmap result");
-
             $url = 'https://api.scpslgame.com/provider/manageserver.php';
 
             $data = array(
@@ -55,21 +52,10 @@ class Creating extends Event
         }
     }
 
-    private function getIp(string $alias): string
-    {
-        $aliasMap = array();
-
-        if (array_key_exists($alias, $aliasMap)) {
-            return $aliasMap[$alias];
-        }
-        return "";
-    }
-
     private function tryAddToServerList(Server $server): bool
     {
-        $node = $server->allocation->ip_alias;
+        $ip = $server->allocation->ip;
         $port = $server->allocation->port;
-        $ip = $this->getIp($node);
         return $this->sendRequest($ip, $port);
     }
 
