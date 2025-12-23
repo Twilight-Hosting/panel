@@ -40,6 +40,13 @@ return [
     ],
     'server' => [
         'reinstall' => 'Reinstalled server',
+        'player' => [
+            'Ban' => 'Banned :user for :reason',
+            'Kick' => 'Kicked :user for :reason',
+            'Unmute' => 'Unmuted :user',
+            'Unban' => 'Unbanned :user',
+            'Mute' => 'Muted :user for :reason',
+        ],
         'console' => [
             'command' => 'Executed ":command" on the server',
         ],

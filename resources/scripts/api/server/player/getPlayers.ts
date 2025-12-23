@@ -4,7 +4,8 @@
     nickname: string;
     ping: number;
     admin: boolean;
-    role: string
+    role: string;
+    muted: boolean;
 }
 
 export interface PlayersData {

@@ -9,12 +9,15 @@ import BanPlayerModal from './BanPlayerModal';
 
 //! Vendors
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faGavel, faExclamationCircle, faUserPlus } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faGavel, faExclamationCircle, faVolumeMute, faVolumeUp } from '@fortawesome/free-solid-svg-icons';
 import tw from 'twin.macro';
+
+import sendCommand from '@/api/server/player/sendAction';
 
 //! States
 import { Player } from '@/api/server/player/getPlayers';
 import KickPlayerModal from '@/components/server/player/KickPlayerModal';
+import MutePlayerModal from '@/components/server/player/MutePlayerModal';
 
 interface Props {
     uuid: string;
@@ -27,6 +30,7 @@ interface Props {
 const PlayersRow = ({ uuid, admin, player, className, refresh }: Props) => {
     const [banvisible, setBanVisible] = useState(false);
     const [kickvisible, setKickVisible] = useState(false);
+    const [mutevisible, setMuteVisible] = useState(false);
 
     return (
         <GreyRowBox $hoverable={false} className={className} css={tw`mb-2`}>
@@ -92,6 +96,33 @@ const PlayersRow = ({ uuid, admin, player, className, refresh }: Props) => {
                         <FontAwesomeIcon icon={faGavel} fixedWidth />
                     </Button>
                 </Can>
+                {player.muted ? (
+                    <Can action='players.unmute'>
+                        <Button
+                            color='green'
+                            isSecondary
+                            onClick={() => sendCommand(uuid, 'Unmute', `id=${player.id}`)}
+                        >
+                            <FontAwesomeIcon icon={faVolumeUp} fixedWidth />
+                        </Button>
+                    </Can>
+                ) : (
+                    <>
+                        <Can action='players.mute'>
+                            <MutePlayerModal
+                                visible={mutevisible}
+                                onModalDismissed={() => setMuteVisible(false)}
+                                uuid={uuid}
+                                playerId={player.id}
+                                playerName={player.nickname ?? 'Noname'}
+                                onSuccess={refresh}
+                            />
+                            <Button color='red' isSecondary onClick={() => setMuteVisible(true)}>
+                                <FontAwesomeIcon icon={faVolumeMute} fixedWidth />
+                            </Button>
+                        </Can>
+                    </>
+                )}
             </div>
         </GreyRowBox>
     );

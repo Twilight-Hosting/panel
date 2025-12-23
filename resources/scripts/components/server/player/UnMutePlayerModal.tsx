@@ -19,9 +19,10 @@ interface Values {
     reason: string;
     until: string; // datetime-local
     permanent: boolean;
+    global: boolean;
 }
 
-const BanPlayerModal = ({ uuid, playerId, playerName, onSuccess }: Props) => {
+const MutePlayerModal = ({ uuid, playerId, playerName, onSuccess }: Props) => {
     const { dismiss } = useContext(ModalContext);
 
     const toSeconds = (until: string, permanent: boolean): number => {
@@ -43,6 +44,7 @@ const BanPlayerModal = ({ uuid, playerId, playerName, onSuccess }: Props) => {
                 reason: 'No Reason',
                 until: '',
                 permanent: false,
+                global: false,
             }}
             onSubmit={async (values, { setSubmitting, setErrors }) => {
                 try {
@@ -50,8 +52,10 @@ const BanPlayerModal = ({ uuid, playerId, playerName, onSuccess }: Props) => {
 
                     await sendCommand(
                         uuid,
-                        'Ban',
-                        `id=${playerId}&reason=${encodeURIComponent(values.reason)}&seconds=${seconds}&name=${playerName}`
+                        'Mute',
+                        `id=${playerId}&reason=${encodeURIComponent(
+                            values.reason
+                        )}&seconds=${seconds}&global=${global}`
                     );
 
                     onSuccess?.();
@@ -77,6 +81,10 @@ const BanPlayerModal = ({ uuid, playerId, playerName, onSuccess }: Props) => {
                         <FormikSwitch name='permanent' label='Permanent ban' description='Ban indefinitely' />
                     </div>
 
+                    <div css={tw`mt-4`}>
+                        <FormikSwitch name='global' label='Globally Muted' description='If enabled activates global mute else its just intercom' />
+                    </div>
+
                     <div css={tw`mt-6 text-right`}>
                         <Button type='button' isSecondary onClick={dismiss} css={tw`mr-2`}>
                             Cancel
@@ -91,4 +99,4 @@ const BanPlayerModal = ({ uuid, playerId, playerName, onSuccess }: Props) => {
     );
 };
 
-export default asModal<Props>()(BanPlayerModal);
+export default asModal<Props>()(MutePlayerModal);

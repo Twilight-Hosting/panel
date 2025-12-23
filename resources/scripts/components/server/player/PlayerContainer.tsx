@@ -1,4 +1,4 @@
-﻿import React, { useEffect } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 
 //! Components
 import ServerContentBlock from '@/components/elements/ServerContentBlock';
@@ -21,6 +21,11 @@ import { ServerContext } from '@/state/server';
 //! Vendors
 import tw from 'twin.macro';
 import useSWR from 'swr';
+import Can from '@/components/elements/Can';
+import MutePlayerModal from '@/components/server/player/MutePlayerModal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faVolumeMute } from '@fortawesome/free-solid-svg-icons';
+import UnbanPlayerModal from '@/components/server/player/UnbanPlayerModal';
 
 export default () => {
     const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
@@ -31,6 +36,8 @@ export default () => {
         errorRetryCount: 7,
         refreshInterval: 60000,
     });
+
+    const [unbanvisible, setUnbanVisible] = useState(false);
 
     useEffect(() => {
         if (!error) {
@@ -51,6 +58,22 @@ export default () => {
                             <Button onClick={() => mutate()} size='small' css={tw`w-full mt-4 sm:w-auto sm:mt-0`}>
                                 Refresh
                             </Button>
+
+                            <Can action='players.unban'>
+                                <UnbanPlayerModal
+                                    visible={unbanvisible}
+                                    onModalDismissed={() => setUnbanVisible(false)}
+                                    uuid={uuid}
+                                    onSuccess={mutate}
+                                />
+                                <Button
+                                    onClick={() => setUnbanVisible(true)}
+                                    size='small'
+                                    css={tw`w-full mt-4 sm:w-auto sm:mt-0`}
+                                >
+                                    Unban
+                                </Button>
+                            </Can>
                             <p css={tw`text-sm text-neutral-400 mt-2 mb-4`}>
                                 There are {data.data.online_players} of {data.data.max_players} online players.
                             </p>

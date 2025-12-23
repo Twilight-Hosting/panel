@@ -10,36 +10,30 @@ import tw from 'twin.macro';
 
 interface Props {
     uuid: string;
-    playerId: number;
-    playerName: string;
     onSuccess?: () => void;
 }
 
 interface Values {
-    reason: string;
+    id: string;
 }
 
-const BanPlayerModal = ({ uuid, playerId, playerName, onSuccess }: Props) => {
+const MutePlayerModal = ({ uuid, onSuccess }: Props) => {
     const { dismiss } = useContext(ModalContext);
 
     return (
         <Formik<Values>
             initialValues={{
-                reason: 'No Reason',
+                id: '',
             }}
             onSubmit={async (values, { setSubmitting, setErrors }) => {
                 try {
-                    await sendCommand(
-                        uuid,
-                        'Kick',
-                        `id=${playerId}&reason=${encodeURIComponent(values.reason)}&name=${playerName}`
-                    );
+                    await sendCommand(uuid, 'Unban', `id=${values.id}`);
 
                     onSuccess?.();
                     dismiss();
                 } catch (err) {
                     setErrors({
-                        reason: 'No reason',
+                        id: 'Please select a valid id',
                     });
                 } finally {
                     setSubmitting(false);
@@ -48,16 +42,16 @@ const BanPlayerModal = ({ uuid, playerId, playerName, onSuccess }: Props) => {
         >
             {({ isSubmitting, values }) => (
                 <Form>
-                    <h3 css={tw`text-xl mb-4`}>Kick {playerName}</h3>
+                    <h3 css={tw`text-xl mb-4`}>Unban</h3>
 
-                    <Field name='reason' label='Reason' placeholder='Breaking server rules' />
+                    <Field name='id' label='Id' placeholder='Id or IP of the user to unban' />
 
                     <div css={tw`mt-6 text-right`}>
                         <Button type='button' isSecondary onClick={dismiss} css={tw`mr-2`}>
                             Cancel
                         </Button>
-                        <Button type='submit' color='grey' disabled={isSubmitting}>
-                            Kick
+                        <Button type='submit' color='green' disabled={isSubmitting}>
+                            Unban
                         </Button>
                     </div>
                 </Form>
@@ -66,4 +60,4 @@ const BanPlayerModal = ({ uuid, playerId, playerName, onSuccess }: Props) => {
     );
 };
 
-export default asModal<Props>()(BanPlayerModal);
+export default asModal<Props>()(MutePlayerModal);

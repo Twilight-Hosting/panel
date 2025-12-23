@@ -3,6 +3,7 @@
 namespace Pterodactyl\Http\Controllers\Api\Client\PlayersManagerAddon;
 
 use Illuminate\Http\JsonResponse;
+use Pterodactyl\Facades\Activity;
 use Pterodactyl\Http\Controllers\Api\Client\ClientApiController;
 use Pterodactyl\Http\Requests\Api\Client\Servers\Network\GetNetworkRequest;
 use Pterodactyl\Models\Server;
@@ -104,6 +105,31 @@ class PlayersController extends ClientApiController
                 $params['id'] = $request->get('id');
                 $params['reason'] = $request->get('reason');
                 $params['seconds'] = $request->get('seconds');
+                Activity::event('server:player.' . $action)
+                    ->property('user', $request->input('name', 'No name'))
+                    ->property('reason', $request->get('reason'))->log();
+                break;
+            case 'Kick':
+                $params['id'] = $request->get('id');
+                $params['reason'] = $request->get('reason');
+                Activity::event('server:player.' . $action)
+                    ->property('user', $request->input('name', 'No name'))
+                    ->property('reason', $request->get('reason'))->log();
+                break;
+            case 'Unmute':
+            case 'Unban':
+                $params['id'] = $request->get('id');
+                Activity::event('server:player.' . $action)
+                    ->property('user', $request->get('id'))->log();
+                break;
+            case 'Mute':
+                $params['id'] = $request->get('id');
+                $params['reason'] = $request->get('reason');
+                $params['seconds'] = $request->get('seconds');
+                $params['global'] = $request->get('global');
+                Activity::event('server:player.' . $action)
+                    ->property('user', $request->input('name', 'No name'))
+                    ->property('reason', $request->get('reason'))->log();
                 break;
         }
 
