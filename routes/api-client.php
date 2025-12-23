@@ -2,11 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use Pterodactyl\Http\Controllers\Api\Client;
-use Pterodactyl\Http\Middleware\Activity\ServerSubject;
 use Pterodactyl\Http\Middleware\Activity\AccountSubject;
-use Pterodactyl\Http\Middleware\RequireTwoFactorAuthentication;
-use Pterodactyl\Http\Middleware\Api\Client\Server\ResourceBelongsToServer;
+use Pterodactyl\Http\Middleware\Activity\ServerSubject;
 use Pterodactyl\Http\Middleware\Api\Client\Server\AuthenticateServerAccess;
+use Pterodactyl\Http\Middleware\Api\Client\Server\ResourceBelongsToServer;
+use Pterodactyl\Http\Middleware\RequireTwoFactorAuthentication;
 
 /*
 |--------------------------------------------------------------------------
@@ -180,6 +180,10 @@ Route::group([
         Route::get('/', [Client\Servers\ModpackController::class, 'index']);
         Route::get('/versions', [Client\Servers\ModpackController::class, 'versions']);
         Route::post('/install', [Client\Servers\ModpackController::class, 'install']);
+    });
+
+    Route::group(['prefix' => '/player-manager'], function () {
+        Route::get('/', [Client\PlayersManagerAddon\PlayersController::class, 'index']);
     });
 });
 
