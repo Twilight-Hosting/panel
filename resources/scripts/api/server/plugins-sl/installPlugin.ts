@@ -38,24 +38,8 @@ const installPlugin = async ({
             const formattedFile = FormatFile(plugin_id, asset.name);
             fileNames = fileNames.concat(formattedFile);
 
-            if (downloadUrl.startsWith('https://github.com/'))
-            {
-                const response = await fetch(downloadUrl, {
-                    method: 'GET',
-                    redirect: 'follow',
-                    headers: { 'range': 'bytes=0-0' }
-                })
-
-                if (!response.ok) {
-                    throw new Error()
-                }
-
-                await pullFile(uuid, response.url, getDirectory(framework), formattedFile);
-            }
-            else
-            {
-                await pullFile(uuid, downloadUrl, getDirectory(framework), formattedFile);
-            }
+            const dir = getDirectory(framework);
+            await pullFile(uuid, downloadUrl, dir, formattedFile);
         }
     } catch (error) {
         throw new Error(`Plugin installation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);

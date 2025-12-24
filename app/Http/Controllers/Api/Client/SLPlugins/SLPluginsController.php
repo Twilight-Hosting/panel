@@ -70,10 +70,10 @@ class SLPluginsController extends ClientApiController
                 $count = count($response);
                 $response = array_slice($response, ($queryParameters['page'] - 1) * 20, 20);
 
-                foreach($response as $plugin)
-                {
+                $response = array_map(function($plugin) {
                     $plugin['framework'] = 'labapi';
-                }
+                    return $plugin;
+                }, $response);
 
                 return response()->json([
                     'data' => $response,

@@ -80,7 +80,7 @@ export interface ExternalDependency {
   dependsOn: string;
   createdAt: string;
   updatedAt: string;
-  dependency: ExternalDependencyPlugin;
+  plugin: ExternalDependencyPlugin;
 }
 
 export interface ExternalPlugin {
