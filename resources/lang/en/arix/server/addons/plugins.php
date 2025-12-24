@@ -18,7 +18,7 @@ return[
     'plugin-installed' => 'Plugin Installed',
 
     'install' => [
-        'plugin-details' => 'Plugin details',
+        'details' => 'Plugin details',
         'download-not-available' => 'Download not available',
         'installed-successfully' => 'Plugin Installed successfully',
         'select-a-version' => 'Select a version',

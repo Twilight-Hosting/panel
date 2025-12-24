@@ -103,7 +103,7 @@ export default function PluginRow({ plugin, filters }: { plugin: ExternalPlugin;
                         </Tooltip>
                     )}
                 </div>
-                <PluginDetails plugin={plugin} />
+                {/* <PluginDetails plugin={plugin} /> */}
                 {!isInstalled ?
                         <Can action={'file.create'}>
                             <InstallButton 

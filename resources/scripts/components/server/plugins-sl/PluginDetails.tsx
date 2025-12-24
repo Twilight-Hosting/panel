@@ -8,7 +8,7 @@ import { ExternalLinkIcon, DownloadIcon, CalendarIcon, ViewGridAddIcon, ChevronU
 import Tooltip from '@/components/elements/tooltip/Tooltip';
 import { useTranslation } from 'react-i18next';
 import * as locales from 'date-fns/locale';
-import { marked } from 'marked';
+import { MarkdownRenderer } from '@/components/server/plugins-sl/MarkdownRenderer';
 
 const getLocale = (localeKey: keyof typeof locales) => {
     if (locales[localeKey]) {
@@ -25,19 +25,6 @@ const ModalContent = ({ plugin, visible, onDismissed, ...props }: RequiredModalP
     const { i18n } = useTranslation();
     const currentLang = i18n.language;
     const localeKey = currentLang as keyof typeof locales;
-
-    const RenderMarkdown = (markdown: string) => {
-        marked.setOptions({
-            gfm: true,
-            breaks: true,
-            async: false,
-        });
-
-        const html = marked.parse(markdown);
-        return(
-            <div dangerouslySetInnerHTML={{ __html: html }} />
-        );
-    }
 
     return (
         <Modal visible={visible} onDismissed={onDismissed} {...props}>
@@ -109,10 +96,10 @@ const ModalContent = ({ plugin, visible, onDismissed, ...props }: RequiredModalP
                     <p>
                         {plugin.description}
                     </p>
-                    <div>
+                    {/* <div>
                         <p className={'text-lg'}>README:</p>
-                        {RenderMarkdown(plugin.readme)}
-                    </div>
+                        <MarkdownRenderer content={plugin.readme} />
+                    </div> */}
                 </div>
             </div>
         </Modal>
@@ -133,7 +120,7 @@ export default function PluginDetails({ plugin } : { plugin: ExternalPlugin; }) 
             />
 
             <Button onClick={() => setVisible(true)}>
-                {t('install.plugin-details')}
+                {t('install.details')}
             </Button>
         </div>
     )
