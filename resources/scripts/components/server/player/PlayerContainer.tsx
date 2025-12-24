@@ -22,10 +22,8 @@ import { ServerContext } from '@/state/server';
 import tw from 'twin.macro';
 import useSWR from 'swr';
 import Can from '@/components/elements/Can';
-import MutePlayerModal from '@/components/server/player/MutePlayerModal';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faVolumeMute } from '@fortawesome/free-solid-svg-icons';
 import UnbanPlayerModal from '@/components/server/player/UnbanPlayerModal';
+import TitledGreyBox from '@/components/elements/TitledGreyBox';
 
 export default () => {
     const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
@@ -103,9 +101,20 @@ export default () => {
                             </div>
                         </>
                     ) : data.data.message.toLowerCase().includes('plugin not installed') ? (
-                        // TODO: Add serious text
-                        <p css={tw`text-sm text-neutral-400 mt-2 mb-4`}>No plugin so skibidi.</p>
+                        <TitledGreyBox title={'What is this?'} css={tw`mb-6 md:mb-10`}>
+                            This section requires a server-side plugin that integrates with the panel to enable
+                            real-time game actions. Once installed, you'll be able to view active players, execute
+                            commands, manage permissions, and perform administrative actions directly from the panel
+                            without directly interfacing with the console or any other external tool.
+
+                            The plugin will auto install when clicking the button and the server will need a restart to apply the changes
+                            No additional actions need to be done, once restarted this section will work automatically
+                        </TitledGreyBox>
                     ) : (
+                        // TODO: ADD BUTTON TO install using
+                        //         import pullFile from '@/api/server/files/pullFile';
+                        //         await pullFile(uuid, `https://arix.gg/arix-api/v1${download}`, '/', 'server.jar');
+
                         <MessageBox type={'error'} title={'ERROR:'}>
                             {data.data.message}
                         </MessageBox>
