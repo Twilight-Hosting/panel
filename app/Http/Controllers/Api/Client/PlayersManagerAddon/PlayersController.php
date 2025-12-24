@@ -106,6 +106,7 @@ class PlayersController extends ClientApiController
                 $params['reason'] = $request->get('reason');
                 $params['seconds'] = $request->get('seconds');
                 Activity::event('server:player.' . $action)
+                    ->property('userid', $request->get('id'))
                     ->property('user', $request->input('name', 'No name'))
                     ->property('reason', $request->get('reason'))->log();
                 break;
@@ -113,6 +114,7 @@ class PlayersController extends ClientApiController
                 $params['id'] = $request->get('id');
                 $params['reason'] = $request->get('reason');
                 Activity::event('server:player.' . $action)
+                    ->property('userid', $request->get('id'))
                     ->property('user', $request->input('name', 'No name'))
                     ->property('reason', $request->get('reason'))->log();
                 break;
@@ -120,7 +122,7 @@ class PlayersController extends ClientApiController
             case 'Unban':
                 $params['id'] = $request->get('id');
                 Activity::event('server:player.' . $action)
-                    ->property('user', $request->get('id'))->log();
+                    ->property('userid', $request->get('id'))->log();
                 break;
             case 'Mute':
                 $params['id'] = $request->get('id');
@@ -128,6 +130,7 @@ class PlayersController extends ClientApiController
                 $params['seconds'] = $request->get('seconds');
                 $params['global'] = $request->get('global');
                 Activity::event('server:player.' . $action)
+                    ->property('userid', $request->get('id'))
                     ->property('user', $request->input('name', 'No name'))
                     ->property('reason', $request->get('reason'))->log();
                 break;

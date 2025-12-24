@@ -41,11 +41,11 @@ return [
     'server' => [
         'reinstall' => 'Reinstalled server',
         'player' => [
-            'Ban' => 'Banned :user for :reason',
-            'Kick' => 'Kicked :user for :reason',
-            'Unmute' => 'Unmuted :user',
-            'Unban' => 'Unbanned :user',
-            'Mute' => 'Muted :user for :reason',
+            'Ban' => 'Banned :user (:userid) for :reason',
+            'Kick' => 'Kicked :user (:userid) for :reason',
+            'Unmute' => 'Unmuted :userid',
+            'Unban' => 'Unbanned :userid',
+            'Mute' => 'Muted :user (:userid) for :reason',
         ],
         'console' => [
             'command' => 'Executed ":command" on the server',
