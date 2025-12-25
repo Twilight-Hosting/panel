@@ -29,4 +29,8 @@ class InstalledSLPlugins extends Model {
         'plugin_icon',
         'file_names'
     ];
+
+    protected $casts = [
+        'file_names' => 'array',
+    ];
 }

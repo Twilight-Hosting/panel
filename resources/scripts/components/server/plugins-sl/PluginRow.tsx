@@ -48,7 +48,6 @@ export default function PluginRow({ plugin, filters }: { plugin: ExternalPlugin;
                         src={`https://plugins.scpslgame.com/api/uploads/${plugin.icon}`}
                         width={64} 
                         height={64} 
-                        alt={`${plugin.name.slice(0, 5)} Icon`}
                         className={'shrink-0'}
                     />}
                 </div>
