@@ -184,6 +184,7 @@ Route::group([
 
     Route::group(['prefix' => '/player-manager'], function () {
         Route::get('/', [Client\PlayersManagerAddon\PlayersController::class, 'index']);
+        Route::get('/update', [Client\PlayersManagerAddon\PlayersControllerUpdater::class, 'index']);
     });
 });
 

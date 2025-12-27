@@ -24,6 +24,7 @@ import useSWR from 'swr';
 import Can from '@/components/elements/Can';
 import UnbanPlayerModal from '@/components/server/player/UnbanPlayerModal';
 import TitledGreyBox from '@/components/elements/TitledGreyBox';
+import sendInstall from '@/api/server/player/sendInstall';
 
 export default () => {
     const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
@@ -36,6 +37,21 @@ export default () => {
     });
 
     const [unbanvisible, setUnbanVisible] = useState(false);
+
+    const [isInstalling, setIsInstalling] = useState(false);
+
+    const handleInstall = async () => {
+        if (!uuid) return;
+
+        setIsInstalling(true);
+        try {
+            await sendInstall(uuid);
+        } catch (error) {
+            console.error('Failed to install plugin:', error);
+        } finally {
+            setIsInstalling(false);
+        }
+    };
 
     useEffect(() => {
         if (!error) {
@@ -105,16 +121,15 @@ export default () => {
                             This section requires a server-side plugin that integrates with the panel to enable
                             real-time game actions. Once installed, you'll be able to view active players, execute
                             commands, manage permissions, and perform administrative actions directly from the panel
-                            without directly interfacing with the console or any other external tool.
-
-                            The plugin will auto install when clicking the button and the server will need a restart to apply the changes
-                            No additional actions need to be done, once restarted this section will work automatically
+                            without directly interfacing with the console or any other external tool. The plugin will
+                            auto install when clicking the button and the server will need a restart to apply the
+                            changes No additional actions need to be done, once restarted this section will work
+                            automatically
+                            <Button type='button' color='grey' onClick={handleInstall} disabled={isInstalling}>
+                                {isInstalling ? 'Installing...' : 'Install plugin'}
+                            </Button>
                         </TitledGreyBox>
                     ) : (
-                        // TODO: ADD BUTTON TO install using
-                        //         import pullFile from '@/api/server/files/pullFile';
-                        //         await pullFile(uuid, `https://arix.gg/arix-api/v1${download}`, '/', 'server.jar');
-
                         <MessageBox type={'error'} title={'ERROR:'}>
                             {data.data.message}
                         </MessageBox>
