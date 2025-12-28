@@ -57,6 +57,8 @@ export default ({ server }: { server: Server }) => {
     const memoryLimit = server.limits.memory !== 0 ? bytesToString(mbToBytes(server.limits.memory)) : t('unlimited');
     const cpuLimit = server.limits.cpu !== 0 ? server.limits.cpu + '%' : t('unlimited');
 
+    const killable = stats?.status === 'stopping';
+
     return (
         <>
             <div className='backdrop rounded-box overflow-hidden' css={'background-color:var(--gray700-default);'}>
@@ -180,21 +182,24 @@ export default ({ server }: { server: Server }) => {
                     </Link>
                     <Button.Success
                         className={'flex items-center gap-x-1'}
-                        onClick={() => sendPowerAction(server.uuid, 'start')}
+                        disabled={stats?.status !== 'offline'}
+                        onClick={() => sendPowerAction(server.uuid, 'start').then(() => getStats())}
                     >
                         <PlayIcon className={'w-5'} />
                     </Button.Success>
                     <Button.Text
                         className={'flex items-center gap-x-1'}
-                        onClick={() => sendPowerAction(server.uuid, 'restart')}
+                        disabled={!stats?.status}
+                        onClick={() => sendPowerAction(server.uuid, 'restart').then(() => getStats())}
                     >
                         <RefreshIcon className={'w-5'} />
                     </Button.Text>
                     <Button.Danger
                         className={'flex items-center gap-x-1'}
-                        onClick={() => sendPowerAction(server.uuid, 'stop')}
+                        disabled={stats?.status === 'offline'}
+                        onClick={() => sendPowerAction(server.uuid, killable ? 'kill' : 'stop').then(() => getStats())}
                     >
-                        <StopIcon className={'w-5'} />
+                        {killable ? <MinusCircleIcon className={'w-5'} /> : <StopIcon className={'w-5'} />}
                     </Button.Danger>
                 </div>
             </div>
