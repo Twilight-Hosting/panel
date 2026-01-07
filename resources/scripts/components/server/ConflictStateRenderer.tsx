@@ -13,7 +13,11 @@ export default () => {
     );
 
     return status === 'installing' || status === 'install_failed' || status === 'reinstall_failed' ? (
-        <ServerConsoleContainer />
+        <ScreenBlock
+            title={'Running Installer'}
+            image={ServerInstallSvg}
+            message={'Your server should be ready soon, please try again in a few minutes.'}
+        />
     ) : status === 'suspended' ? (
         <ScreenBlock
             title={'Server Suspended'}
