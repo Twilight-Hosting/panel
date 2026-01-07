@@ -12,7 +12,9 @@ export default () => {
         (state) => state.server.data?.isNodeUnderMaintenance || false
     );
 
-    return status === 'installing' || status === 'install_failed' || status === 'reinstall_failed' ? null : status === 'suspended' ? (
+    return status === 'installing' || status === 'install_failed' || status === 'reinstall_failed' ? (
+        <ServerConsoleContainer />
+    ) : status === 'suspended' ? (
         <ScreenBlock
             title={'Server Suspended'}
             image={ServerErrorSvg}
