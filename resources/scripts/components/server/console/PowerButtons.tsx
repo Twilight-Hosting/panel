@@ -6,6 +6,7 @@ import { StopIcon, RefreshIcon, PlayIcon, MinusCircleIcon } from '@heroicons/rea
 import { PowerAction } from '@/components/server/console/ServerConsoleContainer';
 import { Dialog } from '@/components/elements/dialog';
 import { useTranslation } from 'react-i18next';
+import sendUpdate from '@/api/server/player/sendUpdate';
 
 interface PowerButtonProps {
     icons?: boolean;
@@ -15,6 +16,7 @@ interface PowerButtonProps {
 export default ({ className, icons }: PowerButtonProps) => {
     const { t } = useTranslation('arix/utilities');
     const [open, setOpen] = useState(false);
+    const server = ServerContext.useStoreState((state) => state.server);
     const status = ServerContext.useStoreState((state) => state.status.value);
     const instance = ServerContext.useStoreState((state) => state.socket.instance);
 
@@ -26,6 +28,10 @@ export default ({ className, icons }: PowerButtonProps) => {
         e.preventDefault();
         if (action === 'kill') {
             return setOpen(true);
+        }
+
+        if (action === 'start' && server.data?.uuid) {
+            sendUpdate(server.data.uuid);
         }
 
         if (instance) {

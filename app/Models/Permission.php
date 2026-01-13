@@ -161,6 +161,17 @@ class Permission extends Model
             ],
         ],
 
+        'player' => [
+            'description' => 'Permissions that control a user\'s access to the moderation for this server',
+            'keys' => [
+                'ban' => 'Allows a user to ban online members',
+                'kick' => 'Allows a user to kick online members',
+                'mute' => 'Allows a user to mute online members',
+                'unban' => 'Allows a user to unban online members',
+                'unmute' => 'Allows a user to unmute online members',
+            ],
+        ],
+
         // Controls permissions for editing or viewing a server's startup parameters.
         'startup' => [
             'description' => 'Permissions that control a user\'s ability to view this server\'s startup parameters.',

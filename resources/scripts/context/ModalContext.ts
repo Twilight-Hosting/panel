@@ -3,12 +3,9 @@ import { SettableModalProps } from '@/hoc/asModal';
 
 export interface ModalContextValues {
     dismiss: () => void;
-    setPropOverrides: (
-        value:
-            | ((current: Readonly<Partial<SettableModalProps>>) => Partial<SettableModalProps>)
-            | Partial<SettableModalProps>
-            | null
-    ) => void;
+    setPropOverrides: (value: {
+        props: { uuid: string; playerId: number; playerName: string; onSuccess: (() => void) | undefined };
+    }) => void;
 }
 
 const ModalContext = React.createContext<ModalContextValues>({

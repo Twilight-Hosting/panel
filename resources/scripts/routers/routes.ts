@@ -19,6 +19,7 @@ import DomainsContainer from '@/components/server/subdomains/SubdomainsContainer
 import PluginsContainer from '@/components/server/plugins/PluginsContainer';
 import VersionsContainer from '@/components/server/versions/VersionsContainer';
 import { UserIcon, EyeIcon, CollectionIcon, ViewGridIcon, TerminalIcon, FolderOpenIcon, DatabaseIcon, CalendarIcon, UserGroupIcon, ArchiveIcon, GlobeIcon, GlobeAltIcon, AdjustmentsIcon, DocumentTextIcon, CogIcon, DocumentDownloadIcon, ViewGridAddIcon } from '@heroicons/react/outline'
+import PlayerContainer from '@/components/server/player/PlayerContainer';
 
 const FileEditContainer = lazy(() => import('@/components/server/files/FileEditContainer'));
 const ScheduleEditContainer = lazy(() => import('@/components/server/schedules/ScheduleEditContainer'));
@@ -193,6 +194,14 @@ export default {
                 component: NetworkContainer,
             },
             {
+                path: '/player-manager',
+                permission: 'file.*',
+                name: 'Player Manager',
+                component: PlayerContainer,
+                eggIds: [16],
+                icon: UserIcon,
+            },
+            {
                 path: '/plugins',
                 permission: 'file.*',
                 name: 'plugins',
@@ -206,7 +215,7 @@ export default {
                 name: 'Modpacks',
                 component: ModpacksContainer,
                 eggIds: [1, 3, 15],
-		        icon: ViewGridAddIcon,
+                icon: ViewGridAddIcon,
             },
             {
                 path: '/domains',
@@ -258,8 +267,8 @@ export default {
                 name: 'properties',
                 nestId: 1,
                 icon: DocumentTextIcon,
-                component: PropertiesContainer
-            }
-        ]
-    }
+                component: PropertiesContainer,
+            },
+        ],
+    },
 } as Routes;
