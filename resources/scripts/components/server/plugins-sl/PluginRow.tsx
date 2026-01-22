@@ -44,10 +44,10 @@ export default function PluginRow({ plugin, filters }: { plugin: ExternalPlugin;
                         className={'shrink-0'}
                     />
                     :
-                    <img 
+                    <img
                         src={`https://plugins.scpslgame.com/api/uploads/${plugin.icon}`}
-                        width={64} 
-                        height={64} 
+                        width={64}
+                        height={64}
                         className={'shrink-0'}
                     />}
                 </div>
@@ -102,10 +102,10 @@ export default function PluginRow({ plugin, filters }: { plugin: ExternalPlugin;
                         </Tooltip>
                     )}
                 </div>
-                {/* <PluginDetails plugin={plugin} /> */}
+                <PluginDetails plugin={plugin} />
                 {!isInstalled ?
                         <Can action={'file.create'}>
-                            <InstallButton 
+                            <InstallButton
                                 plugin={plugin}
                             />
                         </Can>
