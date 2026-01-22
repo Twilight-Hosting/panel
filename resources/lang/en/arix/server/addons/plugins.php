@@ -24,6 +24,7 @@ return[
         'select-a-version' => 'Select a version',
         'select-version' => 'Select Version',
         'install-plugin' => 'Install plugin',
+        'plugin-details' => 'Plugin Details',
         'no-release-selected' => 'No release selected.'
     ],
 
