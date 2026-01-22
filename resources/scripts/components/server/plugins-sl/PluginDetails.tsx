@@ -18,15 +18,23 @@ const getLocale = (localeKey: keyof typeof locales) => {
 const MarkdownViewer = ({ content }: { content: string }) => {
     const html = useMemo(() => {
         if (!content) return '';
+
         const rawHtml = marked.parse(content, {
             gfm: true,
-            breaks: true,
-            async: false,
-        }) as string;
+            breaks: true
+        });
 
-        return typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawHtml) : rawHtml;
+        return typeof DOMPurify !== 'undefined'
+            ? DOMPurify.sanitize(rawHtml)
+            : rawHtml;
     }, [content]);
-    return <div className='prose prose-invert max-w-none text-gray-300' dangerouslySetInnerHTML={{ __html: html }} />;
+
+    return (
+        <div
+            className="prose prose-invert max-w-none text-gray-300"
+            dangerouslySetInnerHTML={{ __html: html }}
+        />
+    );
 };
 
 const ModalContent = ({ plugin, visible, onDismissed, ...props }: RequiredModalProps & { plugin: ExternalPlugin }) => {
