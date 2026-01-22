@@ -22,7 +22,8 @@ return[
         'installed-successfully' => 'Plugin Installed successfully',
         'select-a-version' => 'Select a version',
         'select-version' => 'Select Version',
-        'install-plugin' => 'Install plugin'
+        'install-plugin' => 'Install plugin',
+        'plugin-details' => 'Plugin Details'
     ],
 
     'delete' => [
