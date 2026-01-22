@@ -1,81 +1,79 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Modal, { RequiredModalProps } from '@/components/elements/Modal';
 import { ExternalPlugin } from '@/api/server/plugins-sl/Plugins';
 import { Button } from '@/components/elements/button/index';
-import { numify } from "numify";
+import { numify } from 'numify';
 import { differenceInCalendarMonths, format, formatDistanceToNow } from 'date-fns';
 import { ExternalLinkIcon, DownloadIcon, CalendarIcon, ViewGridAddIcon, ChevronUpIcon } from '@heroicons/react/outline';
 import Tooltip from '@/components/elements/tooltip/Tooltip';
 import { useTranslation } from 'react-i18next';
 import * as locales from 'date-fns/locale';
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 const getLocale = (localeKey: keyof typeof locales) => {
-    if (locales[localeKey]) {
-        return locales[localeKey];
-    } else {
-        const keyString = String(localeKey);
-        console.warn(`Locale '${keyString}' not found. Falling back to '${locales.enUS}'`);
-        return locales.enUS;
-    }
+    return locales[localeKey] || locales.enUS;
 };
 
-const ModalContent = ({ plugin, visible, onDismissed, ...props }: RequiredModalProps & { plugin: ExternalPlugin; }) => {
+const MarkdownViewer = ({ content }: { content: string }) => {
+    const html = useMemo(() => {
+        if (!content) return '';
+        const rawHtml = marked.parse(content, {
+            gfm: true,
+            breaks: true,
+            async: false,
+        }) as string;
+
+        return typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(rawHtml) : rawHtml;
+    }, [content]);
+    return <div className='prose prose-invert max-w-none text-gray-300' dangerouslySetInnerHTML={{ __html: html }} />;
+};
+
+const ModalContent = ({ plugin, visible, onDismissed, ...props }: RequiredModalProps & { plugin: ExternalPlugin }) => {
     const { t } = useTranslation('arix/server/addons/plugins');
     const { i18n } = useTranslation();
     const currentLang = i18n.language;
     const localeKey = currentLang as keyof typeof locales;
-
-    const RenderMarkdown = (markdown: string) => {
-        marked.setOptions({
-            gfm: true,
-            breaks: true,
-            async: false,
-        });
-
-        const html = marked.parse(markdown);
-        return(
-            <div dangerouslySetInnerHTML={{ __html: html }} />
-        );
-    }
 
     return (
         <Modal visible={visible} onDismissed={onDismissed} {...props}>
             <div className={'flex flex-col items-start gap-3 overflow-y-auto'}>
                 <div className={'flex items-center gap-x-5'}>
                     <div className={'p-1 bg-gray-600 rounded-lg overflow-hidden'}>
-                    {plugin.icon === null ?
-                    <ViewGridAddIcon
-                        width={64}
-                        height={64}
-                        className={'shrink-0'}
-                    />
-                    :
-                    <img 
-                        src={`https://plugins.scpslgame.com/api/uploads/${plugin.icon}`}
-                        width={64} 
-                        height={64} 
-                        alt={`${plugin.name.slice(0, 5)} Icon`}
-                        className={'shrink-0'}
-                    />}
+                        {plugin.icon === null ? (
+                            <ViewGridAddIcon width={64} height={64} className={'shrink-0'} />
+                        ) : (
+                            <img
+                                src={`https://plugins.scpslgame.com/api/uploads/${plugin.icon}`}
+                                width={64}
+                                height={64}
+                                alt={`${plugin.name.slice(0, 5)} Icon`}
+                                className={'shrink-0'}
+                            />
+                        )}
                     </div>
                     <div>
                         <p className={'text-xl font-medium text-gray-50 flex items-center gap-x-2'}>
                             {plugin.name}
                             <a href={`https://github.com/${plugin.repository}`} target={'_blank'}>
-                                <ExternalLinkIcon className={'w-6'}/>
+                                <ExternalLinkIcon className={'w-6'} />
                             </a>
                         </p>
                         <div className={'flex gap-5 text-gray-400 text-sm'}>
                             <p>
                                 {t('by')}&nbsp;
-                                <a href={`https://github.com/${plugin.author.username}`} target={'_blank'} className={'underline'}>
+                                <a
+                                    href={`https://github.com/${plugin.author.username}`}
+                                    target={'_blank'}
+                                    className={'underline'}
+                                >
                                     {plugin.author.displayName}
                                 </a>
                             </p>
                         </div>
                     </div>
                 </div>
+
                 <div className={'flex gap-3'}>
                     <Tooltip content={`${t('downloads')}`} placement={'top'}>
                         <p className={'flex items-center gap-x-1'}>
@@ -94,47 +92,42 @@ const ModalContent = ({ plugin, visible, onDismissed, ...props }: RequiredModalP
                             <CalendarIcon className={'w-4 text-arix'} />
                             {plugin.repoUpdatedAt
                                 ? (() => {
-                                    const lastUpdated = new Date(plugin.repoUpdatedAt);
-                                    const monthsDifference = Math.abs(differenceInCalendarMonths(lastUpdated, new Date()));
-                                    return monthsDifference > 12
-                                        ? format(lastUpdated, 'MMM do, yyyy', { locale: getLocale(localeKey) })
-                                        : formatDistanceToNow(lastUpdated, { addSuffix: true, locale: getLocale(localeKey) });
-                                    })()
-                                : 'Unknown'
-                            }
+                                      const lastUpdated = new Date(plugin.repoUpdatedAt);
+                                      const monthsDifference = Math.abs(
+                                          differenceInCalendarMonths(lastUpdated, new Date())
+                                      );
+                                      return monthsDifference > 12
+                                          ? format(lastUpdated, 'MMM do, yyyy', { locale: getLocale(localeKey) })
+                                          : formatDistanceToNow(lastUpdated, {
+                                                addSuffix: true,
+                                                locale: getLocale(localeKey),
+                                            });
+                                  })()
+                                : 'Unknown'}
                         </p>
                     </Tooltip>
                 </div>
-                <div className={'space-y-8'}>
-                    <p>
-                        {plugin.description}
-                    </p>
+
+                <div className={'space-y-8 w-full'}>
+                    <p>{plugin.description}</p>
                     <div>
-                        <p className={'text-lg'}>README:</p>
-                        {RenderMarkdown(plugin.readme)}
+                        <p className={'text-lg mb-2 font-semibold'}>README:</p>
+                        <MarkdownViewer content={plugin.readme} />
                     </div>
                 </div>
             </div>
         </Modal>
-    )
-}
+    );
+};
 
-export default function PluginDetails({ plugin } : { plugin: ExternalPlugin; }) {
+export default function PluginDetails({ plugin }: { plugin: ExternalPlugin }) {
     const { t } = useTranslation('arix/server/addons/plugins');
     const [visible, setVisible] = useState(false);
 
     return (
         <div>
-            <ModalContent 
-                plugin={plugin}
-                appear 
-                visible={visible} 
-                onDismissed={() => setVisible(false)}
-            />
-
-            <Button onClick={() => setVisible(true)}>
-                {t('install.plugin-details')}
-            </Button>
+            <ModalContent plugin={plugin} appear visible={visible} onDismissed={() => setVisible(false)} />
+            <Button onClick={() => setVisible(true)}>{t('install.plugin-details')}</Button>
         </div>
-    )
+    );
 }
