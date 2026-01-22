@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('plugin_id');
             $table->integer('server_id');
             $table->string('plugin_name');
-            $table->string('plugin_icon');
-            $table->string('file_names');
+            $table->string('plugin_icon')->nullable();
+            $table->json('file_names');
             $table->timestamps();
         });
     }

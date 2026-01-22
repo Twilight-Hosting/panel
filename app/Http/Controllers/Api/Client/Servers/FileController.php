@@ -148,6 +148,8 @@ class FileController extends ClientApiController
             if (count($addonFiles) > 0) {
                 $pluginsAddon->renameAddonFilenameByRenameObject($server->id, $file['from'], $file['to']);
             }
+
+            SLPluginsController::tryRenamePlugin($request->input('root'), $server->id, $file['from'], $file['to']);
         }
 
         $this->fileRepository

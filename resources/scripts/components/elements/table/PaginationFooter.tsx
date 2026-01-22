@@ -19,7 +19,6 @@ const PaginationFooter = ({ pagination, className, onPageSelect }: Props) => {
     const { currentPage: current, totalPages: total } = pagination;
 
     const pages = { previous: [] as number[], next: [] as number[] };
-    console.log(`Processing ${current} ${total}`);
     for (let i = 1; i <= 2; i++) {
         if (current - i >= 1) {
             pages.previous.push(current - i);

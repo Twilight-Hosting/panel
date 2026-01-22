@@ -3,6 +3,7 @@
 namespace Pterodactyl\Http\Controllers\Api\Client\SLPlugins;
 
 use Illuminate\Auth\Access\AuthorizationException;
+use Pterodactyl\Events\Server\Installed;
 use Pterodactyl\Http\Controllers\Api\Client\ClientApiController;
 use Pterodactyl\Http\Controllers\Controller;
 use Pterodactyl\Models\Permission;
@@ -30,10 +31,15 @@ class SLPluginsController extends ClientApiController
                     'error' => 'Missing framework parameter',
                 ], 400);
             }
-            elseif(!isset($queryParameters['page'])) {
+            if(!isset($queryParameters['page'])) {
                 $queryParameters['page'] = 1;
             }
+            else {
+                $queryParameters['page'] = (int)$queryParameters['page'];
+            }
 
+            // TODO: Convert the code in this if statement into a method to populate an array (plus return metadata that can be summed together)
+            // THEN make 'framework' call that method or another variant for EXILED based on what it is.
             if ($queryParameters['framework'] === 'labapi') {
                 $plugins = $this->getCache();
                 
@@ -50,7 +56,7 @@ class SLPluginsController extends ClientApiController
                 {
                     $search = $queryParameters['search'];
                     $response = array_filter($response, function($entry) use ($search) {
-                        return stripos($entry['name'], $search);
+                        return stripos($entry['name'], $search) !== false;
                     });
                 }
 
@@ -70,10 +76,10 @@ class SLPluginsController extends ClientApiController
                 $count = count($response);
                 $response = array_slice($response, ($queryParameters['page'] - 1) * 20, 20);
 
-                foreach($response as $plugin)
-                {
+                $response = array_map(function($plugin) {
                     $plugin['framework'] = 'labapi';
-                }
+                    return $plugin;
+                }, $response);
 
                 return response()->json([
                     'data' => $response,
@@ -106,6 +112,11 @@ class SLPluginsController extends ClientApiController
 
         $installedPlugins = InstalledSLPlugins::where('server_id', $server->id)->get();
 
+        $installedPlugins = $installedPlugins->map(function($plugin) {
+                    $plugin->file_names = $plugin->file_names;
+                    return $plugin;
+                });
+
         return response()->json($installedPlugins);
     }
 
@@ -123,8 +134,8 @@ class SLPluginsController extends ClientApiController
                 'plugin_version' => 'required|string',
                 'plugin_id' => 'required|string',
                 'plugin_name' => 'required|string',
-                'plugin_icon' => 'required|string',
-                'file_names' => 'required|string[]',
+                'plugin_icon' => 'nullable|string',
+                'file_names' => 'required|array',
             ]);
 
             $framework = $request->plugin_framework;
@@ -134,7 +145,7 @@ class SLPluginsController extends ClientApiController
 
             if ($framework === 'exiled' & !$this->hasExiled($server)) {
                 return response()->json([
-                    'error' => 'You cannot install an EXILED plugin without EXILED!',
+                    'error' => 'You cannot install an EXILED plugin without EXILED being installed!',
                 ], 400);
             }
 
@@ -150,10 +161,11 @@ class SLPluginsController extends ClientApiController
             // store the plugin
             $installedPlugin = InstalledSLPlugins::create([
                 'plugin_framework' => $framework,
+                'plugin_version' => $request->plugin_version, 
                 'plugin_id' => $plugin_id,
+                'server_id' => $server->id,
                 'plugin_name' => $name,
                 'plugin_icon' => $request->plugin_icon,
-                'server_id' => $server->id,
                 'file_names' => $file_names,
             ]);
 
@@ -168,13 +180,51 @@ class SLPluginsController extends ClientApiController
                 'plugin_icon' => $request->plugin_icon,
             ]);
         } catch (\Exception $e) {
-            return response()->json(['error' => [$e->getMessage(), $e->getTraceAsString()]]);
+            return response()->json(['error' => [$e->getMessage(), $e->getTraceAsString()]], 400);
         }
     }
 
-    public static function tryRemovePlugin(string $path, int $server_id, array|string $files)
+    public static function tryRenamePlugin(string $path, int $server_id, string $from, string $to)
     {
         # using $path, check $files for anything that might be in a plugins folder, then check DB using $server_id
+        // LabAPI
+        if ($path === '/.config/SCP Secret Laboratory/LabAPI/plugins/global')
+        {
+            $installedPlugins = InstalledSLPlugins::where('server_id', $server_id)->get();
+
+            foreach ($installedPlugins as $plugin) {
+                $newNames = $plugin->file_names;
+
+                $key = array_search($from, $newNames);
+                if ($key !== false) {
+                    $newNames[$key] = $to;
+                    InstalledSLPlugins::where('id', $plugin->id)->update(['file_names' => $newNames]);
+                }
+            }
+        }
+    }
+
+    public static function tryRemovePlugin(string $path, int $server_id, array $files)
+    {
+        # using $path, check $files for anything that might be in a plugins folder, then check DB using $server_id
+        // LabAPI
+        if ($path === '/.config/SCP Secret Laboratory/LabAPI/plugins/global')
+        {
+            $installedPlugins = InstalledSLPlugins::where('server_id', $server_id)->get();
+
+            foreach ($installedPlugins as $plugin) {
+                $newFiles = array_diff($plugin->file_names, $files);
+
+                if (count($newFiles) === 0)
+                {
+                    InstalledSLPlugins::where('id', $plugin->id)->delete();
+                }
+                elseif (count($newFiles) < count($plugin->file_names))
+                {
+                    InstalledSLPlugins::where('id', $plugin->id)->update(['file_names' => implode(',', $newFiles)]);
+                }
+            }
+        }
     }
 
     private function getCache()
@@ -291,6 +341,6 @@ class SLPluginsController extends ClientApiController
     private function hasEXILED(Server $server): bool
     {
         $this->daemonFileRepository->setServer($server);
-        return !empty($this->daemonFileRepository->getDirectory('/home/container/.config/EXILED'));
+        return !empty($this->daemonFileRepository->getDirectory('/.config/EXILED'));
     }
 }
