@@ -153,10 +153,15 @@ class ServerTransferController extends Controller
         curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         $result = curl_exec($curl);
+
+        if ($result === false) {
+            throw new Exception('Curl error: ' . curl_error($curl));
+        }
+
         $file = fopen("/var/www/pterodactyl/storage/logs/transfer.log", "a");
-        fwrite($file, date("Y-m-d h:m:s", time()) . "\n");
+        fwrite($file, date("Y-m-d h:i:s", time()) . "\n");
         fwrite($file, "$oldIp:$oldPort -> $newIp:$newPort\n");
-        fwrite($result);
+        fwrite($file, $result . "\n");
         fclose($file);
     }
 }
