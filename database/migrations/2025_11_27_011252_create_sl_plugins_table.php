@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('server_id');
             $table->string('plugin_name');
             $table->string('plugin_icon')->nullable();
-            $table->json('file_names');
+            $table->json('files');
             $table->timestamps();
         });
     }

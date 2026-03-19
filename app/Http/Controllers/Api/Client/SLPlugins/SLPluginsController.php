@@ -112,11 +112,6 @@ class SLPluginsController extends ClientApiController
 
         $installedPlugins = InstalledSLPlugins::where('server_id', $server->id)->get();
 
-        $installedPlugins = $installedPlugins->map(function($plugin) {
-                    $plugin->file_names = $plugin->file_names;
-                    return $plugin;
-                });
-
         return response()->json($installedPlugins);
     }
 
@@ -135,13 +130,13 @@ class SLPluginsController extends ClientApiController
                 'plugin_id' => 'required|string',
                 'plugin_name' => 'required|string',
                 'plugin_icon' => 'nullable|string',
-                'file_names' => 'required|array',
+                'files' => 'required|array',
             ]);
 
             $framework = $request->plugin_framework;
             $plugin_id = $request->plugin_id;
             $name = $request->plugin_name;
-            $file_names = $request->file_names;
+            $files = $request->files;
 
             if ($framework === 'exiled' & !$this->hasExiled($server)) {
                 return response()->json([
@@ -166,7 +161,7 @@ class SLPluginsController extends ClientApiController
                 'server_id' => $server->id,
                 'plugin_name' => $name,
                 'plugin_icon' => $request->plugin_icon,
-                'file_names' => $file_names,
+                'files' => $files,
             ]);
 
             return response()->json([
@@ -176,7 +171,7 @@ class SLPluginsController extends ClientApiController
                 'plugin_id' => $plugin_id,
                 'plugin_name' => $name,
                 'server_id' => $server->id,
-                'file_names' => $file_names,
+                'files' => $files,
                 'plugin_icon' => $request->plugin_icon,
             ]);
         } catch (\Exception $e) {
@@ -187,19 +182,16 @@ class SLPluginsController extends ClientApiController
     public static function tryRenamePlugin(string $path, int $server_id, string $from, string $to)
     {
         # using $path, check $files for anything that might be in a plugins folder, then check DB using $server_id
-        // LabAPI
-        if ($path === '/.config/SCP Secret Laboratory/LabAPI/plugins/global')
-        {
-            $installedPlugins = InstalledSLPlugins::where('server_id', $server_id)->get();
 
-            foreach ($installedPlugins as $plugin) {
-                $newNames = $plugin->file_names;
+        $installedPlugins = InstalledSLPlugins::where('server_id', $server_id)->get();
 
-                $key = array_search($from, $newNames);
-                if ($key !== false) {
-                    $newNames[$key] = $to;
-                    InstalledSLPlugins::where('id', $plugin->id)->update(['file_names' => $newNames]);
-                }
+        foreach ($installedPlugins as $plugin) {
+            $newNames = $plugin->files;
+
+            $key = array_search($path .'/' . $from, $newNames);
+            if ($key !== false) {
+                $newNames[$key] = $path . '/' . $to;
+                InstalledSLPlugins::where('id', $plugin->id)->update(['files' => $newNames]);
             }
         }
     }
@@ -207,22 +199,21 @@ class SLPluginsController extends ClientApiController
     public static function tryRemovePlugin(string $path, int $server_id, array $files)
     {
         # using $path, check $files for anything that might be in a plugins folder, then check DB using $server_id
-        // LabAPI
-        if ($path === '/.config/SCP Secret Laboratory/LabAPI/plugins/global')
-        {
-            $installedPlugins = InstalledSLPlugins::where('server_id', $server_id)->get();
 
-            foreach ($installedPlugins as $plugin) {
-                $newFiles = array_diff($plugin->file_names, $files);
+        $installedPlugins = InstalledSLPlugins::where('server_id', $server_id)->get();
 
-                if (count($newFiles) === 0)
-                {
-                    InstalledSLPlugins::where('id', $plugin->id)->delete();
-                }
-                elseif (count($newFiles) < count($plugin->file_names))
-                {
-                    InstalledSLPlugins::where('id', $plugin->id)->update(['file_names' => implode(',', $newFiles)]);
-                }
+        foreach ($installedPlugins as $plugin) {
+            $newFiles = array_diff($plugin->files, array_map(function($file) use ($path) {
+                return $path . '/' . $file;
+            }, $files));
+
+            if (count($newFiles) === 0)
+            {
+                InstalledSLPlugins::where('id', $plugin->id)->delete();
+            }
+            elseif (count($newFiles) < count($plugin->files))
+            {
+                InstalledSLPlugins::where('id', $plugin->id)->update(['files' => $newFiles]);
             }
         }
     }

@@ -32,13 +32,14 @@ const installPlugin = async ({
 
     try {
         var fileNames: string[] = [];
+        const dir = getDirectory(framework);
+
         for (const asset of assets)
         {
             var downloadUrl = asset.downloadUrl;
             const formattedFile = FormatFile(plugin_id, asset.name);
-            fileNames = fileNames.concat(formattedFile);
+            fileNames = fileNames.concat(dir + '/' + formattedFile);
 
-            const dir = getDirectory(framework);
             await pullFile(uuid, downloadUrl, dir, formattedFile);
         }
     } catch (error) {
@@ -52,7 +53,7 @@ const installPlugin = async ({
             plugin_framework: framework,
             plugin_version: release.name,
             plugin_id: plugin_id,
-            file_names: fileNames
+            files: fileNames
         })
         .then(({ data }) => resolve(data))
         .catch(reject);

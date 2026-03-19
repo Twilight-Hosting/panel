@@ -27,10 +27,10 @@ class InstalledSLPlugins extends Model {
         'server_id',
         'plugin_name',
         'plugin_icon',
-        'file_names'
+        'files'
     ];
 
     protected $casts = [
-        'file_names' => 'array',
+        'files' => 'array',
     ];
 }

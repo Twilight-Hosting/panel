@@ -34,7 +34,7 @@ export default function InstalledPluginRow({ ...props}: InstalledPlugin){
                 plugin_id={props.id}
                 plugin_name={props.plugin_name}
                 framework={props.plugin_framework}
-                file_names={props.file_names}
+                file_names={props.files}
             />
         </GreyRowBox>
     )

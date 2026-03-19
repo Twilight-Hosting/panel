@@ -51,7 +51,8 @@ Route::group([
         // Route::get('/filters', [Client\SLPlugins\SLPluginsController::class, 'getFilters']);
         Route::get('/installed', [Client\SLPlugins\SLPluginsController::class, 'getInstalled']);
         Route::get('/installable', [Client\SLPlugins\SLPluginsController::class, 'getService']);
-        Route::post('/install', [Client\SLPlugins\SLPluginsController::class, 'store']);
+        $route = Route::post('/install', [Client\SLPlugins\SLPluginsController::class, 'store']);
+        $route->withoutMiddleware('TrimStrings');
         // Route::delete('/{plugin_id}', [Client\SLPlugins\SLPluginsController::class, 'destroy']);
         // Route::patch('/{plugin_id}', [Client\SLPlugins\SLPluginsController::class, 'rename']);
     });
