@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal, { RequiredModalProps } from '@/components/elements/Modal';
 import { ExternalPlugin, InstalledPlugin, ExternalRelease } from '@/api/server/plugins-sl/Plugins';
+import getPossibleActions, { AssetParams, DownloadAction } from '@/api/server/plugins-sl/Assets';
 import installPlugin from '@/api/server/plugins-sl/installPlugin';
 import { ServerContext } from '@/state/server';
 import { Button } from '@/components/elements/button/index';
@@ -17,6 +18,7 @@ import { isEmptyArray } from 'formik';
 import { bytesToString } from '@/lib/formatters';
 import tw from 'twin.macro';
 import styled, { css } from 'styled-components';
+import getInstallationLocations from '@/api/server/plugins-sl/getInstallationLocations';
 
 const getLocale = (localeKey: keyof typeof locales) => {
     if (locales[localeKey]) {
@@ -160,7 +162,17 @@ const ModalContent = ({ plugin, visible, onDismissed, ...props }: RequiredModalP
     const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
     const { clearFlashes, addFlash } = useStoreActions((actions: Actions<ApplicationStore>) => actions.flashes);
     const appendPlugin = ServerContext.useStoreActions((actions) => actions.slPlugins.appendPlugin);
-    const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
+    const [selectedAssets, setSelectedAssets] = useState<AssetParams[]>([]);
+    const exiledInstalled = ServerContext.useStoreState((state) => state.slPlugins.exiledInstalled);
+    const port = ServerContext.useStoreState((state) => 
+        {
+            if (state.server.data!.allocations.length > 0)
+            {
+                return state.server.data!.allocations[0].port.toString();
+            }
+
+            return '0';
+        });
 
     const Error = (message?: string) => {
         onDismissed();
@@ -188,7 +200,7 @@ const ModalContent = ({ plugin, visible, onDismissed, ...props }: RequiredModalP
                         plugin_name: plugin.name,
                         plugin_icon: plugin.icon || '',
                         release: selectedRelease,
-                        assets: selectedRelease.assets.filter(asset => selectedAssets.includes(asset.name))
+                        assets: selectedAssets,
                     })
                     .then((rep: InstalledPlugin) => {
                         appendPlugin(rep);
@@ -309,14 +321,20 @@ const ModalContent = ({ plugin, visible, onDismissed, ...props }: RequiredModalP
                         ?
                             <div className={'space-y-1'}>
                                 {selectedRelease.assets.map((asset) => (
+                                    <div>
                                         <Checkbox
                                             key={asset.name}
                                             id={asset.name}
-                                            checked={selectedAssets.includes(asset.name)}
+                                            checked={selectedAssets.some(a => a.name === asset.name)}
                                             onChange={(checked) => {
                                                 const newAssets = checked
-                                                    ? [...selectedAssets, asset.name]
-                                                    : selectedAssets.filter(name => name !== asset.name);
+                                                    ? [...selectedAssets, {
+                                                        name: asset.name,
+                                                        downloadUrl: asset.downloadUrl,
+                                                        downloadLocation: '', // or some default
+                                                        downloadAction: DownloadAction.None
+                                                    }]
+                                                    : selectedAssets.filter(a => a.name !== asset.name);
                                                 setSelectedAssets(newAssets);
                                             }}
                                         >
@@ -333,6 +351,41 @@ const ModalContent = ({ plugin, visible, onDismissed, ...props }: RequiredModalP
                                                 </div>
                                             </div>
                                         </Checkbox>
+
+                                        <Select 
+                                            onChange={e => {
+                                            const found = selectedAssets.find(a => a.name === asset.name)
+    
+                                            if (found != null)
+                                                found.downloadLocation = e.target.value
+                                        }}>
+                                            {
+                                                getInstallationLocations(port, exiledInstalled, plugin.framework === 'exiled').map((info) => (
+                                                    <option value={info.name} key={info.location}>
+                                                        {info.name}
+                                                    </option>
+                                                ))
+                                            }
+                                        </Select>
+
+                                        {
+                                            getPossibleActions(asset.name).length > 0
+                                            ? <Select onChange={e => {
+                                            const found = selectedAssets.find(a => a.name === asset.name)
+
+                                            if (found != null)
+                                                found.downloadAction = e.target.value as DownloadAction
+                                        }}>
+                                            {getPossibleActions(asset.name).map((action) => (
+                                                <option value={action} key={action}>
+                                                    {action}
+                                                </option>
+                                            ))}
+                                        </Select>
+
+                                            : {}
+                                        }
+                                    </div>
                                 ))}
                             </div>
                         :

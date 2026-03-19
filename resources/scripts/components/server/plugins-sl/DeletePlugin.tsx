@@ -25,9 +25,9 @@ export default function DeletePlugin({ plugin_id, plugin_name, framework, file_n
     const Delete = () => {
         setLoading(true);
         clearFlashes('plugins');
-        
+
         deleteFiles(
-            uuid, getDirectory(framework), file_names
+            uuid, '', file_names
         )
         .then(() => {
             removePlugin(plugin_id)

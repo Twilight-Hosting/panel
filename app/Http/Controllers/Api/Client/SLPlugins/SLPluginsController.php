@@ -115,6 +115,17 @@ class SLPluginsController extends ClientApiController
         return response()->json($installedPlugins);
     }
 
+    // just wraps hasExiled for an API call thing
+    public function getHasExiled(Server $server) {
+        $request = Request();
+
+        if (!$request->user()->can(Permission::ACTION_FILE_READ)) {
+            throw new AuthorizationException();
+        }
+
+        return response()->json(['HasExiled' => $this->hasEXILED($server)]);
+    }
+
     public function store(Server $server)
     {
         try {

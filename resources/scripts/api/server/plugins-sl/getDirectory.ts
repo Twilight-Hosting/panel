@@ -1,9 +1,30 @@
-const getDirectory = (framework: string): string => {
-    // TODO: update
+const getDirectory = (port: string, framework: string, dependencies: boolean, portSpecific: boolean): string => {
+
     if (framework === 'labapi')
-        return '/.config/SCP Secret Laboratory/LabAPI/plugins/global'
+    {
+        if (dependencies)
+        {
+            return '/.config/SCP Secret Laboratory/LabAPI/dependencies/' + portSpecific ? port : 'global'
+        }
+        else
+        {
+            return '/.config/SCP Secret Laboratory/LabAPI/plugins/' + portSpecific ? port : 'global'
+        }
+    }
+    else if (framework === 'exiled')
+    {
+        if (dependencies)
+        {
+            return '/.config/Exiled/Plugins/dependencies'
+        }
+        else
+        {
+            return '/.config/Exiled/Plugins' + portSpecific ? '/' + port : ''
+        }
+    }
+
     console.error(`Uhhhhhh how? Provided framework: ${framework === `` ? `Empty` : framework}`);
     return '';
 }
 
-export default getDirectory
+export default getDirectory;

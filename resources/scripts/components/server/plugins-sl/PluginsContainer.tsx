@@ -16,6 +16,7 @@ import { useDeepMemoize } from '@/plugins/useDeepMemoize';
 import FlashMessageRender from '@/components/FlashMessageRender';
 import { PaginatedResult } from '@/api/http';
 import { useTranslation } from 'react-i18next';
+import getExiledInstalled from '@/api/server/plugins-sl/getExiledInstalled';
 
 type RadioProps = {
     id: string;
@@ -76,7 +77,9 @@ const PluginsContainer = () => {
     const [filters, setFilters] = useState<QueryParams>({ page: 1, framework: 'labapi', tags: [], search: '' });
     const [plugins, setPlugins] = useState<PaginatedResult<ExternalPlugin>>();
     const setInstalledPlugins = ServerContext.useStoreActions((state) => state.slPlugins.setPlugins);
+    const setExiledInstalled = ServerContext.useStoreActions((state) => state.slPlugins.setExiledInstalled);
     const installedPlugins = useDeepMemoize(ServerContext.useStoreState((state) => state.slPlugins.data));
+    const exiledInstalled = ServerContext.useStoreState((state) => state.slPlugins.exiledInstalled);
 
     const resetFilters = () => {
         setSearchTerm('');
@@ -84,7 +87,7 @@ const PluginsContainer = () => {
     }
 
     const updateFilter = (target: keyof QueryParams, value: string | number): void => {
-        if(target==='framework') {
+        if (target==='framework') {
             setSearchTerm('');
             setFilters((prevFilters) => ({
                 ...prevFilters,
@@ -154,6 +157,14 @@ const PluginsContainer = () => {
             .catch((error) => {
                 addError({ key: 'plugins', message: error.message });
             })
+
+        getExiledInstalled({id})
+            .then((response) => {
+                setExiledInstalled(response);
+            })
+            .catch((error) => {
+                addError({ key: 'exiled_installed', message: error.message})
+            })
     }, [id]);
 
     return (
@@ -212,9 +223,23 @@ const PluginsContainer = () => {
                                     </button>
                                 )}
                             </div>
-                            <RadioButton id="all" active={filters.framework} target={'framework'} updateFilter={updateFilter} />
-                            <RadioButton id="labapi" active={filters.framework} target={'framework'} updateFilter={updateFilter} />
-                            <RadioButton id="exiled" active={filters.framework} target={'framework'} updateFilter={updateFilter} />
+
+                            {
+                                exiledInstalled ? 
+                                <RadioButton id="all" active={filters.framework} target={'framework'} updateFilter={updateFilter} />
+                                : {}
+                            }
+                            {
+                                exiledInstalled ? 
+                                <RadioButton id="labapi" active={filters.framework} target={'framework'} updateFilter={updateFilter} />
+                                : {}
+                            }
+                            {
+                                exiledInstalled ? 
+                                <RadioButton id="exiled" active={filters.framework} target={'framework'} updateFilter={updateFilter} />
+                                : {}
+                            }
+
                         </div>
                         <div className={'flex flex-col gap-1'}>
                             <p className={'font-medium'}>Categories</p>

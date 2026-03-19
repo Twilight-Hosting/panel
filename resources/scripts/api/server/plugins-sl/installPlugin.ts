@@ -1,6 +1,7 @@
 import http from '@/api/http';
 import pullFile from '@/api/server/files/pullFile';
-import { ExternalAsset, ExternalRelease, InstalledPlugin } from '@/api/server/plugins-sl/Plugins';
+import { ExternalRelease, InstalledPlugin } from '@/api/server/plugins-sl/Plugins';
+import { AssetParams } from '@/api/server/plugins-sl/Assets';
 import getDirectory from '@/api/server/plugins-sl/getDirectory';
 
 export interface InstallProps {
@@ -11,7 +12,7 @@ export interface InstallProps {
     plugin_name: string, 
     plugin_icon: string, 
     release: ExternalRelease, 
-    assets: ExternalAsset[]
+    assets: AssetParams[]
 }
 
 const installPlugin = async ({ 
@@ -32,15 +33,13 @@ const installPlugin = async ({
 
     try {
         var fileNames: string[] = [];
-        const dir = getDirectory(framework);
 
         for (const asset of assets)
         {
-            var downloadUrl = asset.downloadUrl;
             const formattedFile = FormatFile(plugin_id, asset.name);
-            fileNames = fileNames.concat(dir + '/' + formattedFile);
+            fileNames.push(asset.downloadLocation + '/' + formattedFile);
 
-            await pullFile(uuid, downloadUrl, dir, formattedFile);
+            await pullFile(uuid, asset.downloadUrl, asset.downloadLocation, formattedFile);
         }
     } catch (error) {
         throw new Error(`Plugin installation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);

@@ -2,6 +2,9 @@ import { action, Action } from 'easy-peasy';
 import { InstalledPlugin } from '@/api/server/plugins-sl/Plugins';
 
 export interface SLServerPluginsStore {
+    exiledInstalled: boolean;
+    setExiledInstalled: Action<SLServerPluginsStore, boolean>;
+
     data: InstalledPlugin[]; 
     setPlugins: Action<SLServerPluginsStore, InstalledPlugin[]>; 
     appendPlugin: Action<SLServerPluginsStore, InstalledPlugin>; 
@@ -9,6 +12,12 @@ export interface SLServerPluginsStore {
 }
 
 const slPlugins: SLServerPluginsStore = {
+    exiledInstalled: false,
+
+    setExiledInstalled: action((state, payload) => {
+        state.exiledInstalled = payload;
+    }),
+
     data: [],
 
     setPlugins: action((state, payload) => {
