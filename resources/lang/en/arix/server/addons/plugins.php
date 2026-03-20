@@ -32,7 +32,6 @@ return[
         'delete-plugin' => 'Delete plugin',
         'deleted-succesfully' => 'Plugin Deleted succesfully',
         'are-you-sure' => 'Are you sure you want to delete',
-        'are-you-sure-sl' => 'Are you sure you want to remove',
         'continue' => 'Continue'
     ]
 ];

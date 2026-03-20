@@ -224,21 +224,15 @@ const PluginsContainer = () => {
                                 )}
                             </div>
 
-                            {
-                                exiledInstalled ? 
-                                <RadioButton id="all" active={filters.framework} target={'framework'} updateFilter={updateFilter} />
-                                : {}
-                            }
-                            {
-                                exiledInstalled ? 
-                                <RadioButton id="labapi" active={filters.framework} target={'framework'} updateFilter={updateFilter} />
-                                : {}
-                            }
-                            {
-                                exiledInstalled ? 
-                                <RadioButton id="exiled" active={filters.framework} target={'framework'} updateFilter={updateFilter} />
-                                : {}
-                            }
+                            {exiledInstalled && ['all', 'labapi', 'exiled'].map((id) => (
+                                <RadioButton
+                                    key={id}
+                                    id={id}
+                                    active={filters.framework}
+                                    target={'framework'}
+                                    updateFilter={updateFilter}
+                                />
+                            ))}
 
                         </div>
                         <div className={'flex flex-col gap-1'}>

@@ -6,13 +6,13 @@ export interface AssetParams {
     downloadAction: DownloadAction,
 }
 
-export const DownloadAction = {
-    None: 'none',
-    Extract: 'extract'
-} as const
+export enum DownloadAction {
+    None = 0,
+    Extract = 1,
+}
 
 const getPossibleActions = (name: string): DownloadAction[] => {
-    const actions: DownloadAction[] = [];
+    const actions: DownloadAction[] = [DownloadAction.None];
 
     // TODO: make this better lol
     if (name.endsWith(".zip") || name.endsWith(".tar.gz")) {
@@ -23,5 +23,3 @@ const getPossibleActions = (name: string): DownloadAction[] => {
 }
 
 export default getPossibleActions
-
-export type DownloadAction = typeof DownloadAction[keyof typeof DownloadAction]

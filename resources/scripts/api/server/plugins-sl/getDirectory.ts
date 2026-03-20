@@ -4,22 +4,22 @@ const getDirectory = (port: string, framework: string, dependencies: boolean, po
     {
         if (dependencies)
         {
-            return '/.config/SCP Secret Laboratory/LabAPI/dependencies/' + portSpecific ? port : 'global'
+            return '/.config/SCP Secret Laboratory/LabAPI/dependencies/' + (portSpecific ? port : 'global')
         }
         else
         {
-            return '/.config/SCP Secret Laboratory/LabAPI/plugins/' + portSpecific ? port : 'global'
+            return '/.config/SCP Secret Laboratory/LabAPI/plugins/' + (portSpecific ? port : 'global')
         }
     }
     else if (framework === 'exiled')
     {
         if (dependencies)
         {
-            return '/.config/Exiled/Plugins/dependencies'
+            return '/.config/EXILED/Plugins/dependencies'
         }
         else
         {
-            return '/.config/Exiled/Plugins' + portSpecific ? '/' + port : ''
+            return '/.config/EXILED/Plugins' + (portSpecific ? ('/' + port) : '')
         }
     }
 

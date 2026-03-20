@@ -12,7 +12,7 @@ export interface InstalledPlugin {
     plugin_id:         string;
     server_id:         number;
     plugin_name:       string;
-    files:             string[];
+    file_locations:             string[];
     plugin_icon:       string;
     created_at:        Date;
     updated_at:        Date;

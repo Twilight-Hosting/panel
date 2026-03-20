@@ -52,7 +52,8 @@ const installPlugin = async ({
             plugin_framework: framework,
             plugin_version: release.name,
             plugin_id: plugin_id,
-            files: fileNames
+            file_locations: fileNames,
+            download_actions: assets.map(a => a.downloadAction as Number),
         })
         .then(({ data }) => resolve(data))
         .catch(reject);

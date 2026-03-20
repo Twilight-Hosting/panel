@@ -27,7 +27,7 @@ export default function DeletePlugin({ plugin_id, plugin_name, framework, file_n
         clearFlashes('plugins');
 
         deleteFiles(
-            uuid, '', file_names
+            uuid, '/', file_names.map(f => f.substring(1))
         )
         .then(() => {
             removePlugin(plugin_id)
@@ -58,7 +58,7 @@ export default function DeletePlugin({ plugin_id, plugin_name, framework, file_n
             confirm={t('delete.continue')}
             onConfirmed={Delete}
         >
-            {t('delete.are-you-sure-sl')} <code>{plugin_name}</code>?
+            {t('delete.are-you-sure')} <code>{plugin_name}</code>?
         </Dialog.Confirm>
 
         <Can action={'file.delete'}>

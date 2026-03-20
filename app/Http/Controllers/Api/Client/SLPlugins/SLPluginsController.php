@@ -11,6 +11,14 @@ use Pterodactyl\Models\Plugins\InstalledSLPlugins;
 use Pterodactyl\Models\Server;
 use Pterodactyl\Repositories\Wings\DaemonFileRepository;
 
+use function Laravel\Prompts\error;
+
+enum DownloadAction: int
+{
+    case None = 0;
+    case Extract = 1;
+}
+
 class SLPluginsController extends ClientApiController
 {
     private const CACHE_FILE = 'slplugins_cache.json';
@@ -119,7 +127,7 @@ class SLPluginsController extends ClientApiController
     public function getHasExiled(Server $server) {
         $request = Request();
 
-        if (!$request->user()->can(Permission::ACTION_FILE_READ)) {
+        if (!$request->user()->can(Permission::ACTION_FILE_READ, $server)) {
             throw new AuthorizationException();
         }
 
@@ -141,13 +149,24 @@ class SLPluginsController extends ClientApiController
                 'plugin_id' => 'required|string',
                 'plugin_name' => 'required|string',
                 'plugin_icon' => 'nullable|string',
-                'files' => 'required|array',
+                'file_locations' => 'required|array',
+                'download_actions' => 'required|array'
             ]);
 
             $framework = $request->plugin_framework;
             $plugin_id = $request->plugin_id;
             $name = $request->plugin_name;
-            $files = $request->files;
+            $files = $request->file_locations;
+            $actions = $request->download_actions;
+
+            if (count($files) != count($actions))
+            {
+                return response()->json([
+                    'error' => 'files count is not equal to download_actions count!',
+                    'file_locations' => $files,
+                    'actions' => $actions,
+                ], 400);
+            }
 
             if ($framework === 'exiled' & !$this->hasExiled($server)) {
                 return response()->json([
@@ -164,6 +183,23 @@ class SLPluginsController extends ClientApiController
                 ], 400);
             }
 
+            try {
+                for ($i = 0; $i < count($files); $i++)
+                {
+                    $file = $files[$i];
+                    $action = $actions[$i];
+
+                    if ($action == DownloadAction::Extract)
+                    {
+                        $this->daemonFileRepository->setserver($server);
+                        $this->daemonFileRepository->decompressFile(null, $file);
+                    }
+                }
+            } catch (\Exception $ex) {
+                error($ex->getMessage());
+                error($ex->getTraceAsString());
+            }
+
             // store the plugin
             $installedPlugin = InstalledSLPlugins::create([
                 'plugin_framework' => $framework,
@@ -172,7 +208,8 @@ class SLPluginsController extends ClientApiController
                 'server_id' => $server->id,
                 'plugin_name' => $name,
                 'plugin_icon' => $request->plugin_icon,
-                'files' => $files,
+                'file_locations' => $files,
+                'actions' => $actions,
             ]);
 
             return response()->json([
@@ -180,10 +217,11 @@ class SLPluginsController extends ClientApiController
                 'id' => $installedPlugin->id,
                 'plugin_framework' => $framework,
                 'plugin_id' => $plugin_id,
-                'plugin_name' => $name,
                 'server_id' => $server->id,
-                'files' => $files,
+                'plugin_name' => $name,
                 'plugin_icon' => $request->plugin_icon,
+                'file_locations' => $files,
+                'actions' => $actions,
             ]);
         } catch (\Exception $e) {
             return response()->json(['error' => [$e->getMessage(), $e->getTraceAsString()]], 400);

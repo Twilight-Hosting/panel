@@ -317,83 +317,100 @@ const ModalContent = ({ plugin, visible, onDismissed, ...props }: RequiredModalP
                             ))}
                         </Select>
                     {
-                        selectedRelease
-                        ?
-                            <div className={'space-y-1'}>
-                                {selectedRelease.assets.map((asset) => (
-                                    <div>
-                                        <Checkbox
-                                            key={asset.name}
-                                            id={asset.name}
-                                            checked={selectedAssets.some(a => a.name === asset.name)}
-                                            onChange={(checked) => {
-                                                const newAssets = checked
-                                                    ? [...selectedAssets, {
-                                                        name: asset.name,
-                                                        downloadUrl: asset.downloadUrl,
-                                                        downloadLocation: '', // or some default
-                                                        downloadAction: DownloadAction.None
-                                                    }]
-                                                    : selectedAssets.filter(a => a.name !== asset.name);
-                                                setSelectedAssets(newAssets);
-                                            }}
-                                        >
-                                            <div className="flex flex-col">
-                                                <p className="font-medium text-gray-100 mb-1">
-                                                    {asset.name}
-                                                </p>
-                                                <div className="flex items-center gap-x-4 text-sm text-gray-400">
-                                                    <div className="flex items-center gap-x-1">
-                                                        <DownloadIcon className="w-4 h-4" />
-                                                        <span>{numify(asset.downloadCount)}</span>
-                                                    </div>
-                                                    <span>{bytesToString(asset.size)}</span>
+                        selectedRelease &&
+                        <div className={'space-y-2'}>
+                            {selectedRelease.assets.map((asset) => {
+                        const isSelected = selectedAssets.some(a => a.name === asset.name);
+                        const currentAsset = selectedAssets.find(a => a.name === asset.name);
+
+                        return (
+                            <div key={asset.name} className="flex items-start gap-4 p-2 rounded-lg">
+                                <div className="flex-1 min-w-0">
+                                    <Checkbox
+                                        id={asset.name}
+                                        checked={isSelected}
+                                        onChange={(checked) => {
+                                            const newAssets = checked
+                                                ? [...selectedAssets, {
+                                                    name: asset.name,
+                                                    downloadUrl: asset.downloadUrl,
+                                                    downloadLocation: '',
+                                                    downloadAction: DownloadAction.None
+                                                }]
+                                                : selectedAssets.filter(a => a.name !== asset.name);
+                                            setSelectedAssets(newAssets);
+                                        }}
+                                    >
+                                        <div className="flex flex-col">
+                                            <p className="font-medium text-gray-100 mb-1">
+                                                {asset.name}
+                                            </p>
+                                            <div className="flex items-center gap-x-4 text-sm text-gray-400">
+                                                <div className="flex items-center gap-x-1">
+                                                    <DownloadIcon className="w-4 h-4" />
+                                                    <span>{numify(asset.downloadCount)}</span>
                                                 </div>
+                                                <span>{bytesToString(asset.size)}</span>
                                             </div>
-                                        </Checkbox>
+                                        </div>
+                                    </Checkbox>
+                                </div>
 
-                                        <Select 
+                                <div className="flex gap-2 ml-auto flex-shrink-0 min-w-[200px]">
+                                    <Select
+                                        value={currentAsset?.downloadLocation || ''}
+                                        onChange={e => {
+                                            const newLocation = e.target.value; // capture value immediately
+                                            setSelectedAssets(prev =>
+                                                prev.map(a =>
+                                                    a.name === asset.name
+                                                        ? { ...a, downloadLocation: newLocation }
+                                                        : a
+                                                )
+                                            );
+                                        }}
+                                        disabled={!isSelected}
+                                    >
+                                        <option value="" disabled>Select Location</option>
+                                        {getInstallationLocations(port, exiledInstalled, plugin.framework === 'labapi').map((info) => (
+                                            <option value={info.location} key={info.location}>
+                                                {info.name}
+                                            </option>
+                                        ))}
+                                    </Select>
+
+                                    {getPossibleActions(asset.name).length > 1 && (
+                                        <Select
+                                            value={currentAsset?.downloadAction ?? DownloadAction.None}
                                             onChange={e => {
-                                            const found = selectedAssets.find(a => a.name === asset.name)
-    
-                                            if (found != null)
-                                                found.downloadLocation = e.target.value
-                                        }}>
-                                            {
-                                                getInstallationLocations(port, exiledInstalled, plugin.framework === 'exiled').map((info) => (
-                                                    <option value={info.name} key={info.location}>
-                                                        {info.name}
-                                                    </option>
-                                                ))
-                                            }
-                                        </Select>
-
-                                        {
-                                            getPossibleActions(asset.name).length > 0
-                                            ? <Select onChange={e => {
-                                            const found = selectedAssets.find(a => a.name === asset.name)
-
-                                            if (found != null)
-                                                found.downloadAction = e.target.value as DownloadAction
-                                        }}>
+                                                const newAction = parseInt(e.target.value) as DownloadAction; // capture
+                                                setSelectedAssets(prev =>
+                                                    prev.map(a =>
+                                                        a.name === asset.name
+                                                            ? { ...a, downloadAction: newAction }
+                                                            : a
+                                                    )
+                                                );
+                                            }}
+                                            disabled={!isSelected}
+                                        >
                                             {getPossibleActions(asset.name).map((action) => (
                                                 <option value={action} key={action}>
-                                                    {action}
+                                                    {action === DownloadAction.None ? 'None' :
+                                                    action === DownloadAction.Extract ? 'Extract' : action}
                                                 </option>
                                             ))}
                                         </Select>
-
-                                            : {}
-                                        }
-                                    </div>
-                                ))}
+                                    )}
+                                </div>
                             </div>
-                        :
-                        null
+                        );
+                    })}
+                        </div>
                     }
                 </div>
                 <div className={'flex justify-end mt-3'}>
-                    <Button disabled={!selectedRelease || loading || !selectedAssets || isEmptyArray(selectedAssets)} onClick={InstallPlugin} className={'flex items-center gap-x-2'}>
+                    <Button disabled={!selectedRelease || loading || !selectedAssets || isEmptyArray(selectedAssets) || selectedAssets.some(a => a.downloadLocation === 'Select Location')} onClick={InstallPlugin} className={'flex items-center gap-x-2'}>
                         {loading && <Spinner size={'small'} />}
                         {t('install.install-plugin')}
                     </Button>
