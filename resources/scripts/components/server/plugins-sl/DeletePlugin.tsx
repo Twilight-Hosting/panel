@@ -22,29 +22,35 @@ export default function DeletePlugin({ plugin_id, plugin_name, framework, file_n
     const { clearFlashes, addFlash } = useStoreActions((actions: Actions<ApplicationStore>) => actions.flashes);
     const [loading, setLoading] = useState(false);
 
-    const Delete = () => {
-        setLoading(true);
-        clearFlashes('plugins');
+const Delete = () => {
+    setLoading(true);
+    clearFlashes('plugins');
 
-        deleteFiles(
-            uuid, '/', file_names.map(f => f.substring(1))
-        )
+    const deletePromises = file_names.map(file => {
+        const index = file.lastIndexOf('/');
+        const directory = file.substring(0, index);
+        const fileName = file.substring(index + 1);
+
+        return deleteFiles(uuid, directory, [fileName]);
+    });
+
+    Promise.all(deletePromises)
         .then(() => {
-            removePlugin(plugin_id)
+            removePlugin(plugin_id);
             addFlash({
                 type: 'success',
                 key: 'plugins:delete',
                 message: t('delete.deleted-succesfully'),
-            })
+            });
         })
         .catch((error) => {
             addFlash({
                 type: 'error',
                 key: 'plugins:delete',
-                message: error.response.data.error,
-            })
+                message: error.response?.data?.error || 'Failed to delete files',
+            });
         })
-        .finally(() => setLoading(false))
+        .finally(() => setLoading(false));
     }
 
     return (
