@@ -171,7 +171,7 @@ class Server extends Model
         'allocation_limit' => 'sometimes|nullable|integer|min:0',
         'backup_limit' => 'present|nullable|integer|min:0',
         // ADDON
-        'subdomain_limit' => 'required|integer|min:0',
+        'subdomain_limit' => 'integer|min:0',
     ];
 
     /**

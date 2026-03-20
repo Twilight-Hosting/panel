@@ -21,7 +21,7 @@ export interface ModalProps extends RequiredModalProps {
 }
 
 export const ModalMask = styled.div`
-    ${tw`fixed z-40 overflow-auto flex w-full inset-0`};
+    ${tw`fixed z-40 overflow-hidden flex w-full inset-0`};
     backdrop-filter:blur(8px);
     background: rgba(0, 0, 0, 0.5);
 `;
@@ -40,7 +40,7 @@ const ModalContainer = styled.div<{ alignTop?: boolean }>`
             ${breakpoint('md')`margin-top: 10%`};
         `};
 
-    margin-bottom: auto;
+    margin-bottom: 5%;
 
     & > .close-icon {
         ${tw`absolute right-0 p-2 text-white cursor-pointer opacity-50 transition-all duration-150 ease-linear hover:opacity-100`};
