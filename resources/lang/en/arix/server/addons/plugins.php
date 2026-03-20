@@ -7,6 +7,7 @@ return[
     'browse-plugins' => 'Browse Plugins',
     'no-plugins-found' => 'No plugins were found',
     'platform' => 'Platform',
+    'framework' => 'Framework',
     'category' => 'Category',
     'reset-filters' => 'Reset Filters',
     'version' => 'Version',

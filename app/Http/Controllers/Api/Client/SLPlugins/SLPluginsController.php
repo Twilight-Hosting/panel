@@ -25,6 +25,9 @@ class SLPluginsController extends ClientApiController
     private const CACHE_DURATION = 15 * 60;
     private const PLUGINS_API_URL = 'https://plugins.scpslgame.com/api/v1/plugin?search=&limit=10000000';
 
+    // if you want to find plugin ids, go to the PLUGINS_API_URL and ctrl-f the plugin LOL
+    public const PLUGIN_BLACKLIST = ['001af586', '90d7ff28'];
+
     public function __construct(private DaemonFileRepository $daemonFileRepository)
     {
         parent::__construct();
@@ -60,6 +63,13 @@ class SLPluginsController extends ClientApiController
                 }
 
                 $response = $plugins['data']['data'];
+                $response = array_filter($response, function($entry) {
+                    if (!isset($entry['id']))
+                        return false;
+
+                    return !in_array($entry['id'], self::PLUGIN_BLACKLIST);
+                });
+
                 if (isset($queryParameters['search']) && $queryParameters['search'] !== '')
                 {
                     $search = $queryParameters['search'];
@@ -206,7 +216,7 @@ class SLPluginsController extends ClientApiController
                         // for some reason the pull file function in DaemonFileRepository can return a value before you can even try to decompress the file. Idk why, but now this must exist
                         if (!$decompressed)
                         {
-                            usleep(100000);
+                            usleep(200000);
                             $decompressed = true;
                         }
 

@@ -17,15 +17,17 @@ import FlashMessageRender from '@/components/FlashMessageRender';
 import { PaginatedResult } from '@/api/http';
 import { useTranslation } from 'react-i18next';
 import getExiledInstalled from '@/api/server/plugins-sl/getExiledInstalled';
+import Tooltip from '@/components/elements/tooltip/Tooltip';
 
 type RadioProps = {
     id: string;
     target: keyof QueryParams;
     active?: string;
+    disabled?: boolean
     updateFilter: (target: keyof QueryParams, value: string | number) => void;
 };
 
-const RadioButton: React.FC<RadioProps> = ({ id, target, active, updateFilter }) => {
+const RadioButton: React.FC<RadioProps> = ({ id, target, active, disabled, updateFilter }) => {
     return (
         <div className="flex items-center gap-x-1 cursor-pointer">
             <Input
@@ -34,6 +36,7 @@ const RadioButton: React.FC<RadioProps> = ({ id, target, active, updateFilter })
                 type="radio"
                 checked={active === id}
                 onClick={() => updateFilter(target, id)}
+                disabled={disabled}
             />
             <label htmlFor={`${id}-${target}`} className={'capitalize'}>
                 {id.toLowerCase()}
@@ -213,7 +216,7 @@ const PluginsContainer = () => {
                             exiledInstalled &&
                             <div className={'flex flex-col gap-1'}>
                                 <div className={'flex items-center justify-between'}>
-                                    <p className={'font-medium'}>{t('platform')}</p>
+                                    <p className={'font-medium'}>{t('framework')}</p>
                                     {JSON.stringify(filters) !== JSON.stringify({ 
                                         page: 1, 
                                         framework: 'labapi',
@@ -226,31 +229,49 @@ const PluginsContainer = () => {
                                     )}
                                 </div>
 
-                                {['all', 'labapi', 'exiled'].map((id) => (
-                                    <RadioButton
-                                        key={id}
-                                        id={id}
-                                        active={filters.framework}
-                                        target={'framework'}
-                                        updateFilter={updateFilter}
-                                    />
-                                ))}
+                                {['all', 'labapi', 'exiled'].map((id) => 
+                                    {
+                                        const isDisabled = id !== 'labapi';
+                                        const tooltip = isDisabled ? 'An Exiled plugin manager has not been implemented yet' : ''
+
+                                        const radio = (
+                                            <RadioButton
+                                                key={id}
+                                                id={id}
+                                                active={filters.framework}
+                                                target={'framework'}
+                                                updateFilter={updateFilter}
+                                                disabled={isDisabled}
+                                            />
+                                        );
+
+                                        return isDisabled ? (
+                                            <Tooltip key={id} content={tooltip} placement='top'>
+                                                <p>
+                                                    {radio}
+                                                </p>
+                                            </Tooltip>
+                                        ) : radio;
+                                    }
+                                )}
+
                             </div>
                         }
 
                         <div className={'flex flex-col gap-1'}>
-                            <p className={'font-medium'}>{t('categories')}</p>
-
-                            {!exiledInstalled && JSON.stringify(filters) !== JSON.stringify({ 
-                                    page: 1, 
-                                    framework: 'labapi',
-                                    tags: [],
-                                    search: '',
-                                }) && (
-                                <button onClick={() => resetFilters()} className={'text-sm text-gray-300 font-medium'}>
-                                    ({t('reset-filters')})
-                                </button>
-                            )}
+                            <div className='flex items-center justify-between'>
+                                <p className={'font-medium'}>{t('category')}</p>
+                                {!exiledInstalled && JSON.stringify(filters) !== JSON.stringify({ 
+                                        page: 1, 
+                                        framework: 'labapi',
+                                        tags: [],
+                                        search: '',
+                                    }) && (
+                                    <button onClick={() => resetFilters()} className={'text-sm text-gray-300 font-medium'}>
+                                        ({t('reset-filters')})
+                                    </button>
+                                )}
+                            </div>
 
                             <div className={'flex flex-col gap-2 max-h-48 overflow-y-auto'}>
                                 <TagCheckbox id="tools" active={filters.tags || []} updateFilter={updateCheckbox}/>
