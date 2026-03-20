@@ -7,6 +7,7 @@ return[
     'browse-plugins' => 'Browse Plugins',
     'no-plugins-found' => 'No plugins were found',
     'platform' => 'Platform',
+    'category' => 'Category',
     'reset-filters' => 'Reset Filters',
     'version' => 'Version',
     'loader' => 'Loader',
@@ -18,14 +19,19 @@ return[
     'plugin-installed' => 'Plugin Installed',
 
     'install' => [
-        'details' => 'Plugin details',
         'download-not-available' => 'Download not available',
         'installed-successfully' => 'Plugin Installed successfully',
         'select-a-version' => 'Select a version',
         'select-version' => 'Select Version',
         'install-plugin' => 'Install plugin',
         'plugin-details' => 'Plugin Details',
-        'no-release-selected' => 'No release selected.'
+
+        'select-location' => 'Select Location',
+
+        'actions' => [
+            'none' => 'None',
+            'extract' => 'Extract',
+        ],
     ],
 
     'delete' => [

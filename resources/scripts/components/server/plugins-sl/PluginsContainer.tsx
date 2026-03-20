@@ -209,34 +209,49 @@ const PluginsContainer = () => {
                 </div>
                 <div>
                     <div className={'sticky top-4 bg-gray-700 rounded-box backdrop p-5 flex flex-col gap-5'}>
+                        {
+                            exiledInstalled &&
+                            <div className={'flex flex-col gap-1'}>
+                                <div className={'flex items-center justify-between'}>
+                                    <p className={'font-medium'}>{t('platform')}</p>
+                                    {JSON.stringify(filters) !== JSON.stringify({ 
+                                        page: 1, 
+                                        framework: 'labapi',
+                                        tags: [],
+                                        search: '',
+                                    }) && (
+                                        <button onClick={() => resetFilters()} className={'text-sm text-gray-300 font-medium'}>
+                                            ({t('reset-filters')})
+                                        </button>
+                                    )}
+                                </div>
+
+                                {['all', 'labapi', 'exiled'].map((id) => (
+                                    <RadioButton
+                                        key={id}
+                                        id={id}
+                                        active={filters.framework}
+                                        target={'framework'}
+                                        updateFilter={updateFilter}
+                                    />
+                                ))}
+                            </div>
+                        }
+
                         <div className={'flex flex-col gap-1'}>
-                            <div className={'flex items-center justify-between'}>
-                                <p className={'font-medium'}>{t('platform')}</p>
-                                {JSON.stringify(filters) !== JSON.stringify({ 
+                            <p className={'font-medium'}>{t('categories')}</p>
+
+                            {!exiledInstalled && JSON.stringify(filters) !== JSON.stringify({ 
                                     page: 1, 
                                     framework: 'labapi',
                                     tags: [],
                                     search: '',
                                 }) && (
-                                    <button onClick={() => resetFilters()} className={'text-sm text-gray-300 font-medium'}>
-                                        ({t('reset-filters')})
-                                    </button>
-                                )}
-                            </div>
+                                <button onClick={() => resetFilters()} className={'text-sm text-gray-300 font-medium'}>
+                                    ({t('reset-filters')})
+                                </button>
+                            )}
 
-                            {exiledInstalled && ['all', 'labapi', 'exiled'].map((id) => (
-                                <RadioButton
-                                    key={id}
-                                    id={id}
-                                    active={filters.framework}
-                                    target={'framework'}
-                                    updateFilter={updateFilter}
-                                />
-                            ))}
-
-                        </div>
-                        <div className={'flex flex-col gap-1'}>
-                            <p className={'font-medium'}>Categories</p>
                             <div className={'flex flex-col gap-2 max-h-48 overflow-y-auto'}>
                                 <TagCheckbox id="tools" active={filters.tags || []} updateFilter={updateCheckbox}/>
                                 <TagCheckbox id="framework" active={filters.tags || []} updateFilter={updateCheckbox}/>

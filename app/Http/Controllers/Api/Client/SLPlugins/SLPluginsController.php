@@ -156,14 +156,14 @@ class SLPluginsController extends ClientApiController
             $framework = $request->plugin_framework;
             $plugin_id = $request->plugin_id;
             $name = $request->plugin_name;
-            $files = $request->file_locations;
+            $file_locations = $request->file_locations;
             $actions = $request->download_actions;
 
-            if (count($files) != count($actions))
+            if (count($file_locations) != count($actions))
             {
                 return response()->json([
-                    'error' => 'files count is not equal to download_actions count!',
-                    'file_locations' => $files,
+                    'error' => 'file_locations count is not equal to download_actions count!',
+                    'file_locations' => $file_locations,
                     'actions' => $actions,
                 ], 400);
             }
@@ -183,21 +183,39 @@ class SLPluginsController extends ClientApiController
                 ], 400);
             }
 
-            try {
-                for ($i = 0; $i < count($files); $i++)
-                {
-                    $file = $files[$i];
-                    $action = $actions[$i];
+            logger('running foreach loop');
 
-                    if ($action == DownloadAction::Extract)
-                    {
+            $decompressed = false;
+
+            try {
+                foreach ($file_locations as $index => $file) {
+                    $action = DownloadAction::tryFrom((int)$actions[$index]);
+
+                    logger('Processing action: ' . $action->value);
+
+                    if ($action == DownloadAction::Extract) {
+                        logger('attempting to decompress');
+
                         $this->daemonFileRepository->setserver($server);
-                        $this->daemonFileRepository->decompressFile(null, $file);
+
+                        $dir = dirname($file);
+                        $filename = basename($file);
+
+                        logger('decompressing with directory: [' . $dir . '] and filename [' . $filename . ']');
+
+                        // for some reason the pull file function in DaemonFileRepository can return a value before you can even try to decompress the file. Idk why, but now this must exist
+                        if (!$decompressed)
+                        {
+                            usleep(100000);
+                            $decompressed = true;
+                        }
+
+                        $this->daemonFileRepository->decompressFile($dir, $filename);
                     }
                 }
             } catch (\Exception $ex) {
-                error($ex->getMessage());
-                error($ex->getTraceAsString());
+                logger()->error($ex->getMessage());
+                logger()->error($ex->getTraceAsString());
             }
 
             // store the plugin
@@ -208,7 +226,7 @@ class SLPluginsController extends ClientApiController
                 'server_id' => $server->id,
                 'plugin_name' => $name,
                 'plugin_icon' => $request->plugin_icon,
-                'file_locations' => $files,
+                'file_locations' => $file_locations,
                 'actions' => $actions,
             ]);
 
@@ -220,9 +238,9 @@ class SLPluginsController extends ClientApiController
                 'server_id' => $server->id,
                 'plugin_name' => $name,
                 'plugin_icon' => $request->plugin_icon,
-                'file_locations' => $files,
+                'file_locations' => $file_locations,
                 'actions' => $actions,
-            ]);
+            ], 200, [], JSON_UNESCAPED_SLASHES);
         } catch (\Exception $e) {
             return response()->json(['error' => [$e->getMessage(), $e->getTraceAsString()]], 400);
         }
@@ -230,29 +248,25 @@ class SLPluginsController extends ClientApiController
 
     public static function tryRenamePlugin(string $path, int $server_id, string $from, string $to)
     {
-        # using $path, check $files for anything that might be in a plugins folder, then check DB using $server_id
-
         $installedPlugins = InstalledSLPlugins::where('server_id', $server_id)->get();
 
         foreach ($installedPlugins as $plugin) {
-            $newNames = $plugin->files;
+            $newLocations = $plugin->file_locations;
 
-            $key = array_search($path .'/' . $from, $newNames);
+            $key = array_search($path .'/' . $from, $newLocations);
             if ($key !== false) {
-                $newNames[$key] = $path . '/' . $to;
-                InstalledSLPlugins::where('id', $plugin->id)->update(['files' => $newNames]);
+                $newLocations[$key] = $path . '/' . $to;
+                InstalledSLPlugins::where('id', $plugin->id)->update(['file_locations' => $newLocations]);
             }
         }
     }
 
     public static function tryRemovePlugin(string $path, int $server_id, array $files)
     {
-        # using $path, check $files for anything that might be in a plugins folder, then check DB using $server_id
-
         $installedPlugins = InstalledSLPlugins::where('server_id', $server_id)->get();
 
         foreach ($installedPlugins as $plugin) {
-            $newFiles = array_diff($plugin->files, array_map(function($file) use ($path) {
+            $newFiles = array_diff($plugin->file_locations, array_map(function($file) use ($path) {
                 return $path . '/' . $file;
             }, $files));
 
@@ -260,9 +274,9 @@ class SLPluginsController extends ClientApiController
             {
                 InstalledSLPlugins::where('id', $plugin->id)->delete();
             }
-            elseif (count($newFiles) < count($plugin->files))
+            elseif (count($newFiles) < count($plugin->file_locations))
             {
-                InstalledSLPlugins::where('id', $plugin->id)->update(['files' => $newFiles]);
+                InstalledSLPlugins::where('id', $plugin->id)->update(['file_locations' => $newFiles]);
             }
         }
     }

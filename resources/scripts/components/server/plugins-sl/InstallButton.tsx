@@ -318,13 +318,13 @@ const ModalContent = ({ plugin, visible, onDismissed, ...props }: RequiredModalP
                         </Select>
                     {
                         selectedRelease &&
-                        <div className={'space-y-2'}>
+                        <div className={'space-y-0.5'}>
                             {selectedRelease.assets.map((asset) => {
                         const isSelected = selectedAssets.some(a => a.name === asset.name);
                         const currentAsset = selectedAssets.find(a => a.name === asset.name);
 
                         return (
-                            <div key={asset.name} className="flex items-start gap-4 p-2 rounded-lg">
+                            <div key={asset.name} className="flex items-start gap-2 p-1 rounded-lg">
                                 <div className="flex-1 min-w-0">
                                     <Checkbox
                                         id={asset.name}
@@ -356,8 +356,9 @@ const ModalContent = ({ plugin, visible, onDismissed, ...props }: RequiredModalP
                                     </Checkbox>
                                 </div>
 
-                                <div className="flex gap-2 ml-auto flex-shrink-0 min-w-[200px]">
+                                <div className="flex gap-1 ml-auto flex-shrink-0 min-w-[200px] self-stretch">
                                     <Select
+                                        className='h-full'
                                         value={currentAsset?.downloadLocation || ''}
                                         onChange={e => {
                                             const newLocation = e.target.value; // capture value immediately
@@ -371,7 +372,7 @@ const ModalContent = ({ plugin, visible, onDismissed, ...props }: RequiredModalP
                                         }}
                                         disabled={!isSelected}
                                     >
-                                        <option value="" disabled>Select Location</option>
+                                        <option value="" disabled>{t('install.select-location')}</option>
                                         {getInstallationLocations(port, exiledInstalled, plugin.framework === 'labapi').map((info) => (
                                             <option value={info.location} key={info.location}>
                                                 {info.name}
@@ -381,6 +382,7 @@ const ModalContent = ({ plugin, visible, onDismissed, ...props }: RequiredModalP
 
                                     {getPossibleActions(asset.name).length > 1 && (
                                         <Select
+                                            className='h-full'
                                             value={currentAsset?.downloadAction ?? DownloadAction.None}
                                             onChange={e => {
                                                 const newAction = parseInt(e.target.value) as DownloadAction; // capture
@@ -396,8 +398,8 @@ const ModalContent = ({ plugin, visible, onDismissed, ...props }: RequiredModalP
                                         >
                                             {getPossibleActions(asset.name).map((action) => (
                                                 <option value={action} key={action}>
-                                                    {action === DownloadAction.None ? 'None' :
-                                                    action === DownloadAction.Extract ? 'Extract' : action}
+                                                    {action === DownloadAction.None ? t('install.actions.none') :
+                                                    action === DownloadAction.Extract ? t('install.actions.extract') : action}
                                                 </option>
                                             ))}
                                         </Select>
