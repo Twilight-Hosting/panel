@@ -260,12 +260,35 @@ class SLPluginsController extends ClientApiController
     {
         $installedPlugins = InstalledSLPlugins::where('server_id', $server_id)->get();
 
-        foreach ($installedPlugins as $plugin) {
-            $newLocations = $plugin->file_locations;
+        // Build the full source and destination paths
+        $sourcePath = $path . '/' . $from;
+        $destPath = $path . '/' . $to;
 
-            $key = array_search($path .'/' . $from, $newLocations);
-            if ($key !== false) {
-                $newLocations[$key] = $path . '/' . $to;
+        foreach ($installedPlugins as $plugin) {
+            $updated = false;
+            $newLocations = [];
+
+            foreach ($plugin->file_locations as $fileLocation) {
+                // Check if this file is exactly the renamed file
+                if ($fileLocation === $sourcePath) {
+                    $newLocations[] = $destPath;
+                    $updated = true;
+                }
+                // Check if this file is inside a renamed directory
+                elseif (strpos($fileLocation, $sourcePath) === 0) {
+                    // Replace the source directory path with the destination path
+                    $newLocation = $destPath . substr($fileLocation, strlen($sourcePath));
+                    $newLocations[] = $newLocation;
+                    $updated = true;
+                }
+                // No change needed for this file
+                else {
+                    $newLocations[] = $fileLocation;
+                }
+            }
+
+            // Only update if changes were made
+            if ($updated) {
                 InstalledSLPlugins::where('id', $plugin->id)->update(['file_locations' => $newLocations]);
             }
         }
@@ -274,20 +297,40 @@ class SLPluginsController extends ClientApiController
     public static function tryRemovePlugin(string $path, int $server_id, array $files)
     {
         $installedPlugins = InstalledSLPlugins::where('server_id', $server_id)->get();
+        $deletedPaths = array_map(function($file) use ($path) {
+            return $path . '/' . $file;
+        }, $files);
 
         foreach ($installedPlugins as $plugin) {
-            $newFiles = array_diff($plugin->file_locations, array_map(function($file) use ($path) {
-                return $path . '/' . $file;
-            }, $files));
+            // Filter out any plugin file locations that were deleted
+            $remainingFiles = array_filter($plugin->file_locations, function($pluginFile) use ($deletedPaths) {
+                // Check if this plugin file is exactly one of the deleted files
+                if (in_array($pluginFile, $deletedPaths)) {
+                    return false;
+                }
 
-            if (count($newFiles) === 0)
-            {
+                // Check if this plugin file is inside any deleted directory
+                foreach ($deletedPaths as $deletedPath) {
+                    // If the deleted path is a directory and the plugin file is inside it
+                    if (strpos($pluginFile, $deletedPath) === 0) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+
+            // Re-index the array to maintain sequential keys
+            $remainingFiles = array_values($remainingFiles);
+
+            if (count($remainingFiles) === 0) {
+                // No files left, delete the plugin record
                 InstalledSLPlugins::where('id', $plugin->id)->delete();
+            } elseif (count($remainingFiles) < count($plugin->file_locations)) {
+                // Some files were removed, update the record
+                InstalledSLPlugins::where('id', $plugin->id)->update(['file_locations' => $remainingFiles]);
             }
-            elseif (count($newFiles) < count($plugin->file_locations))
-            {
-                InstalledSLPlugins::where('id', $plugin->id)->update(['file_locations' => $newFiles]);
-            }
+            // If count is the same, no changes needed
         }
     }
 
@@ -405,6 +448,6 @@ class SLPluginsController extends ClientApiController
     private function hasEXILED(Server $server): bool
     {
         $this->daemonFileRepository->setServer($server);
-        return !empty($this->daemonFileRepository->getDirectory('/.config/EXILED'));
+        return $this->daemonFileRepository->directoryExists('/.config/EXILED');
     }
 }
