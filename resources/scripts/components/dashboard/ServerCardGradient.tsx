@@ -171,7 +171,7 @@ export default ({ server }: { server: Server }) => {
                         )}
                     </div>
                 </div>
-                <div className={'px-6 pt-4 pb-5 flex flex-row items-center gap-x-2'}>
+                <div className={'px-6 pt-4 pb-5 flex flex-row items-stretch gap-x-2'}>
                     <Link
                         to={`/server/${server.id}/console`}
                         className={
