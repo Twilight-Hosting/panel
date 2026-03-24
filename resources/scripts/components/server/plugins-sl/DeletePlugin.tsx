@@ -1,0 +1,85 @@
+import React, { useState } from 'react';
+import deleteFiles from '@/api/server/files/deleteFiles';
+import { ServerContext } from '@/state/server';
+import { Actions, useStoreActions } from 'easy-peasy';
+import { TrashIcon } from '@heroicons/react/outline';
+import { ApplicationStore } from '@/state';
+import Can from '@/components/elements/Can';
+import { Button } from '@/components/elements/button/index';
+import Spinner from '@/components/elements/Spinner';
+import Tooltip from '@/components/elements/tooltip/Tooltip';
+import FlashMessageRender from '@/components/FlashMessageRender';
+import { Dialog } from '@/components/elements/dialog';
+import tw from 'twin.macro';
+import { useTranslation } from 'react-i18next';
+import getDirectory from '@/api/server/plugins-sl/getDirectory';
+
+export default function DeletePlugin({ plugin_id, plugin_name, framework, file_names }: { plugin_id: number, plugin_name: string, framework: string, file_names: string[] }){
+    const { t } = useTranslation('arix/server/addons/plugins');
+    const [isOpen, setIsOpen] = useState(false);
+    const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
+    const removePlugin = ServerContext.useStoreActions((actions) => actions.slPlugins.removePlugin);
+    const { clearFlashes, addFlash } = useStoreActions((actions: Actions<ApplicationStore>) => actions.flashes);
+    const [loading, setLoading] = useState(false);
+
+const Delete = () => {
+    setLoading(true);
+    clearFlashes('plugins');
+
+    const deletePromises = file_names.map(file => {
+        const index = file.lastIndexOf('/');
+        const directory = file.substring(0, index);
+        const fileName = file.substring(index + 1);
+
+        return deleteFiles(uuid, directory, [fileName]);
+    });
+
+    Promise.all(deletePromises)
+        .then(() => {
+            removePlugin(plugin_id);
+            addFlash({
+                type: 'success',
+                key: 'plugins:delete',
+                message: t('delete.deleted-succesfully'),
+            });
+        })
+        .catch((error) => {
+            addFlash({
+                type: 'error',
+                key: 'plugins:delete',
+                message: error.response?.data?.error || 'Failed to delete files',
+            });
+        })
+        .finally(() => setLoading(false));
+    }
+
+    return (
+        <>
+        <FlashMessageRender byKey={'plugins:delete'} css={tw`mb-4`} />
+        <Dialog.Confirm
+            open={isOpen}
+            hideCloseIcon
+            onClose={() => setIsOpen(false)}
+            title={t('delete.delete-plugin')}
+            confirm={t('delete.continue')}
+            onConfirmed={Delete}
+        >
+            {t('delete.are-you-sure')} <code>{plugin_name}</code>?
+        </Dialog.Confirm>
+
+        <Can action={'file.delete'}>
+            <Tooltip content={`${t('delete.delete-plugin')}`} placement={'top'}>
+                <Button.Danger
+                    onClick={() => setIsOpen(true)} 
+                    disabled={loading} 
+                    className={'ml-auto'}
+                >
+                    {loading 
+                        ? <Spinner size={'small'} />
+                        : <TrashIcon className={'w-4'} /> }
+                </Button.Danger>
+            </Tooltip>
+        </Can>
+        </>
+    )
+}

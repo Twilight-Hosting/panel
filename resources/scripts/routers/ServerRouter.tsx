@@ -41,15 +41,15 @@ import { ip } from '@/lib/formatters';
 
         Read this before doing addon modifications
 
-        Arix Theme has already handled many panel 
-        modifications for you, so there's no need for 
+        Arix Theme has already handled many panel
+        modifications for you, so there's no need for
         any changes in the "ServerRouter.tsx" file.
 */
 
 export default () => {
     const match = useRouteMatch<{ id: string }>();
     const location = useLocation();
-    
+
     const { t } = useTranslation('arix/navigation');
 
     const rootAdmin = useStoreState((state) => state.user.data!.rootAdmin);
@@ -121,10 +121,10 @@ export default () => {
                                 <div className="flex items-center gap-x-2">
                                     <div className={`w-6 h-6 rounded opacity-50
                                         ${status === 'offline'
-                                        ? 'bg-danger-200' 
-                                        : status === 'running' 
+                                        ? 'bg-danger-200'
+                                        : status === 'running'
                                         ? 'bg-success-200'
-                                        : status === 'starting' 
+                                        : status === 'starting'
                                         ? 'bg-yellow-500'
                                         : 'bg-red-500'
                                         }
@@ -164,7 +164,7 @@ export default () => {
                             <InstallListener />
                             <TransferListener />
                             <WebsocketHandler />
-                            {inConflictState && (!rootAdmin || (rootAdmin && !location.pathname.endsWith(`/server/${id}`))) ? (
+                            {inConflictState && (!rootAdmin || (rootAdmin && !location.pathname.endsWith(`/server/${id}/console`))) ? (
                                 <ConflictStateRenderer />
                             ) : (
                                 <ErrorBoundary>

@@ -2,6 +2,7 @@
 
 namespace Pterodactyl\Http\Controllers\Api\Remote\Servers;
 
+use Exception;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
 use Pterodactyl\Models\Allocation;
@@ -13,6 +14,8 @@ use Pterodactyl\Repositories\Eloquent\ServerRepository;
 use Pterodactyl\Repositories\Wings\DaemonServerRepository;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException;
+
+use function Laravel\Prompts\error;
 
 class ServerTransferController extends Controller
 {
@@ -57,28 +60,31 @@ class ServerTransferController extends Controller
 
         if ($server->egg_id == 16)
         {
-            $oldAlias = "";
-            $newAlias = "";
-            $oldPort = 0;
-            $newPort = 0;
+            try {
+                $oldIp = "";
+                $newIp = "";
+                $oldPort = 0;
+                $newPort = 0;
 
-            foreach ($server->allocations as $allocation) {
-                $oldAlias = $allocation->ip_alias;
-                $oldPort = $allocation->port;
-                break;
+                foreach ($server->allocations as $allocation) {
+                    $oldIp = $allocation->ip;
+                    $oldPort = $allocation->port;
+                    break;
+                }
+
+                foreach ($transfer->newNode->allocations as $allocation) {
+                    $newIp = $allocation->ip;
+                    $newPort = $allocation->port;
+                    break;
+                }
+
+                $this->sendRequest($oldIp, $oldPort, $newIp, $newPort);
+            } catch (Exception $ex) {
+                error($ex->getMessage());
+                error($ex->getTraceAsString());
             }
-
-            foreach ($transfer->newNode->allocations as $allocation) {
-                $newAlias = $allocation->ip_alias;
-                $newPort = $allocation->port;
-                break;
-            }
-
-            $oldIp = $this->getIp($oldAlias);
-            $newIp = $this->getIp($newAlias);
-
-            $this->sendRequest($oldIp, $oldPort, $newIp, $newPort);
         }
+
         /** @var \Pterodactyl\Models\Server $server */
         $server = $this->connection->transaction(function () use ($server, $transfer) {
             $allocations = array_merge([$transfer->old_allocation], $transfer->old_additional_allocations);
@@ -129,17 +135,6 @@ class ServerTransferController extends Controller
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }
 
-    private function getIp(string $newAlias): string
-    {
-        $aliasMap = array();
-
-        if (array_key_exists($newAlias, $aliasMap)) {
-            return $aliasMap[$newAlias];
-        }
-
-        return "";
-    }
-
     private function sendRequest(string $oldIp, int $oldPort, string $newIp, int $newPort): void
     {
         $url = 'https://api.scpslgame.com/provider/manageserver.php';
@@ -158,10 +153,15 @@ class ServerTransferController extends Controller
         curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         $result = curl_exec($curl);
+
+        if ($result === false) {
+            throw new Exception('Curl error: ' . curl_error($curl));
+        }
+
         $file = fopen("/var/www/pterodactyl/storage/logs/transfer.log", "a");
-        fwrite($file, date("Y-m-d h:m:s", time()) . "\n");
+        fwrite($file, date("Y-m-d h:i:s", time()) . "\n");
         fwrite($file, "$oldIp:$oldPort -> $newIp:$newPort\n");
-        fwrite($result);
+        fwrite($file, $result . "\n");
         fclose($file);
     }
 }

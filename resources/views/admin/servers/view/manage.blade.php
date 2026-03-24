@@ -134,6 +134,26 @@
                 </div>
             </div>
         @endif
+
+        @if($server->egg_id == 16)
+            <div class="col-sm-4">
+                <div class="box box-danger">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Reset Verification Key</h3>
+                    </div>
+                    <div class="box-body">
+                        <p>Resets this servers verification key. Use this if a server host accidentally overrides the key generated when the server is created. <strong>Warning!</strong> only use this if you know what you are doing!</p>
+                    </div>
+
+                    <div class="box-footer">
+                        <form action="{{ route('admin.servers.view.manage.resetverkey', $server->id) }}" method="POST">
+                            {!! csrf_field() !!}
+                            <button type="submit" class="btn btn-danger">Reset Verification Key</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        @endif
     </div>
 
     <div class="modal fade" id="transferServerModal" tabindex="-1" role="dialog">

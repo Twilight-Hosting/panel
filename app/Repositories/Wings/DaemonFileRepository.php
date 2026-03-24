@@ -147,6 +147,21 @@ class DaemonFileRepository extends DaemonRepository
     }
 
     /**
+     * Returns whether a directory exists.
+     * 
+     * @throws \Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException
+     */
+    public function directoryExists(string $path): bool
+    {
+        try {
+            $this->getDirectory($path);
+            return true;
+        } catch (DaemonConnectionException) {
+            return false;
+        }
+    }
+
+    /**
      * Creates a new directory for the server in the given $path.
      *
      * @throws \Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException

@@ -7,6 +7,8 @@ return[
     'browse-plugins' => 'Browse Plugins',
     'no-plugins-found' => 'No plugins were found',
     'platform' => 'Platform',
+    'framework' => 'Framework',
+    'category' => 'Category',
     'reset-filters' => 'Reset Filters',
     'version' => 'Version',
     'loader' => 'Loader',
@@ -22,7 +24,15 @@ return[
         'installed-successfully' => 'Plugin Installed successfully',
         'select-a-version' => 'Select a version',
         'select-version' => 'Select Version',
-        'install-plugin' => 'Install plugin'
+        'install-plugin' => 'Install plugin',
+        'plugin-details' => 'Plugin Details',
+
+        'select-location' => 'Select Location',
+
+        'actions' => [
+            'none' => 'None',
+            'extract' => 'Extract',
+        ],
     ],
 
     'delete' => [

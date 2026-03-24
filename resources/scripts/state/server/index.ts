@@ -8,6 +8,7 @@ import schedules, { ServerScheduleStore } from '@/state/server/schedules';
 import databases, { ServerDatabaseStore } from '@/state/server/databases';
 import subdomains, { ServerSubdomainsStore } from '@/state/server/subdomains';
 import plugins, { ServerPluginsStore } from '@/state/server/plugins';
+import slPlugins, { SLServerPluginsStore } from '@/state/server/plugins-sl';
 import isEqual from 'react-fast-compare';
 
 export type ServerStatus = 'offline' | 'starting' | 'stopping' | 'running' | null;
@@ -84,6 +85,7 @@ export interface ServerStore {
     databases: ServerDatabaseStore;
     subdomains: ServerSubdomainsStore;
     plugins: ServerPluginsStore;
+    slPlugins: SLServerPluginsStore
     files: ServerFileStore;
     schedules: ServerScheduleStore;
     socket: SocketStore;
@@ -99,6 +101,7 @@ export const ServerContext = createContextStore<ServerStore>(
         databases,
         subdomains,
         plugins,
+        slPlugins,
         files,
         subusers,
         schedules,
