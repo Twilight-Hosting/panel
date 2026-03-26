@@ -201,17 +201,12 @@ class SLPluginsController extends ClientApiController
                 foreach ($file_locations as $index => $file) {
                     $action = DownloadAction::tryFrom((int)$actions[$index]);
 
-                    logger('Processing action: ' . $action->value);
-
                     if ($action == DownloadAction::Extract) {
-                        logger('attempting to decompress');
 
                         $this->daemonFileRepository->setserver($server);
 
                         $dir = dirname($file);
                         $filename = basename($file);
-
-                        logger('decompressing with directory: [' . $dir . '] and filename [' . $filename . ']');
 
                         // for some reason the pull file function in DaemonFileRepository can return a value before you can even try to decompress the file. Idk why, but now this must exist
                         if (!$decompressed)
@@ -220,7 +215,11 @@ class SLPluginsController extends ClientApiController
                             $decompressed = true;
                         }
 
-                        $this->daemonFileRepository->decompressFile($dir, $filename);
+                        $extractedFiles = json_decode($this->daemonFileRepository->decompressFile($dir, $filename)->getBody()->getContents(), true);
+                        foreach ($extractedFiles as $extracted)
+                        {
+                            
+                        }
                     }
                 }
             } catch (\Exception $ex) {
