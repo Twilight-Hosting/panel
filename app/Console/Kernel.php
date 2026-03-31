@@ -44,6 +44,8 @@ class Kernel extends ConsoleKernel
             $schedule->command(PruneCommand::class, ['--model' => [ActivityLog::class]])->daily();
         }
 
+        \Pterodactyl\BlueprintFramework\GetExtensionSchedules::schedules($schedule);
+
         if (config('pterodactyl.telemetry.enabled')) {
             $this->registerTelemetry($schedule);
         }

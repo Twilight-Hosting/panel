@@ -27,8 +27,16 @@ class GetUserPermissionsService
         }
 
         /** @var \Pterodactyl\Models\Subuser|null $subuserPermissions */
-        $subuserPermissions = $server->subusers()->where('user_id', $user->id)->first();
+        $subuserPermissions = $server->subusers()->where('user_id', $user->id)->first()?->permissions ?? [];
 
-        return $subuserPermissions ? $subuserPermissions->permissions : [];
+        $rolePermissions = [];
+
+        if ($role = $user->role()) {
+            if (!in_array($server->id, $role->excluded_servers)) {
+                $rolePermissions = $role->permissions ?? [];
+            }
+        }
+
+        return array_values(array_unique(array_merge($subuserPermissions, $rolePermissions)));
     }
 }

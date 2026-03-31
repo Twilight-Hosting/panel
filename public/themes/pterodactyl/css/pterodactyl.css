@@ -544,6 +544,16 @@ body {
     border-top: 1px solid #1f2933;
 }
 
+.skin-blue .sidebar-menu>li>a{
+    display: flex;
+    align-items: center;
+    column-gap:5px;
+}
+
+.skin-blue .sidebar-menu>li>a>svg{
+    width: 20px;
+}
+
 .skin-blue .sidebar-menu>li.active>a {
     border-left-color: #099aa5;
 }
@@ -852,4 +862,34 @@ pre {
 
 .equal-height .box-body {
     flex: 1;
+}
+
+.input-w-reset{
+    display:flex;
+}
+.input-w-reset > input{
+    border-bottom-right-radius: 0rem;
+    border-top-right-radius: 0rem;
+}
+.input-w-reset > button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius:none;
+    border-bottom-right-radius: .25rem;
+    border-top-right-radius: .25rem;
+    border:1px solid #606d7b;
+    border-left:none;
+    background-color:#515f6cbb;
+    overflow:hidden
+}
+.input-w-reset > button > svg{
+    width: 20px;
+    transition: .3s;
+}
+.input-w-reset > button:hover > svg{
+    transform:rotate(-180deg);
+}
+.input-w-reset > button:focus > svg{
+    transform: rotate(-360deg);
 }

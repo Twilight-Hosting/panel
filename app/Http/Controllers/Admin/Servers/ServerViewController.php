@@ -14,6 +14,7 @@ use Pterodactyl\Repositories\Eloquent\NodeRepository;
 use Pterodactyl\Repositories\Eloquent\MountRepository;
 use Pterodactyl\Traits\Controllers\JavascriptInjection;
 use Pterodactyl\Repositories\Eloquent\LocationRepository;
+use Pterodactyl\Repositories\Wings\DaemonServerRepository;
 use Pterodactyl\Repositories\Eloquent\DatabaseHostRepository;
 
 class ServerViewController extends Controller
@@ -30,6 +31,7 @@ class ServerViewController extends Controller
         private NestRepository $nestRepository,
         private NodeRepository $nodeRepository,
         private EnvironmentService $environmentService,
+        private DaemonServerRepository $daemonServerRepository
     ) {
     }
 
@@ -38,7 +40,32 @@ class ServerViewController extends Controller
      */
     public function index(Request $request, Server $server): View
     {
+        $server->loadMissing(['egg.nest', 'location', 'node', 'user']);
+
+        try {
+            $details = $this->daemonServerRepository->setServer($server)->getDetails();
+            $status = $details['state'] ?? 'offline';
+        } catch (\Exception $exception) {
+            $status = 'offline';
+        }
+
         return view('admin.servers.view.index', compact('server'));
+        /*
+         * Old method stuff: (check if 'status' is required in return)
+        $server->loadMissing(['egg.nest', 'location', 'node', 'user']);
+
+        try {
+            $details = $this->daemonServerRepository->setServer($server)->getDetails();
+            $status = $details['state'] ?? 'offline';
+        } catch (\Exception $exception) {
+            $status = 'offline';
+        }
+
+        return $this->view->make('admin.servers.view.index', [
+            'server' => $server,
+            'status' => $status,
+        ]);
+        */
     }
 
     /**
@@ -114,7 +141,7 @@ class ServerViewController extends Controller
      * Returns the base server management page, or an exception if the server
      * is in a state that cannot be recovered from.
      *
-     * @throws DisplayException
+     * @throws \Pterodactyl\Exceptions\DisplayException
      */
     public function manage(Request $request, Server $server): View
     {

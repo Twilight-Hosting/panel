@@ -6,6 +6,9 @@ use Illuminate\Auth\Middleware\Authorize;
 use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Http\Middleware\TrustProxies;
+use Pterodactyl\Http\Middleware\CheckBan;
+use Pterodactyl\Http\Middleware\CheckLoginBan;
+use Pterodactyl\Http\Middleware\TrackLoginAttempts;
 use Pterodactyl\Http\Middleware\TrimStrings;
 use Illuminate\Session\Middleware\StartSession;
 use Pterodactyl\Http\Middleware\EncryptCookies;
@@ -34,6 +37,8 @@ use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
 use Pterodactyl\Http\Middleware\Api\Client\SubstituteClientBindings;
 use Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance;
 use Pterodactyl\Http\Middleware\Api\Application\AuthenticateApplicationUser;
+use Pterodactyl\Http\Middleware\TrackLastActivity;
+
 
 class Kernel extends HttpKernel
 {
@@ -48,6 +53,7 @@ class Kernel extends HttpKernel
         TrimStrings::class,
         ConvertEmptyStringsToNull::class,
         SetSecurityHeaders::class,
+        CheckBan::class,
     ];
 
     protected $middlewarePriority = [
@@ -64,8 +70,12 @@ class Kernel extends HttpKernel
             StartSession::class,
             ShareErrorsFromSession::class,
             VerifyCsrfToken::class,
+            TrackLastActivity::class,
             SubstituteBindings::class,
             LanguageMiddleware::class,
+            CheckBan::class,
+            CheckLoginBan::class,
+            TrackLoginAttempts::class
         ],
         'api' => [
             EnsureStatefulRequests::class,

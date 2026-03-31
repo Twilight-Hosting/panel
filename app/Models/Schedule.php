@@ -27,7 +27,7 @@ use Pterodactyl\Contracts\Extensions\HashidsInterface;
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  * @property string $hashid
- * @property Server $server
+ * @property \Pterodactyl\Models\Server $server
  * @property \Illuminate\Database\Eloquent\Collection<int, \Pterodactyl\Models\Task> $tasks
  */
 class Schedule extends Model
@@ -106,6 +106,9 @@ class Schedule extends Model
         'next_run_at' => 'nullable|date',
     ];
 
+    /**
+     * {@inheritDoc}
+     */
     public function getRouteKeyName(): string
     {
         return $this->getKeyName();
@@ -120,7 +123,9 @@ class Schedule extends Model
     {
         $formatted = sprintf('%s %s %s %s %s', $this->cron_minute, $this->cron_hour, $this->cron_day_of_month, $this->cron_month, $this->cron_day_of_week);
 
-        return CarbonImmutable::instance((new CronExpression($formatted))->getNextRunDate());
+        return CarbonImmutable::createFromTimestamp(
+            (new CronExpression($formatted))->getNextRunDate()->getTimestamp()
+        );
     }
 
     /**

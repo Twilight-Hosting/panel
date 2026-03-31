@@ -11,7 +11,6 @@ use Pterodactyl\Contracts\Models\Identifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Pterodactyl\Models\Traits\HasRealtimeIdentifier;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
@@ -37,7 +36,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property string $daemonBase
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
- * @property Location $location
+ * @property \Pterodactyl\Models\Location $location
  * @property \Pterodactyl\Models\Mount[]|\Illuminate\Database\Eloquent\Collection $mounts
  * @property \Pterodactyl\Models\Server[]|\Illuminate\Database\Eloquent\Collection $servers
  * @property \Pterodactyl\Models\Allocation[]|\Illuminate\Database\Eloquent\Collection $allocations
@@ -45,8 +44,6 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 #[Attributes\Identifiable('node')]
 class Node extends Model implements Identifiable
 {
-    /** @use HasFactory<\Database\Factories\NodeFactory> */
-    use HasFactory;
     use Notifiable;
     use HasRealtimeIdentifier;
 
@@ -87,7 +84,7 @@ class Node extends Model implements Identifiable
      * Fields that are mass assignable.
      */
     protected $fillable = [
-        'public', 'name', 'location_id',
+        'public', 'name', 'alert', 'daemon_text', 'container_text', 'location_id',
         'description', 'fqdn', 'scheme', 'behind_proxy',
         'memory', 'memory_overallocate', 'disk',
         'disk_overallocate', 'upload_size', 'daemonBase',
@@ -97,6 +94,9 @@ class Node extends Model implements Identifiable
 
     public static array $validationRules = [
         'name' => 'required|regex:/^([\w .-]{1,100})$/',
+        'alert' => 'nullable|string|max:200',
+        'daemon_text' => 'required|string|max:100',
+        'container_text' => 'required|string|max:100',
         'description' => 'string|nullable',
         'location_id' => 'required|exists:locations,id',
         'public' => 'boolean',
@@ -118,6 +118,7 @@ class Node extends Model implements Identifiable
      * Default values for specific columns that are generally not changed on base installs.
      */
     protected $attributes = [
+        'alert' => null,
         'public' => true,
         'behind_proxy' => false,
         'memory_overallocate' => 0,

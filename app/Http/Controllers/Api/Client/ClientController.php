@@ -49,9 +49,15 @@ class ClientController extends ClientApiController
             // If they aren't an admin but want all the admin servers don't fail the request, just
             // make it a query that will never return any results back.
             if (!$user->root_admin) {
-                $builder->whereRaw('1 = 2');
+                if (($role = $user->role()) && $user->role()->hasPermission("websocket.connect")) {
+                    $builder    = $type === 'admin-all'
+                        ? $builder
+                        : $builder->whereNotIn('servers.id', array_merge($user->accessibleServers()->pluck('id')->all(), $role->excluded_servers));
+                } else {
+                    $builder->whereRaw('1 = 2');
+                }
             } else {
-                $builder = $type === 'admin-all'
+                $builder    = $type === 'admin-all'
                     ? $builder
                     : $builder->whereNotIn('servers.id', $user->accessibleServers()->pluck('id')->all());
             }

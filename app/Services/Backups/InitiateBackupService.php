@@ -70,8 +70,8 @@ class InitiateBackupService
      * Initiates the backup process for a server on Wings.
      *
      * @throws \Throwable
-     * @throws TooManyBackupsException
-     * @throws TooManyRequestsHttpException
+     * @throws \Pterodactyl\Exceptions\Service\Backup\TooManyBackupsException
+     * @throws \Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException
      */
     public function handle(Server $server, ?string $name = null, bool $override = false): Backup
     {
@@ -98,6 +98,7 @@ class InitiateBackupService
             // Get the oldest backup the server has that is not "locked" (indicating a backup that should
             // never be automatically purged). If we find a backup we will delete it and then continue with
             // this process. If no backup is found that can be used an exception is thrown.
+            /** @var \Pterodactyl\Models\Backup $oldest */
             $oldest = $successful->where('is_locked', false)->orderBy('created_at')->first();
             if (!$oldest) {
                 throw new TooManyBackupsException($server->backup_limit);
@@ -107,7 +108,7 @@ class InitiateBackupService
         }
 
         return $this->connection->transaction(function () use ($server, $name) {
-            /** @var Backup $backup */
+            /** @var \Pterodactyl\Models\Backup $backup */
             $backup = $this->repository->create([
                 'server_id' => $server->id,
                 'uuid' => Uuid::uuid4()->toString(),

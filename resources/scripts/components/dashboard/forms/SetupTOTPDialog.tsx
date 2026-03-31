@@ -12,6 +12,7 @@ import Tooltip from '@/components/elements/tooltip/Tooltip';
 import enableAccountTwoFactor from '@/api/account/enableAccountTwoFactor';
 import FlashMessageRender from '@/components/FlashMessageRender';
 import { Actions, useStoreActions } from 'easy-peasy';
+import { useTranslation } from 'react-i18next';
 import { ApplicationStore } from '@/state';
 import asDialog from '@/hoc/asDialog';
 
@@ -20,6 +21,7 @@ interface Props {
 }
 
 const ConfigureTwoFactorForm = ({ onTokens }: Props) => {
+    const { t } = useTranslation('arix/account');
     const [submitting, setSubmitting] = useState(false);
     const [value, setValue] = useState('');
     const [password, setPassword] = useState('');
@@ -74,8 +76,7 @@ const ConfigureTwoFactorForm = ({ onTokens }: Props) => {
                 </p>
             </CopyOnClick>
             <p id={'totp-code-description'} className={'mt-6'}>
-                Scan the QR code above using the two-step authentication app of your choice. Then, enter the 6-digit
-                code generated into the field below.
+                {t('twofactor.setup-dialog.description')}
             </p>
             <Input.Text
                 aria-labelledby={'totp-code-description'}
@@ -90,7 +91,7 @@ const ConfigureTwoFactorForm = ({ onTokens }: Props) => {
                 pattern={'\\d{6}'}
             />
             <label htmlFor={'totp-password'} className={'block mt-3'}>
-                Account Password
+                {t('twofactor.setup-dialog.account-password')}
             </label>
             <Input.Text
                 variant={Input.Text.Variants.Loose}
@@ -100,13 +101,15 @@ const ConfigureTwoFactorForm = ({ onTokens }: Props) => {
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.currentTarget.value)}
             />
             <Dialog.Footer>
-                <Button.Text onClick={close}>Cancel</Button.Text>
+                <Button.Text onClick={close}>
+                    {t('twofactor.setup-dialog.cancel')}
+                </Button.Text>
                 <Tooltip
                     disabled={password.length > 0 && value.length === 6}
                     content={
                         !token
-                            ? 'Waiting for QR code to load...'
-                            : 'You must enter the 6-digit code and your password to continue.'
+                            ? `${t('twofactor.setup-dialog.qrcode-loading')}`
+                            : `${t('twofactor.setup-dialog.enter-6digit-password')}`
                     }
                     delay={100}
                 >
@@ -115,7 +118,7 @@ const ConfigureTwoFactorForm = ({ onTokens }: Props) => {
                         type={'submit'}
                         form={'enable-totp-form'}
                     >
-                        Enable
+                        {t('twofactor.setup-dialog.enable')}
                     </Button>
                 </Tooltip>
             </Dialog.Footer>

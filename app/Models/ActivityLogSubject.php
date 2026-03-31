@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $activity_log_id
  * @property int $subject_id
  * @property string $subject_type
- * @property ActivityLog|null $activityLog
+ * @property \Pterodactyl\Models\ActivityLog|null $activityLog
  * @property \Illuminate\Database\Eloquent\Model $subject
  *
  * @method static \Illuminate\Database\Eloquent\Builder|ActivityLogSubject newModelQuery()

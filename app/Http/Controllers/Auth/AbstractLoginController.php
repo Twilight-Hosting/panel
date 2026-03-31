@@ -51,7 +51,7 @@ abstract class AbstractLoginController extends Controller
      *
      * @return never-return
      *
-     * @throws DisplayException
+     * @throws \Pterodactyl\Exceptions\DisplayException
      */
     protected function sendFailedLoginResponse(Request $request, ?Authenticatable $user = null, ?string $message = null)
     {

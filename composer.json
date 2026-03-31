@@ -25,6 +25,7 @@
         "ext-posix": "*",
         "ext-zip": "*",
         "aws/aws-sdk-php": "^3.369",
+        "doctrine/dbal": "~3.8.6",
         "guzzlehttp/guzzle": "^7.9.2",
         "hashids/hashids": "^5.0.2",
         "laracasts/utilities": "~3.2.3",
@@ -50,13 +51,15 @@
         "symfony/mailgun-mailer": "^7.4.0",
         "symfony/postmark-mailer": "^7.4.0",
         "symfony/yaml": "^7.4.0",
-        "webmozart/assert": "^1.11.0"
+        "webmozart/assert": "^1.11.0",
+        "wemx/sso-pterodactyl": "^1.2"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.6",
         "fakerphp/faker": "^1.24",
         "friendsofphp/php-cs-fixer": "~3.64.0",
         "itsgoingd/clockwork": "^5.3",
+        "laravel/sail": "~1.31.0",
         "larastan/larastan": "^3.8",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.5",
@@ -91,9 +94,7 @@
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "post-create-project-cmd": [
-            "@php artisan key:generate --ansi",
-            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
-            "@php artisan migrate --graceful --ansi"
+            "@php artisan key:generate --ansi"
         ]
     },
     "config": {
@@ -101,7 +102,7 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "platform": {
-            "php": "8.2.0"
+            "php": "8.2.23"
         }
     },
     "minimum-stability": "stable",
