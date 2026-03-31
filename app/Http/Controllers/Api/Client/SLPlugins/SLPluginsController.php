@@ -19,6 +19,7 @@ enum DownloadAction: int
     case Extract = 1;
 }
 
+// hi
 class SLPluginsController extends ClientApiController
 {
     private const CACHE_FILE = 'slplugins_cache.json';
@@ -53,7 +54,7 @@ class SLPluginsController extends ClientApiController
             // THEN make 'framework' call that method or another variant for EXILED based on what it is.
             if ($queryParameters['framework'] === 'labapi') {
                 $plugins = $this->getCache();
-                
+
                 if (!isset($plugins['data']['data']))
                 {
                     return response()->json([
@@ -218,7 +219,7 @@ class SLPluginsController extends ClientApiController
                         $extractedFiles = json_decode($this->daemonFileRepository->decompressFile($dir, $filename)->getBody()->getContents(), true);
                         foreach ($extractedFiles as $extracted)
                         {
-                            
+
                         }
                     }
                 }
@@ -230,7 +231,7 @@ class SLPluginsController extends ClientApiController
             // store the plugin
             $installedPlugin = InstalledSLPlugins::create([
                 'plugin_framework' => $framework,
-                'plugin_version' => $request->plugin_version, 
+                'plugin_version' => $request->plugin_version,
                 'plugin_id' => $plugin_id,
                 'server_id' => $server->id,
                 'plugin_name' => $name,
@@ -397,7 +398,7 @@ class SLPluginsController extends ClientApiController
         }
 
         $data = json_decode($response, true);
-        
+
         if (json_last_error() !== JSON_ERROR_NONE) {
             return [
                 'error' => 'Failed to parse response from plugins API',
@@ -411,7 +412,7 @@ class SLPluginsController extends ClientApiController
         }
 
         $this->saveToCache($data);
-        
+
         return $data;
     }
 
@@ -421,7 +422,7 @@ class SLPluginsController extends ClientApiController
             if ($jsonData === false) {
                 return false;
             }
-            
+
             $result = file_put_contents($this->getCacheFilePath(), $jsonData, LOCK_EX);
             return $result !== false;
         } catch (\Exception $e) {
