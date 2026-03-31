@@ -2,7 +2,6 @@
 
 namespace Pterodactyl\Http\Controllers\Api\Remote\Servers;
 
-use Exception;
 use Illuminate\Http\Request;
 use Pterodactyl\Models\Node;
 use Webmozart\Assert\Assert;
@@ -18,8 +17,6 @@ use Pterodactyl\Repositories\Eloquent\ServerRepository;
 use Pterodactyl\Repositories\Wings\DaemonServerRepository;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException;
-
-use function Laravel\Prompts\error;
 
 class ServerTransferController extends Controller
 {
@@ -80,33 +77,6 @@ class ServerTransferController extends Controller
             throw new HttpForbiddenException('Requesting node does not have permission to access this server.');
         }
 
-        if ($server->egg_id == 16)
-        {
-            try {
-                $oldIp = "";
-                $newIp = "";
-                $oldPort = 0;
-                $newPort = 0;
-
-                foreach ($server->allocations as $allocation) {
-                    $oldIp = $allocation->ip;
-                    $oldPort = $allocation->port;
-                    break;
-                }
-
-                foreach ($transfer->newNode->allocations as $allocation) {
-                    $newIp = $allocation->ip;
-                    $newPort = $allocation->port;
-                    break;
-                }
-
-                $this->sendRequest($oldIp, $oldPort, $newIp, $newPort);
-            } catch (Exception $ex) {
-                error($ex->getMessage());
-                error($ex->getTraceAsString());
-            }
-        }
-
         /** @var \Pterodactyl\Models\Server $server */
         $server = $this->connection->transaction(function () use ($server, $transfer) {
             $allocations = array_merge([$transfer->old_allocation], $transfer->old_additional_allocations);
@@ -155,35 +125,5 @@ class ServerTransferController extends Controller
         });
 
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
-    }
-
-    private function sendRequest(string $oldIp, int $oldPort, string $newIp, int $newPort): void
-    {
-        $url = 'https://api.scpslgame.com/provider/manageserver.php';
-        $data = array(
-            'user' => config('secretLaboratory.vhp_user_id'),
-            'token' => config('secretLaboratory.vhp_key'),
-            'ip' => $oldIp,
-            'port' => $oldPort,
-            'action' => 'reassign',
-            'newip' => $newIp,
-            'newport' => $newPort,
-        );
-
-        $curl = curl_init($url);
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        $result = curl_exec($curl);
-
-        if ($result === false) {
-            throw new Exception('Curl error: ' . curl_error($curl));
-        }
-
-        $file = fopen("/var/www/pterodactyl/storage/logs/transfer.log", "a");
-        fwrite($file, date("Y-m-d h:i:s", time()) . "\n");
-        fwrite($file, "$oldIp:$oldPort -> $newIp:$newPort\n");
-        fwrite($file, $result . "\n");
-        fclose($file);
     }
 }

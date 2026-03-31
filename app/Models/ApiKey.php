@@ -7,6 +7,7 @@ use Webmozart\Assert\Assert;
 use Pterodactyl\Services\Acl\Api\AdminAcl;
 use Laravel\Sanctum\Contracts\HasAbilities;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Pterodactyl\Models\ApiKey.
@@ -31,8 +32,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $r_eggs
  * @property int $r_database_hosts
  * @property int $r_server_databases
- * @property \Pterodactyl\Models\User $tokenable
- * @property \Pterodactyl\Models\User $user
+ * @property User $tokenable
+ * @property User $user
  *
  * @method static \Database\Factories\ApiKeyFactory factory(...$parameters)
  * @method static \Illuminate\Database\Eloquent\Builder|ApiKey newModelQuery()
@@ -62,6 +63,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class ApiKey extends Model implements HasAbilities
 {
+    /** @use HasFactory<\Database\Factories\ApiKeyFactory> */
+    use HasFactory;
+
     /**
      * The resource name for this model when it is transformed into an
      * API representation using fractal.

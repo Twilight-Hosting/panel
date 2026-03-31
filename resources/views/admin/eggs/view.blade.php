@@ -67,11 +67,6 @@
                                 <p class="text-muted small">A simple, human-readable name to use as an identifier for this Egg.</p>
                             </div>
                             <div class="form-group">
-                                <label for="pImage" class="control-label">Egg image <b style="background-color:#17078D;font-size:1rem;padding:2px 7px;border-radius:100px;font-weight:600;">ARIX</b></label>
-                                <input type="text" id="pImage" name="image" value="{{ $egg->image }}" class="form-control" />
-                                <p class="text-muted small">This is the image url of this specific egg which is shown on the theme.</p>
-                            </div>
-                            <div class="form-group">
                                 <label for="pUuid" class="control-label">UUID</label>
                                 <input type="text" id="pUuid" readonly value="{{ $egg->uuid }}" class="form-control" />
                                 <p class="text-muted small">This is the globally unique identifier for this Egg which the Daemon uses as an identifier.</p>
@@ -118,6 +113,17 @@
                                 <label for="pStartup" class="control-label">Startup Command <span class="field-required"></span></label>
                                 <textarea id="pStartup" name="startup" class="form-control" rows="8">{{ $egg->startup }}</textarea>
                                 <p class="text-muted small">The default startup command that should be used for new servers using this Egg.</p>
+                            </div>
+                            <div class="form-group">
+                                <label for="pConfigFeatures" class="control-label">Features</label>
+                                <div>
+                                    <select class="form-control" name="features[]" id="pConfigFeatures" multiple>
+                                        @foreach(($egg->features ?? []) as $feature)
+                                            <option value="{{ $feature }}" selected>{{ $feature }}</option>
+                                        @endforeach
+                                    </select>
+                                    <p class="text-muted small">Additional features belonging to the egg. Useful for configuring additional panel modifications.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -206,6 +212,11 @@
 
             $(this).val(prepend + '    ' + append);
         }
+    });
+    $('#pConfigFeatures').select2({
+        tags: true,
+        selectOnClose: false,
+        tokenSeparators: [',', ' '],
     });
     </script>
 @endsection

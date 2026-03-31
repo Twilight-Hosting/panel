@@ -19,8 +19,7 @@
 }
 
 .terminal {
-    @apply flex flex-col w-full h-full py-3 md:px-3 px-6;
-    background-color: var(--gray700);
+    @apply flex flex-col w-full;
 
     & .overflows_container {
         @apply -ml-4 sm:ml-0;
@@ -32,7 +31,7 @@
     }
 
     & > .container {
-        @apply rounded-t p-1 sm:p-2 min-h-[16rem] flex-1 font-mono text-sm;
+        @apply rounded-t p-1 sm:p-2 bg-black min-h-[16rem] flex-1 font-mono text-sm;
 
         & #terminal {
             @apply h-full;
@@ -52,12 +51,13 @@
     }
 
     & .command_input {
-        @apply relative bg-gray-600 px-2 text-gray-100 pl-10 pr-4 py-3 w-full text-sm rounded-component !border-gray-500;
+        @apply relative bg-gray-900 px-2 text-gray-100 pl-10 pr-4 py-2 w-full font-mono text-sm sm:rounded-b;
         @apply focus:ring-0 outline-none focus-visible:outline-none;
-        border: var(--borderInput);
+        @apply border-0 border-b-2 border-transparent transition-colors duration-100;
+        @apply active:border-cyan-500 focus:border-cyan-500;
     }
 }
 
 .chart_container {
-    @apply bg-gray-700 rounded-box pt-2 border-b-4 border-gray-700 relative;
+    @apply bg-gray-600 rounded shadow-lg pt-2 border-b-4 border-gray-700 relative;
 }

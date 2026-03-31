@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import MessageBox from '@/components/MessageBox';
-import Portal from '@/components/elements/Portal';
-import { useStoreState, useStoreActions } from 'easy-peasy';
-import tw, { css } from 'twin.macro';
+import { useStoreState } from 'easy-peasy';
+import tw from 'twin.macro';
 
 type Props = Readonly<{
     byKey?: string;
@@ -14,27 +13,14 @@ const FlashMessageRender = ({ byKey, className }: Props) => {
         state.flashes.items.filter((flash) => (byKey ? flash.key === byKey : true))
     );
 
-    const clearFlashes = useStoreActions((actions) => actions.flashes.clearFlashes);
-
-    useEffect(() => {
-        if (flashes.length > 0) {
-            const timeoutId = setTimeout(() => {
-                clearFlashes(byKey);
-            }, 6000);
-            return () => clearTimeout(timeoutId);
-        }
-        return () => {};
-    }, [flashes, clearFlashes, byKey]);
-
     return flashes.length ? (
-        <div>
+        <div className={className}>
             {flashes.map((flash, index) => (
                 <React.Fragment key={flash.id || flash.type + flash.message}>
-                    <Portal>
-                        <MessageBox type={flash.type} title={flash.title}>
-                            {flash.message}
-                        </MessageBox>
-                    </Portal>
+                    {index > 0 && <div css={tw`mt-2`}></div>}
+                    <MessageBox type={flash.type} title={flash.title}>
+                        {flash.message}
+                    </MessageBox>
                 </React.Fragment>
             ))}
         </div>

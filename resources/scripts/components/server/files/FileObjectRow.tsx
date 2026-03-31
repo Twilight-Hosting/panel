@@ -14,18 +14,6 @@ import { usePermissions } from '@/plugins/usePermissions';
 import { join } from 'pathe';
 import { bytesToString } from '@/lib/formatters';
 import styles from './style.module.css';
-import { useTranslation } from 'react-i18next';
-import * as locales from 'date-fns/locale';
-
-const getLocale = (localeKey: keyof typeof locales) => {
-    if (locales[localeKey]) {
-        return locales[localeKey];
-    } else {
-        const keyString = String(localeKey);
-        console.warn(`Locale '${keyString}' not found. Falling back to '${locales.enUS}'`);
-        return locales.enUS;
-    }
-};
 
 const Clickable: React.FC<{ file: FileObject }> = memo(({ file, children }) => {
     const [canRead] = usePermissions(['file.read']);
@@ -46,20 +34,13 @@ const Clickable: React.FC<{ file: FileObject }> = memo(({ file, children }) => {
     );
 }, isEqual);
 
-const FileObjectRow = ({ file }: { file: FileObject }) => {
-    console.log(file.modifiedAt)
-
-    const { i18n } = useTranslation();
-    const currentLang = i18n.language;
-    const localeKey = currentLang as keyof typeof locales;
-
-    return(
+const FileObjectRow = ({ file }: { file: FileObject }) => (
     <div
         className={styles.file_row}
         key={file.name}
         onContextMenu={(e) => {
             e.preventDefault();
-            window.dispatchEvent(new CustomEvent(`pterodactyl:files:ctx:${file.key}`, { detail: { clientX: e.clientX, clientY: e.clientY } }));
+            window.dispatchEvent(new CustomEvent(`pterodactyl:files:ctx:${file.key}`, { detail: e.clientX }));
         }}
     >
         <SelectFileCheckbox name={file.name} />
@@ -73,17 +54,17 @@ const FileObjectRow = ({ file }: { file: FileObject }) => {
                     <FontAwesomeIcon icon={faFolder} />
                 )}
             </div>
-            <div css={tw`flex-1 truncate text-gray-200`}>{file.name}</div>
+            <div css={tw`flex-1 truncate`}>{file.name}</div>
             {file.isFile && <div css={tw`w-1/6 text-right mr-4 hidden sm:block`}>{bytesToString(file.size)}</div>}
             <div css={tw`w-1/5 text-right mr-4 hidden md:block`} title={file.modifiedAt.toString()}>
                 {Math.abs(differenceInHours(file.modifiedAt, new Date())) > 48
-                    ? format(file.modifiedAt, 'MMM do, yyyy h:mma', { locale: getLocale(localeKey) })
-                    : formatDistanceToNow(file.modifiedAt, { addSuffix: true, locale: getLocale(localeKey) })}
+                    ? format(file.modifiedAt, 'MMM do, yyyy h:mma')
+                    : formatDistanceToNow(file.modifiedAt, { addSuffix: true })}
             </div>
         </Clickable>
         <FileDropdownMenu file={file} />
     </div>
-)};
+);
 
 export default memo(FileObjectRow, (prevProps, nextProps) => {
     /* eslint-disable @typescript-eslint/no-unused-vars */

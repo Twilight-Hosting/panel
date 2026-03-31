@@ -28,20 +28,6 @@
                         <p class="text-muted small">Character limits: <code>a-zA-Z0-9_.-</code> and <code>[Space]</code> (min 1, max 100 characters).</p>
                     </div>
                     <div class="form-group">
-                        <label for="daemon_text" class="control-label">Daemon text <b style="background-color:#17078D;font-size:1rem;padding:2px 7px;border-radius:100px;font-weight:600;">ARIX</b></label>
-                        <div>
-                            <input type="text" autocomplete="off" name="daemon_text" class="form-control" value="{{ old('daemon_text' ) }}" />
-                            <p class="text-muted"><small>Change the "[Pterodactyl Daemon]:" text.</small></p>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="container_text" class="control-label">Container text <b style="background-color:#17078D;font-size:1rem;padding:2px 7px;border-radius:100px;font-weight:600;">ARIX</b></label>
-                        <div>
-                            <input type="text" autocomplete="off" name="container_text" class="form-control" value="{{ old('container_text' ) }}" />
-                            <p class="text-muted"><small>Change the "container@pterodactyl~" text.</small></p>
-                        </div>
-                    </div>
-                    <div class="form-group">
                         <label for="pDescription" class="form-label">Description</label>
                         <textarea name="description" id="pDescription" rows="4" class="form-control">{{ old('description') }}</textarea>
                     </div>

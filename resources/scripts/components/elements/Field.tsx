@@ -8,16 +8,13 @@ interface OwnProps {
     light?: boolean;
     label?: string;
     description?: string;
-    placeholder?: string;
-    className?: string;
-    icon?: React.ComponentType<{ className?: string }>;
     validate?: (value: any) => undefined | string | Promise<any>;
 }
 
 type Props = OwnProps & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'name'>;
 
 const Field = forwardRef<HTMLInputElement, Props>(
-    ({ id, name, light = false, label, description, validate, placeholder, className, icon: Icon, ...props }, ref) => (
+    ({ id, name, light = false, label, description, validate, ...props }, ref) => (
         <FormikField innerRef={ref} name={name} validate={validate}>
             {({ field, form: { errors, touched } }: FieldProps) => (
                 <div>
@@ -26,25 +23,20 @@ const Field = forwardRef<HTMLInputElement, Props>(
                             {label}
                         </Label>
                     )}
-                    <div className={'relative'}>
-                        {Icon && <Icon className={'w-5 text-gray-400 absolute top-3 left-3 pointer-events-none'}/>}
-                        <Input
-                            id={id}
-                            {...field}
-                            {...props}
-                            className={`${Icon ? '!pl-10' : ''} ${className ? className : ''}`}
-                            placeholder={placeholder ? placeholder : ''}
-                            isLight={light}
-                            hasError={!!(touched[field.name] && errors[field.name])}
-                        />
-                    </div>
+                    <Input
+                        id={id}
+                        {...field}
+                        {...props}
+                        isLight={light}
+                        hasError={!!(touched[field.name] && errors[field.name])}
+                    />
                     {touched[field.name] && errors[field.name] ? (
-                        <p className={'input-help error text-danger-50 mt-1 text-sm'}>
+                        <p className={'input-help error'}>
                             {(errors[field.name] as string).charAt(0).toUpperCase() +
                                 (errors[field.name] as string).slice(1)}
                         </p>
                     ) : description ? (
-                        <p className={'input-help mt-1 text-sm'}>{description}</p>
+                        <p className={'input-help'}>{description}</p>
                     ) : null}
                 </div>
             )}

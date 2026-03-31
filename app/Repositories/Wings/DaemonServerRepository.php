@@ -17,7 +17,7 @@ class DaemonServerRepository extends DaemonRepository
     /**
      * Returns details about a server from the Daemon instance.
      *
-     * @throws \Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException
+     * @throws DaemonConnectionException
      */
     public function getDetails(): array
     {
@@ -37,7 +37,7 @@ class DaemonServerRepository extends DaemonRepository
     /**
      * Creates a new server on the Wings daemon.
      *
-     * @throws \Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException
+     * @throws DaemonConnectionException
      */
     public function create(bool $startOnCompletion = true): void
     {
@@ -58,7 +58,7 @@ class DaemonServerRepository extends DaemonRepository
     /**
      * Triggers a server sync on Wings.
      *
-     * @throws \Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException
+     * @throws DaemonConnectionException
      */
     public function sync(): void
     {
@@ -74,7 +74,7 @@ class DaemonServerRepository extends DaemonRepository
     /**
      * Delete a server from the daemon, forcibly if passed.
      *
-     * @throws \Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException
+     * @throws DaemonConnectionException
      */
     public function delete(): void
     {
@@ -90,7 +90,7 @@ class DaemonServerRepository extends DaemonRepository
     /**
      * Reinstall a server on the daemon.
      *
-     * @throws \Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException
+     * @throws DaemonConnectionException
      */
     public function reinstall(): void
     {
@@ -110,7 +110,7 @@ class DaemonServerRepository extends DaemonRepository
      * Requests the daemon to create a full archive of the server. Once the daemon is finished
      * they will send a POST request to "/api/remote/servers/{uuid}/archive" with a boolean.
      *
-     * @throws \Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException
+     * @throws DaemonConnectionException
      */
     public function requestArchive(): void
     {
@@ -134,7 +134,7 @@ class DaemonServerRepository extends DaemonRepository
      * @deprecated
      * @see \Pterodactyl\Repositories\Wings\DaemonRevocationRepository::deauthorize()
      *
-     * @throws \Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException
+     * @throws DaemonConnectionException
      */
     public function revokeUserJTI(int $id): void
     {
@@ -147,7 +147,7 @@ class DaemonServerRepository extends DaemonRepository
      * Revokes an array of JWT JTI's by marking any token generated before the current time on
      * the Wings instance as being invalid.
      *
-     * @throws \Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException
+     * @throws DaemonConnectionException
      */
     protected function revokeJTIs(array $jtis): void
     {

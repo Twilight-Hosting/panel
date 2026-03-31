@@ -10,14 +10,12 @@ class AdminAuthenticate
     /**
      * Handle an incoming request.
      *
-     * @throws \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException
+     * @throws AccessDeniedHttpException
      */
     public function handle(Request $request, \Closure $next): mixed
     {
-        if (!($request->user() && $request->user()->role() && $request->user()->role()->isRouteAllowed($request->route()))) {
-            if (!$request->user() || !$request->user()->root_admin) {
-                throw new AccessDeniedHttpException();
-            }
+        if (!$request->user() || !$request->user()->root_admin) {
+            throw new AccessDeniedHttpException();
         }
 
         return $next($request);

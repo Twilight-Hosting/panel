@@ -12,12 +12,11 @@ import Can from '@/components/elements/Can';
 import { usePermissions } from '@/plugins/usePermissions';
 import { useDeepCompareMemo } from '@/plugins/useDeepCompareMemo';
 import tw from 'twin.macro';
-import { Button } from '@/components/elements/button/index';
+import Button from '@/components/elements/Button';
 import PermissionTitleBox from '@/components/server/users/PermissionTitleBox';
 import asModal from '@/hoc/asModal';
 import PermissionRow from '@/components/server/users/PermissionRow';
 import ModalContext from '@/context/ModalContext';
-import { useTranslation } from 'react-i18next';
 
 type Props = {
     subuser?: Subuser;
@@ -29,7 +28,6 @@ interface Values {
 }
 
 const EditSubuserModal = ({ subuser }: Props) => {
-    const { t } = useTranslation('arix/server/users');
     const ref = useRef<HTMLHeadingElement>(null);
     const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
     const appendSubuser = ServerContext.useStoreActions((actions) => actions.subusers.appendSubuser);
@@ -98,9 +96,9 @@ const EditSubuserModal = ({ subuser }: Props) => {
             }
             validationSchema={object().shape({
                 email: string()
-                    .max(191, t('must-not-exceed'))
-                    .email(t('valid-email'))
-                    .required(t('valid-email')),
+                    .max(191, 'Email addresses must not exceed 191 characters.')
+                    .email('A valid email address must be provided.')
+                    .required('A valid email address must be provided.'),
                 permissions: array().of(string()),
             })}
         >
@@ -108,12 +106,12 @@ const EditSubuserModal = ({ subuser }: Props) => {
                 <div css={tw`flex justify-between`}>
                     <h2 css={tw`text-2xl`} ref={ref}>
                         {subuser
-                            ? `${canEditUser ? t('modify-permissions-for') : t('view-permissions-for')} ${subuser.email}`
-                            : t('create-new-subuser')}
+                            ? `${canEditUser ? 'Modify' : 'View'} permissions for ${subuser.email}`
+                            : 'Create new subuser'}
                     </h2>
                     <div>
                         <Button type={'submit'} css={tw`w-full sm:w-auto`}>
-                            {subuser ? t('save') : t('invite-user')}
+                            {subuser ? 'Save' : 'Invite User'}
                         </Button>
                     </div>
                 </div>
@@ -121,7 +119,8 @@ const EditSubuserModal = ({ subuser }: Props) => {
                 {!isRootAdmin && loggedInPermissions[0] !== '*' && (
                     <div css={tw`mt-4 pl-4 py-2 border-l-4 border-cyan-400`}>
                         <p css={tw`text-sm text-neutral-300`}>
-                            {t('only-permissions-you-assigned')}
+                            Only permissions which your account is currently assigned may be selected when creating or
+                            modifying other users.
                         </p>
                     </div>
                 )}
@@ -129,8 +128,10 @@ const EditSubuserModal = ({ subuser }: Props) => {
                     <div css={tw`mt-6`}>
                         <Field
                             name={'email'}
-                            label={t('user-email')}
-                            description={t('user-email-description')}
+                            label={'User Email'}
+                            description={
+                                'Enter the email address of the user you wish to invite as a subuser for this server.'
+                            }
                         />
                     </div>
                 )}
@@ -159,7 +160,7 @@ const EditSubuserModal = ({ subuser }: Props) => {
                 <Can action={subuser ? 'user.update' : 'user.create'}>
                     <div css={tw`pb-6 flex justify-end`}>
                         <Button type={'submit'} css={tw`w-full sm:w-auto`}>
-                            {subuser ? t('save') : t('invite-user')}
+                            {subuser ? 'Save' : 'Invite User'}
                         </Button>
                     </div>
                 </Can>

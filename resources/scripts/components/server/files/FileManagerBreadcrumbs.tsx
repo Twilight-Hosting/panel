@@ -3,7 +3,6 @@ import { ServerContext } from '@/state/server';
 import { NavLink, useLocation } from 'react-router-dom';
 import { encodePathSegments, hashToPath } from '@/helpers';
 import tw from 'twin.macro';
-import { useTranslation } from 'react-i18next';
 
 interface Props {
     renderLeft?: JSX.Element;
@@ -12,7 +11,6 @@ interface Props {
 }
 
 export default ({ renderLeft, withinFileEditor, isNewFile }: Props) => {
-    const { t } = useTranslation('arix/server/files');
     const [file, setFile] = useState<string | null>(null);
     const id = ServerContext.useStoreState((state) => state.server.data!.id);
     const directory = ServerContext.useStoreState((state) => state.files.directory);
@@ -40,10 +38,10 @@ export default ({ renderLeft, withinFileEditor, isNewFile }: Props) => {
             });
 
     return (
-        <div css={tw`flex flex-shrink-0 flex-grow-0 items-center text-sm text-neutral-500 overflow-x-hidden`}>
-            {renderLeft || <div css={tw`w-12`} />}/<span css={tw`px-1 text-neutral-300`}>{t('home')}</span>/
+        <div css={tw`flex flex-grow-0 items-center text-sm text-neutral-500 overflow-x-hidden`}>
+            {renderLeft || <div css={tw`w-12`} />}/<span css={tw`px-1 text-neutral-300`}>home</span>/
             <NavLink to={`/server/${id}/files`} css={tw`px-1 text-neutral-200 no-underline hover:text-neutral-100`}>
-                {t('container')}
+                container
             </NavLink>
             /
             {breadcrumbs().map((crumb, index) =>

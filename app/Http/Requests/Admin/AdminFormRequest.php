@@ -21,14 +21,14 @@ abstract class AdminFormRequest extends FormRequest
             return false;
         }
 
-        return $this->user()->root_admin || ($this->user()->role() && $this->user()->role()->isRouteAllowed($this->route()));
+        return (bool) $this->user()->root_admin;
     }
 
     /**
      * Return only the fields that we are interested in from the request.
      * This will include empty fields as a null value.
      */
-    public function normalize(array $only = null): array
+    public function normalize(?array $only = null): array
     {
         return $this->only($only ?? array_keys($this->rules()));
     }

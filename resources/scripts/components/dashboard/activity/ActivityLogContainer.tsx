@@ -12,10 +12,8 @@ import classNames from 'classnames';
 import ActivityLogEntry from '@/components/elements/activity/ActivityLogEntry';
 import Tooltip from '@/components/elements/tooltip/Tooltip';
 import useLocationHash from '@/plugins/useLocationHash';
-import { useTranslation } from 'react-i18next';
 
 export default () => {
-    const { t } = useTranslation('arix/activity');
     const { hash } = useLocationHash();
     const { clearAndAddHttpError } = useFlashKey('account');
     const [filters, setFilters] = useState<ActivityLogFilters>({ page: 1, sorts: { timestamp: -1 } });
@@ -33,7 +31,7 @@ export default () => {
     }, [error]);
 
     return (
-        <PageContentBlock title={t('account-activity-log')}>
+        <PageContentBlock title={'Account Activity Log'}>
             <FlashMessageRender byKey={'account'} />
             {(filters.filters?.event || filters.filters?.ip) && (
                 <div className={'flex justify-end mb-2'}>
@@ -42,14 +40,14 @@ export default () => {
                         className={classNames(btnStyles.button, btnStyles.text, 'w-full sm:w-auto')}
                         onClick={() => setFilters((value) => ({ ...value, filters: {} }))}
                     >
-                        {t('clear-filters')} <XCircleIcon className={'w-4 h-4 ml-2'} />
+                        Clear Filters <XCircleIcon className={'w-4 h-4 ml-2'} />
                     </Link>
                 </div>
             )}
             {!data && isValidating ? (
                 <Spinner centered />
             ) : (
-                <div>
+                <div className={'bg-gray-700'}>
                     {data?.items.map((activity) => (
                         <ActivityLogEntry key={activity.id} activity={activity}>
                             {typeof activity.properties.useragent === 'string' && (

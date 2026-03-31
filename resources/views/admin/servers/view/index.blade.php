@@ -126,50 +126,6 @@
     </div>
     <div class="col-sm-4">
         <div class="box box-primary">
-            <div class="box-header with-border">
-                <h3 class="box-title">Power Actions</h3>
-            </div>
-            <div class="box-body">
-                <div class="row text-center">
-                    <div class="col-sm-4">
-                        <form action="{{ route('admin.servers.start', $server->id) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-success btn-block" {{ $status === 'running' ? 'disabled' : '' }}>
-                                <i class="fa fa-play"></i> Start
-                            </button>
-                        </form>
-                    </div>
-                    <div class="col-sm-4">
-                        <form action="{{ route('admin.servers.restart', $server->id) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-warning btn-block">
-                                <i class="fa fa-refresh"></i> Restart
-                            </button>
-                        </form>
-                    </div>
-                    <div class="col-sm-4">
-                        @if($status === 'stopping')
-                            <form action="{{ route('admin.servers.kill', $server->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn btn-danger btn-block">
-                                    <i class="fa fa-power-off"></i> Kill
-                                </button>
-                            </form>
-                        @else
-                            <form action="{{ route('admin.servers.stop', $server->id) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="btn btn-danger btn-block" {{ $status === 'offline' ? 'disabled' : '' }}>
-                                    <i class="fa fa-stop"></i> Stop
-                                </button>
-                            </form>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-4">
-        <div class="box box-primary">
             <div class="box-body" style="padding-bottom: 0px;">
                 <div class="row">
                     @if($server->isSuspended())

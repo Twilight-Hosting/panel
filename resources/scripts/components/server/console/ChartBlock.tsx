@@ -1,54 +1,21 @@
 import React from 'react';
 import classNames from 'classnames';
-import { ServerContext } from '@/state/server';
 import styles from '@/components/server/console/style.module.css';
-import { ChipIcon, CloudIcon } from '@heroicons/react/outline';
-import { LuMemoryStick } from "react-icons/lu";
 
 interface ChartBlockProps {
-    type: string;
     title: string;
     legend?: React.ReactNode;
     children: React.ReactNode;
-    usage?: string;
-    limit?: string;
-    inbound?: string;
-    outbound?: string;
 }
 
-export default ({ type, title, legend, usage, limit, inbound, outbound, children }: ChartBlockProps) => {
-    const status = ServerContext.useStoreState((state) => state.status.value);
-
-    return (
-    <>
-    <div className={'bg-gray-700 backdrop overflow-hidden rounded-box'}>
-        <div className={'px-6 pt-5 flex justify-between items-center'}>
-            <div>
-                <span className={'text-gray-300'}>{title}:</span>
-                <div className={'flex items-center gap-x-1'}>
-                    {status === 'offline' ? (
-                        <p>Offline</p>
-                    ) : (
-                        <p className={'text-lg font-medium'}>
-                            {usage && usage}
-                            {inbound && outbound && `${inbound} / ${outbound}`}
-                        </p>
-                    )}
-                    <span className={'text-gray-300 font-medium'}>{limit && '/ ' + limit}</span>
-                </div>
-            </div>
-            <div className={'text-white bg-arix rounded-component w-16 h-16 flex items-center justify-center'}>
-                {type == 'cpu'
-                ? <ChipIcon className={'w-10'}/>
-                : type == 'network'
-                ? <CloudIcon className={'w-10'}/>
-                : <LuMemoryStick className={'text-[2.5rem]'}/>
-                }
-            </div>
+export default ({ title, legend, children }: ChartBlockProps) => (
+    <div className={classNames(styles.chart_container, 'group')}>
+        <div className={'flex items-center justify-between px-4 py-2'}>
+            <h3 className={'font-header font-medium transition-colors duration-100 group-hover:text-gray-50'}>
+                {title}
+            </h3>
+            {legend && <p className={'text-sm flex items-center'}>{legend}</p>}
         </div>
-        <div css={'left:-11px;bottom:-11px;width:calc(100% + 17px);position:relative;'}>
-            {children}
-        </div>
+        <div className={'z-10 ml-2'}>{children}</div>
     </div>
-    </>
-)};
+);

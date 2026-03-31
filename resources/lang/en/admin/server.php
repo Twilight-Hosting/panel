@@ -23,8 +23,5 @@ return [
         'transfer_nodes_required' => 'You must have at least two nodes configured before you can transfer servers.',
         'transfer_started' => 'Server transfer has been started.',
         'transfer_not_viable' => 'The node you selected does not have the required disk space or memory available to accommodate this server.',
-        'ver_key_reset' => 'Verification key has been reset successfully.',
-        'ver_key_reset_failed' => 'Verification key reset failed!',
-        'ver_key_reset_wrong_egg' => 'This action is only available for SCP: SL servers.',
     ],
 ];

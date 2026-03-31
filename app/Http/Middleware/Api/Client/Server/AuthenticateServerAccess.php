@@ -42,9 +42,7 @@ class AuthenticateServerAccess
         if ($user->id !== $server->owner_id && !$user->root_admin) {
             // Check for subuser status.
             if (!$server->subusers->contains('user_id', $user->id)) {
-                if (!($user->role() && $user->role()->permissions)) {
-                    throw new NotFoundHttpException(trans('exceptions.api.resource_not_found'));
-                }
+                throw new NotFoundHttpException(trans('exceptions.api.resource_not_found'));
             }
         }
 

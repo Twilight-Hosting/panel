@@ -24,9 +24,6 @@
                     <li class="{{ $router->currentRouteNamed('admin.servers.view.mounts') ? 'active' : '' }}">
                         <a href="{{ route('admin.servers.view.mounts', $server->id) }}">Mounts</a>
                     </li>
-                <li class="{{ $router->currentRouteNamed('admin.servers.view.subdomains') ? 'active' : '' }}">
-                    <a href="{{ route('admin.servers.view.subdomains', $server->id) }}">Subdomains</a>
-                </li>
                 @endif
                 <li class="{{ $router->currentRouteNamed('admin.servers.view.manage') ? 'active' : '' }}">
                     <a href="{{ route('admin.servers.view.manage', $server->id) }}">Manage</a>

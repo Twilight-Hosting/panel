@@ -13,7 +13,6 @@ import { WithClassname } from '@/components/types';
 import Portal from '@/components/elements/Portal';
 import { CloudUploadIcon } from '@heroicons/react/outline';
 import { useSignal } from '@preact/signals-react';
-import createDirectory from '@/api/server/files/createDirectory';
 
 function isFileOrDirectory(event: DragEvent): boolean {
     if (!event.dataTransfer?.types) {
@@ -23,24 +22,6 @@ function isFileOrDirectory(event: DragEvent): boolean {
     return event.dataTransfer.types.some((value) => value.toLowerCase() === 'files');
 }
 
-async function fallbackDirectoryPicker(): Promise<FileList | null> {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.webkitdirectory = true;
-    input.multiple = true;
-    input.style.position = 'fixed';
-    input.style.top = '-100000px';
-    input.style.left = '-100000px';
-    document.body.appendChild(input);
-    return new Promise((resolve) => {
-        input.addEventListener('change', () => {
-            resolve(input.files);
-            document.body.removeChild(input);
-        });
-        input.click();
-    });
-}
-
 export default ({ className }: WithClassname) => {
     const fileUploadInput = useRef<HTMLInputElement>(null);
 
@@ -48,7 +29,7 @@ export default ({ className }: WithClassname) => {
     const timeouts = useSignal<NodeJS.Timeout[]>([]);
 
     const { mutate } = useFileManagerSwr();
-    const { clearAndAddHttpError } = useFlashKey('files');
+    const { addError, clearAndAddHttpError } = useFlashKey('files');
 
     const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
     const directory = ServerContext.useStoreState((state) => state.files.directory);
@@ -80,86 +61,34 @@ export default ({ className }: WithClassname) => {
         setUploadProgress({ name, loaded: data.loaded });
     };
 
-    const onFileSubmission = (list: any[]) => {
+    const onFileSubmission = (files: FileList) => {
         clearAndAddHttpError();
+        const list = Array.from(files);
+        if (list.some((file) => !file.type && (!file.size || file.size === 4096))) {
+            return addError('Folder uploads are not supported.', 'Error');
+        }
 
         const uploads = list.map((file) => {
             const controller = new AbortController();
-
-            if (!file.file) {
-                pushFileUpload({
-                    name: `${directory.endsWith('/') ? directory.slice(0, -1) : directory}/${file.name
-                        .split('/')
-                        .slice(0, -1)
-                        .join('/')}/${file.name.split('/').pop()}`,
-                    data: { abort: controller, loaded: 0, total: file.size },
-                });
-                return () =>
-                    createDirectory(
-                        uuid,
-                        `${directory.endsWith('/') ? directory.slice(0, -1) : directory}/${file.name
-                            .split('/')
-                            .slice(0, -1)
-                            .join('/')}`,
-                        file.name.split('/').pop()
-                    ).then(() =>
-                        timeouts.value.push(
-                            setTimeout(
-                                () =>
-                                    removeFileUpload(
-                                        `${directory.endsWith('/') ? directory.slice(0, -1) : directory}/${file.name
-                                            .split('/')
-                                            .slice(0, -1)
-                                            .join('/')}/${file.name.split('/').pop()}`
-                                    ),
-                                500
-                            )
-                        )
-                    );
-            }
-
             pushFileUpload({
-                name: `${directory.endsWith('/') ? directory.slice(0, -1) : directory}/${file.name ? `${file.name}/` : ""}${file.file.name}`,
-                data: { abort: controller, loaded: 0, total: file.file.size },
+                name: file.name,
+                data: { abort: controller, loaded: 0, total: file.size },
             });
-
-            var fileForm = new FormData;
-            fileForm.append("files", file.file, file.file.name);
 
             return () =>
                 getFileUploadUrl(uuid).then((url) =>
                     axios
                         .post(
                             url,
-                            fileForm,
+                            { files: file },
                             {
                                 signal: controller.signal,
                                 headers: { 'Content-Type': 'multipart/form-data' },
-                                params: {
-                                    directory: `${directory.endsWith('/') ? directory.slice(0, -1) : directory}/${
-                                        file.name
-                                    }`,
-                                },
-                                onUploadProgress: (data) =>
-                                    onUploadProgress(
-                                        data,
-                                        `${directory.endsWith('/') ? directory.slice(0, -1) : directory}/${file.name ? `${file.name}/` : ""}${
-                                            file.file.name
-                                        }`
-                                    ),
+                                params: { directory },
+                                onUploadProgress: (data) => onUploadProgress(data, file.name),
                             }
                         )
-                        .then(() =>
-                            timeouts.value.push(
-                                setTimeout(
-                                    () =>
-                                        removeFileUpload(
-                                            `${directory.endsWith('/') ? directory.slice(0, -1) : directory}/${file.name ? `${file.name}/` : ""}${file.file.name}`
-                                        ),
-                                    500
-                                )
-                            )
-                        )
+                        .then(() => timeouts.value.push(setTimeout(() => removeFileUpload(file.name), 500)))
                 );
         });
 
@@ -171,66 +100,6 @@ export default ({ className }: WithClassname) => {
             });
     };
 
-    const handleEntry = async function (files: any[], prefix: string, entry: FileSystemHandle) {
-        if (entry.kind === 'directory') {
-            files.push({
-                name: `${prefix}${entry.name}`,
-            });
-            // @ts-ignore
-            for await (const entry2 of entry.values()) {
-                await handleEntry(files, `${prefix}${entry.name}/`, entry2);
-            }
-        } else {
-            files.push({
-                name: prefix.slice(0, -1),
-                // @ts-ignore
-                file: await entry.getFile(),
-            });
-        }
-    };
-
-    const uploadDirectory = async () => {
-        // @ts-ignore
-        if (typeof window.showDirectoryPicker === 'function') {
-            // @ts-ignore
-            const result = await window.showDirectoryPicker();
-            const files: any[] = [];
-
-            await handleEntry(files, '', result);
-
-            onFileSubmission(files);
-        } else {
-            // @ts-ignore
-            const result = Array.from(await fallbackDirectoryPicker());
-            const files: any[] = [];
-            const exists: any = {};
-
-            for (const file of result) {
-                const parts = file.webkitRelativePath.split('/').slice(0, -1);
-                const current = exists;
-                let currentPath = '';
-                while (parts.length) {
-                    const part = parts.shift();
-                    // @ts-ignore
-                    if (!current[part]) {
-                        // @ts-ignore
-                        current[part] = {};
-                        currentPath += `${part}/`;
-                        files.push({
-                            name: currentPath.slice(0, -1),
-                        });
-                    }
-                }
-                files.push({
-                    name: file.webkitRelativePath.split('/').slice(0, -1).join('/'),
-                    file,
-                });
-            }
-
-            onFileSubmission(files);
-        }
-    };
-
     return (
         <>
             <Portal>
@@ -238,57 +107,14 @@ export default ({ className }: WithClassname) => {
                     <ModalMask
                         onClick={() => (visible.value = false)}
                         onDragOver={(e) => e.preventDefault()}
-                        onDrop={async (e) => {
+                        onDrop={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
 
                             visible.value = false;
                             if (!e.dataTransfer?.files.length) return;
 
-                            async function mapperFunc(
-                                prefix: string,
-                                item: FileSystemFileEntry | FileSystemDirectoryEntry
-                            ): Promise<any> {
-                                if (item.isFile) {
-                                    return new Promise((res) =>
-                                        // @ts-ignore
-                                        item.file((result) =>
-                                            res({
-                                                name: prefix.slice(0, -1),
-                                                file: result,
-                                            })
-                                        )
-                                    );
-                                } else {
-                                    const entries: any[] = await new Promise((res) =>
-                                        // @ts-ignore
-                                        item.createReader().readEntries(res)
-                                    );
-                                    return [
-                                        {
-                                            name: `${prefix}${item.name}`,
-                                        },
-                                        ...(
-                                            await Promise.all(
-                                                entries.map((item2) => mapperFunc(`${prefix}${item.name}/`, item2))
-                                            )
-                                        // @ts-ignore
-                                        ).flat(),
-                                    ];
-                                }
-                            }
-
-                            onFileSubmission(
-                                (
-                                    await Promise.all(
-                                        Array.from(e.dataTransfer.items)
-                                            .map((item) => item.webkitGetAsEntry())
-                                            // @ts-ignore
-                                            .map((item) => mapperFunc('', item))
-                                    )
-                                // @ts-ignore
-                                ).flat()
-                            );
+                            onFileSubmission(e.dataTransfer.files);
                         }}
                     >
                         <div className={'w-full flex items-center justify-center pointer-events-none'}>
@@ -313,13 +139,7 @@ export default ({ className }: WithClassname) => {
                 onChange={(e) => {
                     if (!e.currentTarget.files) return;
 
-                    onFileSubmission(
-                        Array.from(e.currentTarget.files).map((file) => ({
-                            name: '',
-                            file,
-                        }))
-                    );
-
+                    onFileSubmission(e.currentTarget.files);
                     if (fileUploadInput.current) {
                         fileUploadInput.current.files = null;
                     }
@@ -328,9 +148,6 @@ export default ({ className }: WithClassname) => {
             />
             <Button className={className} onClick={() => fileUploadInput.current && fileUploadInput.current.click()}>
                 Upload
-            </Button>
-            <Button className={className} onClick={uploadDirectory}>
-                Upload Directory
             </Button>
         </>
     );

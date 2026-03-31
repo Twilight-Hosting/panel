@@ -12,21 +12,20 @@ const ToggleContainer = styled.div`
         ${tw`hidden`};
 
         &:checked + label {
-            ${tw`bg-arix border-arix shadow-none`};
+            ${tw`bg-primary-500 border-primary-700 shadow-none`};
         }
 
         &:checked + label:before {
             right: 0.125rem;
-            background-color:white;
         }
     }
 
     & > label {
-        ${tw`mb-0 block overflow-hidden cursor-pointer bg-gray-600 border border-gray-500 rounded-full h-6 shadow-inner`};
+        ${tw`mb-0 block overflow-hidden cursor-pointer bg-neutral-400 border border-neutral-700 rounded-full h-6 shadow-inner`};
         transition: all 75ms linear;
 
         &::before {
-            ${tw`absolute block bg-[#A1A1B5] border h-5 w-5 rounded-full`};
+            ${tw`absolute block bg-white border h-5 w-5 rounded-full`};
             top: 0.125rem;
             right: calc(50% + 0.125rem);
             //width: 1.25rem;

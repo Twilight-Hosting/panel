@@ -31,7 +31,7 @@ class RequireTwoFactorAuthentication
      * order to perform actions. If so, we check the level at which it is required (all users
      * or just admins) and then check if the user has enabled it for their account.
      *
-     * @throws \Pterodactyl\Exceptions\Http\TwoFactorAuthRequiredException
+     * @throws TwoFactorAuthRequiredException
      */
     public function handle(Request $request, \Closure $next): mixed
     {
@@ -50,7 +50,7 @@ class RequireTwoFactorAuthentication
         // If the level is set as admin and the user is not an admin, pass them through as well.
         if ($level === self::LEVEL_NONE || $user->use_totp) {
             return $next($request);
-        } else if ($level === self::LEVEL_ADMIN && !$user->root_admin && !($user->role() && $user->role()->admin_routes)) {
+        } elseif ($level === self::LEVEL_ADMIN && !$user->root_admin) {
             return $next($request);
         }
 

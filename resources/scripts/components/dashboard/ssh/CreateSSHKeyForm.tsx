@@ -4,12 +4,11 @@ import { object, string } from 'yup';
 import FormikFieldWrapper from '@/components/elements/FormikFieldWrapper';
 import SpinnerOverlay from '@/components/elements/SpinnerOverlay';
 import tw from 'twin.macro';
-import { Button } from '@/components/elements/button/index';
+import Button from '@/components/elements/Button';
 import Input, { Textarea } from '@/components/elements/Input';
 import styled from 'styled-components/macro';
 import { useFlashKey } from '@/plugins/useFlash';
 import { createSSHKey, useSSHKeys } from '@/api/account/ssh-keys';
-import { useTranslation } from 'react-i18next';
 
 interface Values {
     name: string;
@@ -21,7 +20,6 @@ const CustomTextarea = styled(Textarea)`
 `;
 
 export default () => {
-    const { t } = useTranslation('arix/account');
     const { clearAndAddHttpError } = useFlashKey('account');
     const { mutate } = useSSHKeys();
 
@@ -50,18 +48,18 @@ export default () => {
                 {({ isSubmitting }) => (
                     <Form>
                         <SpinnerOverlay visible={isSubmitting} />
-                        <FormikFieldWrapper label={t('sshKey.createForm.key-name')} name={'name'} css={tw`mb-6`}>
-                            <Field name={'name'} placeholder={t('sshKey.createForm.key-name')} as={Input} />
+                        <FormikFieldWrapper label={'SSH Key Name'} name={'name'} css={tw`mb-6`}>
+                            <Field name={'name'} as={Input} />
                         </FormikFieldWrapper>
                         <FormikFieldWrapper
-                            label={t('sshKey.createForm.public-key')}
+                            label={'Public Key'}
                             name={'publicKey'}
-                            description={t('sshKey.createForm.public-key-desc')}
+                            description={'Enter your public SSH key.'}
                         >
                             <Field name={'publicKey'} as={CustomTextarea} />
                         </FormikFieldWrapper>
                         <div css={tw`flex justify-end mt-6`}>
-                            <Button>{t('sshKey.createForm.save')}</Button>
+                            <Button>Save</Button>
                         </div>
                     </Form>
                 )}

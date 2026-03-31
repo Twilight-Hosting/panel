@@ -22,8 +22,6 @@ use Pterodactyl\Http\Requests\Api\Client\Servers\Files\CompressFilesRequest;
 use Pterodactyl\Http\Requests\Api\Client\Servers\Files\DecompressFilesRequest;
 use Pterodactyl\Http\Requests\Api\Client\Servers\Files\GetFileContentsRequest;
 use Pterodactyl\Http\Requests\Api\Client\Servers\Files\WriteFileContentRequest;
-use Pterodactyl\Http\Controllers\Api\Client\PluginsAddon\PluginsController;
-use Pterodactyl\Http\Controllers\Api\Client\SLPlugins\SLPluginsController;
 
 class FileController extends ClientApiController
 {
@@ -32,7 +30,7 @@ class FileController extends ClientApiController
      */
     public function __construct(
         private NodeJWTService $jwtService,
-        private DaemonFileRepository $fileRepository
+        private DaemonFileRepository $fileRepository,
     ) {
         parent::__construct();
     }
@@ -141,17 +139,6 @@ class FileController extends ClientApiController
      */
     public function rename(RenameFileRequest $request, Server $server): JsonResponse
     {
-        $pluginsAddon = new PluginsController();
-        // support the occasional mass renaming of jar files (which would be really rare so I didn't bother to make it more efficient)
-        foreach ($request->input('files') as $file) {
-            $addonFiles = $pluginsAddon->checkIfFileIsManagedByAddon($request->input('root'), $server->id, [$file['from']]);
-            if (count($addonFiles) > 0) {
-                $pluginsAddon->renameAddonFilenameByRenameObject($server->id, $file['from'], $file['to']);
-            }
-
-            SLPluginsController::tryRenamePlugin($request->input('root'), $server->id, $file['from'], $file['to']);
-        }
-
         $this->fileRepository
             ->setServer($server)
             ->renameFiles($request->input('root'), $request->input('files'));
@@ -227,14 +214,6 @@ class FileController extends ClientApiController
      */
     public function delete(DeleteFileRequest $request, Server $server): JsonResponse
     {
-        $pluginsAddon = new PluginsController();
-        $addonFiles = $pluginsAddon->checkIfFileIsManagedByAddon($request->input('root'), $server->id, $request->input('files'));
-        if (count($addonFiles) > 0) {
-            $pluginsAddon->removeAddonByFileNames($server->id, $addonFiles);
-        }
-
-        SLPluginsController::tryRemovePlugin($request->input('root'), $server->id, $request->input('files'));
-
         $this->fileRepository->setServer($server)->deleteFiles(
             $request->input('root'),
             $request->input('files')

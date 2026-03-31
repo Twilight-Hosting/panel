@@ -14,8 +14,7 @@ export default createGlobalStyle`
     }
 
     body {
-        ${tw`bg-neutral-800 text-neutral-200`};
-        font-family: var(--fontFamily), sans-serif;
+        ${tw`font-sans bg-neutral-800 text-neutral-200`};
         letter-spacing: 0.015em;
     }
 
@@ -24,8 +23,7 @@ export default createGlobalStyle`
     }
 
     p {
-        ${tw`text-neutral-200 leading-snug`};
-        font-family: var(--fontFamily), sans-serif;
+        ${tw`text-neutral-200 leading-snug font-sans`};
     }
 
     form {

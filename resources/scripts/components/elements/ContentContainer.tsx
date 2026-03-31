@@ -4,7 +4,11 @@ import tw from 'twin.macro';
 
 const ContentContainer = styled.div`
     max-width: 1200px;
-    ${tw`mx-auto`};
+    ${tw`mx-4`};
+
+    ${breakpoint('xl')`
+        ${tw`mx-auto`};
+    `};
 `;
 ContentContainer.displayName = 'ContentContainer';
 

@@ -6,6 +6,7 @@ use Pterodactyl\Contracts\Models\Identifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Pterodactyl\Models\Traits\HasRealtimeIdentifier;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * @property int $id
@@ -42,11 +43,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $inherit_config_stop
  * @property string $inherit_file_denylist
  * @property array|null $inherit_features
- * @property \Pterodactyl\Models\Nest $nest
+ * @property Nest $nest
  * @property \Illuminate\Database\Eloquent\Collection|\Pterodactyl\Models\Server[] $servers
  * @property \Illuminate\Database\Eloquent\Collection|\Pterodactyl\Models\EggVariable[] $variables
- * @property \Pterodactyl\Models\Egg|null $scriptFrom
- * @property \Pterodactyl\Models\Egg|null $configFrom
+ * @property Egg|null $scriptFrom
+ * @property Egg|null $configFrom
  */
 #[Attributes\Identifiable('eegg')]
 class Egg extends Model implements Identifiable
@@ -88,7 +89,6 @@ class Egg extends Model implements Identifiable
      */
     protected $fillable = [
         'name',
-        'image',
         'description',
         'features',
         'docker_images',
@@ -125,14 +125,13 @@ class Egg extends Model implements Identifiable
         'nest_id' => 'required|bail|numeric|exists:nests,id',
         'uuid' => 'required|string|size:36',
         'name' => 'required|string|max:191',
-        'image' => 'nullable|url',
         'description' => 'string|nullable',
         'features' => 'array|nullable',
         'author' => 'required|string|email',
         'file_denylist' => 'array|nullable',
         'file_denylist.*' => 'string',
         'docker_images' => 'required|array|min:1',
-        'docker_images.*' => ['required', 'string', 'max:191', 'regex:/^[\w#\.\/\- ]*\|*[\w\.\/\-:@ ]*$/'],
+        'docker_images.*' => ['required', 'string', 'max:191', 'regex:/^[\w#\.\/\- ]*\|?~?[\w\.\/\-:@ ]*$/'],
         'startup' => 'required|nullable|string',
         'config_from' => 'sometimes|bail|nullable|numeric|exists:eggs,id',
         'config_stop' => 'required_without:config_from|nullable|string|max:191',
@@ -144,7 +143,6 @@ class Egg extends Model implements Identifiable
     ];
 
     protected $attributes = [
-        'image' => null,
         'features' => null,
         'file_denylist' => null,
         'config_stop' => null,

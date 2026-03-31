@@ -9,18 +9,15 @@ import Field from '@/components/elements/Field';
 import { Formik, FormikHelpers } from 'formik';
 import { object, string } from 'yup';
 import tw from 'twin.macro';
-import { AtSymbolIcon } from '@heroicons/react/outline';
-import { Button } from '@/components/elements/button/index';
+import Button from '@/components/elements/Button';
 import Reaptcha from 'reaptcha';
 import useFlash from '@/plugins/useFlash';
-import { useTranslation } from 'react-i18next';
 
 interface Values {
     email: string;
 }
 
 export default () => {
-    const { t } = useTranslation('arix/auth');
     const ref = useRef<Reaptcha>(null);
     const [token, setToken] = useState('');
 
@@ -70,48 +67,47 @@ export default () => {
             initialValues={{ email: '' }}
             validationSchema={object().shape({
                 email: string()
-                    .email(t('forgot.a-valid-email-provided'))
-                    .required(t('forgot.a-valid-email-provided')),
+                    .email('A valid email address must be provided to continue.')
+                    .required('A valid email address must be provided to continue.'),
             })}
         >
             {({ isSubmitting, setSubmitting, submitForm }) => (
-                <LoginFormContainer title={t('forgot.title')} css={tw`w-full flex`}>
+                <LoginFormContainer title={'Request Password Reset'} css={tw`w-full flex`}>
                     <Field
-                        label={t('forgot.email')}
-                        placeholder={t('forgot.email')}
-                        icon={AtSymbolIcon}
-                        description={t('forgot.email-description')}
+                        light
+                        label={'Email'}
+                        description={
+                            'Enter your account email address to receive instructions on resetting your password.'
+                        }
                         name={'email'}
                         type={'email'}
                     />
                     <div css={tw`mt-6`}>
-                        <Button type={'submit'} disabled={isSubmitting} className={'w-full !py-3'}>
-                            {t('forgot.send-email')}
+                        <Button type={'submit'} size={'xlarge'} disabled={isSubmitting} isLoading={isSubmitting}>
+                            Send Email
                         </Button>
                     </div>
-                    <div className={'z-50 relative'}>
-                        {recaptchaEnabled && (
-                            <Reaptcha
-                                ref={ref}
-                                size={'invisible'}
-                                sitekey={siteKey || '_invalid_key'}
-                                onVerify={(response) => {
-                                    setToken(response);
-                                    submitForm();
-                                }}
-                                onExpire={() => {
-                                    setSubmitting(false);
-                                    setToken('');
-                                }}
-                            />
-                        )}
-                    </div>
+                    {recaptchaEnabled && (
+                        <Reaptcha
+                            ref={ref}
+                            size={'invisible'}
+                            sitekey={siteKey || '_invalid_key'}
+                            onVerify={(response) => {
+                                setToken(response);
+                                submitForm();
+                            }}
+                            onExpire={() => {
+                                setSubmitting(false);
+                                setToken('');
+                            }}
+                        />
+                    )}
                     <div css={tw`mt-6 text-center`}>
                         <Link
                             to={'/auth/login'}
-                            css={tw`text-xs text-neutral-300 tracking-wide uppercase no-underline hover:text-neutral-200`}
+                            css={tw`text-xs text-neutral-500 tracking-wide uppercase no-underline hover:text-neutral-700`}
                         >
-                            {t('forgot.return-to-login')}
+                            Return to Login
                         </Link>
                     </div>
                 </LoginFormContainer>

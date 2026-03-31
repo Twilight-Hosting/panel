@@ -1,30 +1,17 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
-import { formatDistanceToNow } from 'date-fns';
+import { faArchive, faEllipsisH, faLock } from '@fortawesome/free-solid-svg-icons';
+import { format, formatDistanceToNow } from 'date-fns';
 import Spinner from '@/components/elements/Spinner';
 import { bytesToString } from '@/lib/formatters';
 import Can from '@/components/elements/Can';
 import useWebsocketEvent from '@/plugins/useWebsocketEvent';
 import BackupContextMenu from '@/components/server/backups/BackupContextMenu';
 import tw from 'twin.macro';
-import CopyOnClick from '@/components/elements/CopyOnClick';
+import GreyRowBox from '@/components/elements/GreyRowBox';
 import getServerBackups from '@/api/swr/getServerBackups';
 import { ServerBackup } from '@/api/server/types';
 import { SocketEvent } from '@/components/server/events';
-import { ArchiveIcon, LockClosedIcon } from '@heroicons/react/outline';
-import { useTranslation } from 'react-i18next';
-import * as locales from 'date-fns/locale';
-
-const getLocale = (localeKey: keyof typeof locales) => {
-    if (locales[localeKey]) {
-        return locales[localeKey];
-    } else {
-        const keyString = String(localeKey);
-        console.warn(`Locale '${keyString}' not found. Falling back to '${locales.enUS}'`);
-        return locales.enUS;
-    }
-};
 
 interface Props {
     backup: ServerBackup;
@@ -32,11 +19,7 @@ interface Props {
 }
 
 export default ({ backup, className }: Props) => {
-    const { t } = useTranslation('arix/server/backups');
     const { mutate } = getServerBackups();
-    const { i18n } = useTranslation();
-    const currentLang = i18n.language;
-    const localeKey = currentLang as keyof typeof locales;
 
     useWebsocketEvent(`${SocketEvent.BACKUP_COMPLETED}:${backup.uuid}` as SocketEvent, (data) => {
         try {
@@ -65,60 +48,55 @@ export default ({ backup, className }: Props) => {
     });
 
     return (
-        <>
-        <tr>
-            <td>
-                <div className={'flex items-center gap-x-2'}>
+        <GreyRowBox css={tw`flex-wrap md:flex-nowrap items-center`} className={className}>
+            <div css={tw`flex items-center truncate w-full md:flex-1`}>
+                <div css={tw`mr-4`}>
                     {backup.completedAt !== null ? (
                         backup.isLocked ? (
-                            <LockClosedIcon css={tw`text-danger-200 w-5`} />
+                            <FontAwesomeIcon icon={faLock} css={tw`text-yellow-500`} />
                         ) : (
-                            <ArchiveIcon css={tw`text-neutral-300 w-5`} />
+                            <FontAwesomeIcon icon={faArchive} css={tw`text-neutral-300`} />
                         )
                     ) : (
                         <Spinner size={'small'} />
                     )}
-                    {backup.name}
-                    {backup.completedAt !== null && !backup.isSuccessful && (
-                        <span
-                            css={tw`bg-danger-200 py-px px-2 rounded-full text-danger-50 text-xs uppercase border border-red-600 mr-2`}
-                        >
-                            {t('failed')}
-                        </span>
-                    )}
                 </div>
-            </td>
-            <td>
-                {backup.completedAt !== null && backup.isSuccessful && (
-                    <span>
-                        {bytesToString(backup.bytes)}
-                    </span>
-                )}
-            </td>
-            <td>
-                {formatDistanceToNow(backup.createdAt, { includeSeconds: true, addSuffix: true, locale: getLocale(localeKey) })}
-            </td>
-            <td>
-                <CopyOnClick text={backup.checksum}>
-                    <p className={'max-w-[250px] overflow-hidden overflow-ellipsis'}>
-                        {backup.checksum}
-                    </p>
-                </CopyOnClick>
-            </td>
-            <td className={'w-1'}>
-                <Can action={['backup.download', 'backup.restore', 'backup.delete']} matchAny>
-                    <div css={tw`mt-4 md:mt-0 ml-6`} style={{ marginRight: '-0.5rem' }}>
-                        {!backup.completedAt ? (
-                            <div css={tw`p-2 invisible`}>
-                                <FontAwesomeIcon icon={faEllipsisH} />
-                            </div>
-                        ) : (
-                            <BackupContextMenu backup={backup} />
+                <div css={tw`flex flex-col truncate`}>
+                    <div css={tw`flex items-center text-sm mb-1`}>
+                        {backup.completedAt !== null && !backup.isSuccessful && (
+                            <span
+                                css={tw`bg-red-500 py-px px-2 rounded-full text-white text-xs uppercase border border-red-600 mr-2`}
+                            >
+                                Failed
+                            </span>
+                        )}
+                        <p css={tw`break-words truncate`}>{backup.name}</p>
+                        {backup.completedAt !== null && backup.isSuccessful && (
+                            <span css={tw`ml-3 text-neutral-300 text-xs font-extralight hidden sm:inline`}>
+                                {bytesToString(backup.bytes)}
+                            </span>
                         )}
                     </div>
-                </Can>
-            </td>
-        </tr>
-        </>
+                    <p css={tw`mt-1 md:mt-0 text-xs text-neutral-400 font-mono truncate`}>{backup.checksum}</p>
+                </div>
+            </div>
+            <div css={tw`flex-1 md:flex-none md:w-48 mt-4 md:mt-0 md:ml-8 md:text-center`}>
+                <p title={format(backup.createdAt, 'ddd, MMMM do, yyyy HH:mm:ss')} css={tw`text-sm`}>
+                    {formatDistanceToNow(backup.createdAt, { includeSeconds: true, addSuffix: true })}
+                </p>
+                <p css={tw`text-2xs text-neutral-500 uppercase mt-1`}>Created</p>
+            </div>
+            <Can action={['backup.download', 'backup.restore', 'backup.delete']} matchAny>
+                <div css={tw`mt-4 md:mt-0 ml-6`} style={{ marginRight: '-0.5rem' }}>
+                    {!backup.completedAt ? (
+                        <div css={tw`p-2 invisible`}>
+                            <FontAwesomeIcon icon={faEllipsisH} />
+                        </div>
+                    ) : (
+                        <BackupContextMenu backup={backup} />
+                    )}
+                </div>
+            </Can>
+        </GreyRowBox>
     );
 };

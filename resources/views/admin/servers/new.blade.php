@@ -282,24 +282,6 @@
     </div>
 
     <div class="row">
-        <div class="col-md-6">
-            <div class="box">
-                <div class="box-header with-border">
-                    <h3 class="box-title">Subdomains Configuration</h3>
-                </div>
-
-                <div class="box-body row">
-                    <div class="form-group col-xs-12">
-                        <label for="subdomainLimit">Subdomain Count limit</label>
-
-                        <input type="number" id="subdomainLimit" name="subdomain_limit" class="form-control" value="1"></input>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
         <div class="col-md-12">
             <div class="box">
                 <div class="box-header with-border">

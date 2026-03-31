@@ -8,9 +8,6 @@ import { httpErrorToHuman } from '@/api/http';
 import { ApplicationStore } from '@/state';
 import tw from 'twin.macro';
 import { Button } from '@/components/elements/button/index';
-import { KeyIcon, AtSymbolIcon } from '@heroicons/react/outline';
-import { useTranslation } from 'react-i18next';
-
 
 interface Values {
     email: string;
@@ -23,7 +20,6 @@ const schema = Yup.object().shape({
 });
 
 export default () => {
-    const { t } = useTranslation('arix/account');
     const user = useStoreState((state: State<ApplicationStore>) => state.user.data);
     const updateEmail = useStoreActions((state: Actions<ApplicationStore>) => state.user.updateUserEmail);
 
@@ -37,7 +33,7 @@ export default () => {
                 addFlash({
                     type: 'success',
                     key: 'account:email',
-                    message: t('update-email.isUpdated'),
+                    message: 'Your primary email has been updated.',
                 })
             )
             .catch((error) =>
@@ -55,31 +51,26 @@ export default () => {
     };
 
     return (
-        <div className={'px-6 py-5'}>
-            <p className={'font-medium text-gray-300 mb-5'}>{t('update-email.update')}</p>
-            <Formik onSubmit={submit} validationSchema={schema} initialValues={{ email: user!.email, password: '' }}>
-                    {({ isSubmitting, isValid }) => (
-                        <React.Fragment>
-                            <SpinnerOverlay size={'large'} visible={isSubmitting} />
-                            <Form css={tw`m-0`}>
-                                <Field id={'current_email'} icon={AtSymbolIcon} type={'email'} name={'email'} label={t('update-email.email')} />
-                                <div css={tw`mt-6`}>
-                                    <Field
-                                        icon={KeyIcon}
-                                        id={'confirm_password'}
-                                        type={'password'}
-                                        name={'password'}
-                                        placeholder={t('update-email.confirm')}
-                                        label={t('update-email.confirm')}
-                                    />
-                                </div>
-                                <div css={tw`mt-6 text-right`}>
-                                    <Button disabled={isSubmitting || !isValid}>{t('update-email.update')}</Button>
-                                </div>
-                            </Form>
-                        </React.Fragment>
-                    )}
-            </Formik>
-        </div>
+        <Formik onSubmit={submit} validationSchema={schema} initialValues={{ email: user!.email, password: '' }}>
+            {({ isSubmitting, isValid }) => (
+                <React.Fragment>
+                    <SpinnerOverlay size={'large'} visible={isSubmitting} />
+                    <Form css={tw`m-0`}>
+                        <Field id={'current_email'} type={'email'} name={'email'} label={'Email'} />
+                        <div css={tw`mt-6`}>
+                            <Field
+                                id={'confirm_password'}
+                                type={'password'}
+                                name={'password'}
+                                label={'Confirm Password'}
+                            />
+                        </div>
+                        <div css={tw`mt-6`}>
+                            <Button disabled={isSubmitting || !isValid}>Update Email</Button>
+                        </div>
+                    </Form>
+                </React.Fragment>
+            )}
+        </Formik>
     );
 };

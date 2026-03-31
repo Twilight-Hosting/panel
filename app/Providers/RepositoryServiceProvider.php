@@ -37,8 +37,6 @@ use Pterodactyl\Contracts\Repository\AllocationRepositoryInterface;
 use Pterodactyl\Contracts\Repository\EggVariableRepositoryInterface;
 use Pterodactyl\Contracts\Repository\DatabaseHostRepositoryInterface;
 use Pterodactyl\Contracts\Repository\ServerVariableRepositoryInterface;
-use Pterodactyl\Contracts\Repository\AktiCubeDevelopmentTeamPermissionManagerRoleRepositoryInterface;
-use Pterodactyl\Repositories\Eloquent\AktiCubeDevelopmentTeamPermissionManagerRoleRepository;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -65,6 +63,5 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(SubuserRepositoryInterface::class, SubuserRepository::class);
         $this->app->bind(TaskRepositoryInterface::class, TaskRepository::class);
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
-        $this->app->bind(AktiCubeDevelopmentTeamPermissionManagerRoleRepositoryInterface::class, AktiCubeDevelopmentTeamPermissionManagerRoleRepository::class);
     }
 }

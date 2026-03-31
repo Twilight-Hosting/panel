@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import Tooltip from '@/components/elements/tooltip/Tooltip';
 import Translate from '@/components/elements/Translate';
@@ -8,23 +8,9 @@ import ActivityLogMetaButton from '@/components/elements/activity/ActivityLogMet
 import { FolderOpenIcon, TerminalIcon } from '@heroicons/react/solid';
 import classNames from 'classnames';
 import style from './style.module.css';
-import UserAvatar from '@/components/UserAvatar';
+import Avatar from '@/components/Avatar';
 import useLocationHash from '@/plugins/useLocationHash';
 import { getObjectKeys, isObject } from '@/lib/objects';
-import { useStoreState } from 'easy-peasy';
-import { ApplicationStore } from '@/state';
-import { useTranslation } from 'react-i18next';
-import * as locales from 'date-fns/locale';
-
-const getLocale = (localeKey: keyof typeof locales) => {
-    if (locales[localeKey]) {
-        return locales[localeKey];
-    } else {
-        const keyString = String(localeKey);
-        console.warn(`Locale '${keyString}' not found. Falling back to '${locales.enUS}'`);
-        return locales.enUS;
-    }
-};
 
 interface Props {
     activity: ActivityLog;
@@ -53,45 +39,15 @@ function wrapProperties(value: unknown): any {
 }
 
 export default ({ activity, children }: Props) => {
-    const { i18n } = useTranslation();
-    const currentLang = i18n.language;
-    const localeKey = currentLang as keyof typeof locales;
-
     const { pathTo } = useLocationHash();
     const actor = activity.relationships.actor;
     const properties = wrapProperties(activity.properties);
-    const [countryCode, setCountryCode] = useState<string | null>(null);
-
-    const ipFlag = String(useStoreState((state: ApplicationStore) => state.settings.data!.arix.ipFlag));
-    
-    // add476291c3b7bc97fdcea5389afb157
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch(`https://api.country.is/${activity.ip}`);
-                const data = await response.json();
-                if (data.country) {
-                    // Transform the country code to lowercase
-                    setCountryCode(data.country.toLowerCase());
-                }
-            } catch (error) {
-                console.error('Error fetching country data:', error);
-            }
-        };
-
-        if (activity.ip && ipFlag == 'true') {
-            fetchData();
-        }
-    }, [activity.ip]);
-
-    const countryLogo = countryCode ? countryCode : 'us';
 
     return (
-        <div className={'grid relative grid-cols-10 py-5 mb-2 last:mb-0 bg-gray-700 backdrop rounded-box'}>
+        <div className={'grid grid-cols-10 py-4 border-b-2 border-gray-800 last:rounded-b last:border-0 group'}>
             <div className={'hidden sm:flex sm:col-span-1 items-center justify-center select-none'}>
                 <div className={'flex items-center w-10 h-10 rounded-full bg-gray-600 overflow-hidden'}>
-                    <UserAvatar uuid={actor?.uuid || 'system'} email={actor?.email || 'system@weijers.one'} user={actor?.username || 'system'} width={'40px'} />
+                    <Avatar name={actor?.uuid || 'system'} />
                 </div>
             </div>
             <div className={'col-span-10 sm:col-span-9 flex'}>
@@ -103,11 +59,11 @@ export default ({ activity, children }: Props) => {
                         <span className={'text-gray-400'}>&nbsp;&mdash;&nbsp;</span>
                         <Link
                             to={`#${pathTo({ event: activity.event })}`}
-                            className={'transition-colors duration-75 active:text-arix hover:text-arix'}
+                            className={'transition-colors duration-75 active:text-cyan-400 hover:text-cyan-400'}
                         >
                             {activity.event}
                         </Link>
-                        <div className={classNames(style.icons, 'hover:text-gray-300')}>
+                        <div className={classNames(style.icons, 'group-hover:text-gray-300')}>
                             {activity.isApi && (
                                 <Tooltip placement={'top'} content={'Using API Key'}>
                                     <TerminalIcon />
@@ -126,14 +82,13 @@ export default ({ activity, children }: Props) => {
                     </p>
                     <div className={'mt-1 flex items-center text-sm'}>
                         {activity.ip && (
-                            <span className={'group flex items-center'}>
-                                {ipFlag == 'true' && <img src={`https://cdn.jsdelivr.net/gh/hampusborgos/country-flags@main/svg/${countryLogo}.svg`} className={'w-6 rounded-sm'}/>}
-                                <span className={'filter blur-sm group-hover:blur-none cursor-text select-none duration-300 px-2'}>{activity.ip}</span>
-                                <span className={'text-gray-400'}>|&nbsp;</span>
+                            <span>
+                                {activity.ip}
+                                <span className={'text-gray-400'}>&nbsp;|&nbsp;</span>
                             </span>
                         )}
-                        <Tooltip placement={'right'} content={format(activity.timestamp, 'MMM do, yyyy H:mm:ss', {locale: getLocale(localeKey)})}>
-                            <span>{formatDistanceToNowStrict(activity.timestamp, { addSuffix: true, locale: getLocale(localeKey) })}</span>
+                        <Tooltip placement={'right'} content={format(activity.timestamp, 'MMM do, yyyy H:mm:ss')}>
+                            <span>{formatDistanceToNowStrict(activity.timestamp, { addSuffix: true })}</span>
                         </Tooltip>
                     </div>
                 </div>

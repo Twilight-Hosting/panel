@@ -7,7 +7,6 @@ import { Button } from '@/components/elements/button/index';
 import Tooltip from '@/components/elements/tooltip/Tooltip';
 import Code from '@/components/elements/Code';
 import { useSignal } from '@preact/signals-react';
-import { useTranslation } from 'react-i18next';
 
 const svgProps = {
     cx: 16,
@@ -32,7 +31,6 @@ const Spinner = ({ progress, className }: { progress: number; className?: string
 );
 
 const FileUploadList = () => {
-    const { t } = useTranslation('arix/server/files');
     const { close } = useContext(DialogWrapperContext);
     const cancelFileUpload = ServerContext.useStoreActions((actions) => actions.files.cancelFileUpload);
     const clearFileUploads = ServerContext.useStoreActions((actions) => actions.files.clearFileUploads);
@@ -60,9 +58,9 @@ const FileUploadList = () => {
             ))}
             <Dialog.Footer>
                 <Button.Danger variant={Button.Variants.Secondary} onClick={() => clearFileUploads()}>
-                    {t('cancel-uploads')}
+                    Cancel Uploads
                 </Button.Danger>
-                <Button.Text onClick={close}>{t('close')}</Button.Text>
+                <Button.Text onClick={close}>Close</Button.Text>
             </Dialog.Footer>
         </div>
     );
@@ -74,7 +72,6 @@ const FileUploadListDialog = asDialog({
 })(FileUploadList);
 
 export default () => {
-    const { t } = useTranslation('arix/server/files');
     const open = useSignal(false);
 
     const count = ServerContext.useStoreState((state) => Object.keys(state.files.uploads).length);
@@ -92,7 +89,7 @@ export default () => {
     return (
         <>
             {count > 0 && (
-                <Tooltip content={`${count} ${t('are-upload-click-to-view')}`}>
+                <Tooltip content={`${count} files are uploading, click to view`}>
                     <button
                         className={'flex items-center justify-center w-10 h-10'}
                         onClick={() => (open.value = true)}

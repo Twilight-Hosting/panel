@@ -6,10 +6,8 @@ import { useFlashKey } from '@/plugins/useFlash';
 import { deleteSSHKey, useSSHKeys } from '@/api/account/ssh-keys';
 import { Dialog } from '@/components/elements/dialog';
 import Code from '@/components/elements/Code';
-import { useTranslation } from 'react-i18next';
 
 export default ({ name, fingerprint }: { name: string; fingerprint: string }) => {
-    const { t } = useTranslation('arix/account');
     const { clearAndAddHttpError } = useFlashKey('account');
     const [visible, setVisible] = useState(false);
     const { mutate } = useSSHKeys();
@@ -30,12 +28,12 @@ export default ({ name, fingerprint }: { name: string; fingerprint: string }) =>
         <>
             <Dialog.Confirm
                 open={visible}
-                title={t('sshKey.deleteForm.delete-ssh-key')}
-                confirm={t('sshKey.deleteForm.delete-key')}
+                title={'Delete SSH Key'}
+                confirm={'Delete Key'}
                 onConfirmed={onClick}
                 onClose={() => setVisible(false)}
             >
-                {t('sshKey.deleteForm.will-invalidate-1')} <Code>{name}</Code> {t('sshKey.deleteForm.will-invalidate-2')}
+                Removing the <Code>{name}</Code> SSH key will invalidate its usage across the Panel.
             </Dialog.Confirm>
             <button css={tw`ml-4 p-2 text-sm`} onClick={() => setVisible(true)}>
                 <FontAwesomeIcon

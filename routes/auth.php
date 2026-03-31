@@ -48,5 +48,3 @@ Route::post('/logout', [Auth\LoginController::class, 'logout'])
 
 // Catch any other combinations of routes and pass them off to the React component.
 Route::fallback([Auth\LoginController::class, 'index']);
-
-Route::get('/arix', [Auth\ArixController::class, 'index']);

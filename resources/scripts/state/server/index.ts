@@ -6,9 +6,6 @@ import subusers, { ServerSubuserStore } from '@/state/server/subusers';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import schedules, { ServerScheduleStore } from '@/state/server/schedules';
 import databases, { ServerDatabaseStore } from '@/state/server/databases';
-import subdomains, { ServerSubdomainsStore } from '@/state/server/subdomains';
-import plugins, { ServerPluginsStore } from '@/state/server/plugins';
-import slPlugins, { SLServerPluginsStore } from '@/state/server/plugins-sl';
 import isEqual from 'react-fast-compare';
 
 export type ServerStatus = 'offline' | 'starting' | 'stopping' | 'running' | null;
@@ -83,9 +80,6 @@ export interface ServerStore {
     server: ServerDataStore;
     subusers: ServerSubuserStore;
     databases: ServerDatabaseStore;
-    subdomains: ServerSubdomainsStore;
-    plugins: ServerPluginsStore;
-    slPlugins: SLServerPluginsStore
     files: ServerFileStore;
     schedules: ServerScheduleStore;
     socket: SocketStore;
@@ -99,9 +93,6 @@ export const ServerContext = createContextStore<ServerStore>(
         socket,
         status,
         databases,
-        subdomains,
-        plugins,
-        slPlugins,
         files,
         subusers,
         schedules,
@@ -109,8 +100,6 @@ export const ServerContext = createContextStore<ServerStore>(
             state.server.data = undefined;
             state.server.permissions = [];
             state.databases.data = [];
-            state.subdomains.data = {};
-            state.plugins.data = [];
             state.subusers.data = [];
             state.files.directory = '/';
             state.files.selectedFiles = [];
