@@ -3,6 +3,7 @@ import Fade from '@/components/elements/Fade';
 import Portal from '@/components/elements/Portal';
 import copy from 'copy-to-clipboard';
 import classNames from 'classnames';
+import { useTranslation } from 'react-i18next';
 
 interface CopyOnClickProps {
     text: string | number | null | undefined;
@@ -11,6 +12,7 @@ interface CopyOnClickProps {
 }
 
 const CopyOnClick = ({ text, showInNotification = true, children }: CopyOnClickProps) => {
+    const { t } = useTranslation('arix/utilities');
     const [copied, setCopied] = useState(false);
 
     useEffect(() => {
@@ -37,6 +39,11 @@ const CopyOnClick = ({ text, showInNotification = true, children }: CopyOnClickP
               onClick: (e: React.MouseEvent<HTMLElement>) => {
                   copy(String(text));
                   setCopied(true);
+                  if (localStorage.getItem('panelSounds') === 'true'){
+                    const copySound = new Audio('/arix/copy.mp3');
+                    copySound.volume = 0.2;
+                    copySound.play();
+                  }
                   if (typeof children.props.onClick === 'function') {
                       children.props.onClick(e);
                   }
@@ -49,11 +56,11 @@ const CopyOnClick = ({ text, showInNotification = true, children }: CopyOnClickP
                 <Portal>
                     <Fade in appear timeout={250} key={copied ? 'visible' : 'invisible'}>
                         <div className={'fixed z-50 bottom-0 right-0 m-4'}>
-                            <div className={'rounded-md py-3 px-4 text-gray-200 bg-neutral-600/95 shadow'}>
+                            <div className={'rounded-md py-3 px-4 text-gray-200 backdrop-blur-md'} css={'background-color:color-mix(in srgb, var(--gray600) 30%, transparent);'}>
                                 <p>
                                     {showInNotification
-                                        ? `Copied "${String(text)}" to clipboard.`
-                                        : 'Copied text to clipboard.'}
+                                        ? t('copied-text', { text: String(text) })
+                                        : t('copied-text', { text: 'text' })}
                                 </p>
                             </div>
                         </div>

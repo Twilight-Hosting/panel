@@ -3,12 +3,14 @@
 namespace Pterodactyl\Services\Servers;
 
 use Illuminate\Http\Response;
+use Pterodactyl\Models\arix\ArixUserSubdomain;
 use Pterodactyl\Models\Server;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\ConnectionInterface;
 use Pterodactyl\Repositories\Wings\DaemonServerRepository;
 use Pterodactyl\Services\Databases\DatabaseManagementService;
 use Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException;
+use Pterodactyl\Http\Controllers\Api\Client\SubdomainsAddon\DomainController;
 
 class ServerDeletionService
 {
@@ -20,7 +22,7 @@ class ServerDeletionService
     public function __construct(
         private ConnectionInterface $connection,
         private DaemonServerRepository $daemonServerRepository,
-        private DatabaseManagementService $databaseManagementService,
+        private DatabaseManagementService $databaseManagementService
     ) {
     }
 
@@ -43,6 +45,12 @@ class ServerDeletionService
     public function handle(Server $server): void
     {
         try {
+            $DomainController = new DomainController();
+            $domainsDelError = $DomainController->DeleteDomainsFromServer($server->id);
+            if ($domainsDelError) {
+                throw new \Exception('Subdomains Addon: Error deleting domains from server'. $domainsDelError, 500);
+            }
+            
             $this->daemonServerRepository->setServer($server)->delete();
         } catch (DaemonConnectionException $exception) {
             // If there is an error not caused a 404 error and this isn't a forced delete,

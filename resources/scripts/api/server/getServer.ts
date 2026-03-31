@@ -34,6 +34,12 @@ export interface Server {
     uuid: string;
     name: string;
     node: string;
+    nodeAlert: string;
+    daemonText: string;
+    containerText: string;
+    eggImage: string;
+    eggId: number;
+    nestId: number;
     isNodeUnderMaintenance: boolean;
     status: ServerStatus;
     sftpDetails: {
@@ -56,6 +62,7 @@ export interface Server {
         databases: number;
         allocations: number;
         backups: number;
+        subdomains: number;
     };
     isTransferring: boolean;
     variables: ServerEggVariable[];
@@ -70,6 +77,12 @@ export const rawDataToServerObject = ({ attributes: data }: FractalResponseData)
     uuid: data.uuid,
     name: data.name,
     node: data.node,
+    nodeAlert: data.node_alert,
+    daemonText: data.daemon_text,
+    containerText: data.container_text,
+    eggImage: data.egg_image,
+    nestId: data.nest_id,
+    eggId: data.egg_id,
     isNodeUnderMaintenance: data.is_node_under_maintenance,
     status: data.status,
     invocation: data.invocation,

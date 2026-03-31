@@ -6,6 +6,65 @@ use Pterodactyl\Http\Middleware\Admin\Servers\ServerInstalled;
 
 Route::get('/', [Admin\BaseController::class, 'index'])->name('admin.index');
 
+Route::group(['prefix' => 'domain'], function () {
+    Route::get('/', [Admin\SubdomainsAddon\SubdomainsAddonConnectionController::class, 'index'])->name('admin.domain');
+    Route::get('/connected', [Admin\SubdomainsAddon\SubdomainsAddonConnectionController::class, 'GetConnectedDomains'])->name('admin.domain.connected');
+    Route::post('/connect', [Admin\SubdomainsAddon\SubdomainsAddonConnectionController::class, 'ConnectNewDomain'])->name('admin.domain.connect');
+    Route::delete('/disconnect/{domain}', [Admin\SubdomainsAddon\SubdomainsAddonConnectionController::class, 'DisconnectDomain'])->name('admin.domain.disconnect');
+
+    Route::get('/cloudflare/config', [Admin\SubdomainsAddon\SubdomainsAddonConnectionController::class, 'GetCloudflareConfig'])->name('admin.domain.cloudflare.getConfig');
+    Route::post('/set/CF/key', [Admin\SubdomainsAddon\SubdomainsAddonConnectionController::class, 'SetCloudflareKey'])->name('admin.domain.setCFkey');
+    Route::post('/mock/set/CF/key', [Admin\SubdomainsAddon\SubdomainsAddonConnectionController::class, 'MockSetCloudflareKey'])->name('admin.domain.mockNewConfig');
+
+    Route::group(['prefix' => 'blocklist'], function () {
+        Route::get('/', [Admin\SubdomainsAddon\SubdomainsAddonBlocklistController::class, 'index'])->name('admin.domain.blocklist');
+        Route::post('/', [Admin\SubdomainsAddon\SubdomainsAddonBlocklistController::class, 'AddBlocklist'])->name('admin.domain.blocklist.add');
+        Route::delete('/{id}', [Admin\SubdomainsAddon\SubdomainsAddonBlocklistController::class, 'RemoveBlocklist'])->name('admin.domain.blocklist.remove');
+    });
+
+    Route::group(['prefix' => '{server:id}'], function () {
+        Route::post('/force/delete' , [Admin\SubdomainsAddon\SubdomainsAddonConnectionController::class, 'ForceDeleteSubdomainFromServer'])->name('admin.domain.forceDelete');
+        Route::post('/config', [Admin\SubdomainsAddon\SubdomainsAddonConfigController::class, 'UpdateConfig'])->name('admin.domain.config.update');
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| Theme Controller Routes
+|--------------------------------------------------------------------------
+|
+| Endpoint: /admin/theme
+|
+*/
+Route::group(['prefix' => 'arix'], function () {
+    Route::get('/', [Admin\Arix\ArixController::class, 'index'])->name('admin.arix');
+    Route::post('/', [Admin\Arix\ArixController::class, 'store']);
+
+    Route::get('/layout', [Admin\Arix\ArixLayoutController::class, 'index'])->name('admin.arix.layout');
+    Route::post('/layout', [Admin\Arix\ArixLayoutController::class, 'store']);
+
+    Route::get('/components', [Admin\Arix\ArixComponentsController::class, 'index'])->name('admin.arix.components');
+    Route::post('/components', [Admin\Arix\ArixComponentsController::class, 'store']);
+
+    Route::get('/announcement', [Admin\Arix\ArixAnnouncementController::class, 'index'])->name('admin.arix.announcement');
+    Route::post('/announcement', [Admin\Arix\ArixAnnouncementController::class, 'store']);
+
+    Route::get('/mail', [Admin\Arix\ArixMailController::class, 'index'])->name('admin.arix.mail');
+    Route::post('/mail', [Admin\Arix\ArixMailController::class, 'store']);
+
+    Route::get('/styling', [Admin\Arix\ArixStylingController::class, 'index'])->name('admin.arix.styling');
+    Route::post('/styling', [Admin\Arix\ArixStylingController::class, 'store']);
+
+    Route::get('/meta', [Admin\Arix\ArixMetaController::class, 'index'])->name('admin.arix.meta');
+    Route::post('/meta', [Admin\Arix\ArixMetaController::class, 'store']);
+
+    Route::get('/colors', [Admin\Arix\ArixColorsController::class, 'index'])->name('admin.arix.colors');
+    Route::post('/colors', [Admin\Arix\ArixColorsController::class, 'store']);
+
+    Route::get('/advanced', [Admin\Arix\ArixAdvancedController::class, 'index'])->name('admin.arix.advanced');
+    Route::post('/advanced', [Admin\Arix\ArixAdvancedController::class, 'store']);
+});
+
 /*
 |--------------------------------------------------------------------------
 | Location Controller Routes
@@ -94,6 +153,30 @@ Route::group(['prefix' => 'users'], function () {
 
     Route::patch('/view/{user:id}', [Admin\UserController::class, 'update']);
     Route::delete('/view/{user:id}', [Admin\UserController::class, 'delete'])->name('admin.users.delete');
+
+    Route::group(['prefix' => 'moderation'], function () {
+        Route::get('/', [Admin\Moderation\ModerationController::class, 'index'])->name('admin.moderation');
+        Route::get('/create', [Admin\Moderation\ModerationController::class, 'create'])->name('admin.moderation.create');
+        Route::post('/', [Admin\Moderation\ModerationController::class, 'store'])->name('admin.moderation.store');
+        Route::put('/{ban}/unban', [Admin\Moderation\ModerationController::class, 'unban'])->name('admin.moderation.unban');
+        Route::delete('/{ban}', [Admin\Moderation\ModerationController::class, 'destroy'])->name('admin.moderation.destroy');
+        Route::get('/warn', [Admin\Moderation\ModerationController::class, 'warnForm'])->name('admin.moderation.warn');
+        Route::post('/warn', [Admin\Moderation\ModerationController::class, 'warn'])->name('admin.moderation.warn.store');
+        Route::delete('/warnings/{warning}', [Admin\Moderation\ModerationController::class, 'destroyWarning'])->name('admin.moderation.warning.destroy');
+        Route::get('/block', [Admin\Moderation\ModerationController::class, 'blockForm'])->name('admin.moderation.block');
+        Route::post('/block', [Admin\Moderation\ModerationController::class, 'block'])->name('admin.moderation.block.store');
+        Route::put('/blocks/{block}/unblock', [Admin\Moderation\ModerationController::class, 'unblock'])->name('admin.moderation.unblock');
+        Route::delete('/blocks/{block}', [Admin\Moderation\ModerationController::class, 'destroyBlock'])->name('admin.moderation.block.destroy');
+        Route::get('/ip-ban', [Admin\Moderation\ModerationController::class, 'ipBanForm'])->name('admin.moderation.ip-ban');
+        Route::post('/ip-ban', [Admin\Moderation\ModerationController::class, 'ipBan'])->name('admin.moderation.ip-ban.store');
+        Route::post('/users/{user}/logout', [Admin\Moderation\ModerationController::class, 'forceLogout'])->name('admin.moderation.logout');
+        Route::put('/settings', [Admin\Moderation\ModerationController::class, 'updateSettings'])->name('admin.moderation.settings');
+        Route::get('/login-history', [Admin\Moderation\ModerationController::class, 'loginHistory'])->name('admin.moderation.login-history');
+        Route::get('/failed-attempts', [Admin\Moderation\ModerationController::class, 'failedAttempts'])->name('admin.moderation.failed-attempts');
+        Route::post('/failed-attempts/clear', [Admin\Moderation\ModerationController::class, 'clearFailedAttempts'])->name('admin.moderation.clear-failed-attempts');
+        Route::put('/failed-attempts/{id}/unblock', [Admin\Moderation\ModerationController::class, 'unblockFailedAttempt'])->name('admin.moderation.unblock-failed-attempt');
+        Route::get('/users/search', [Admin\Moderation\ModerationController::class, 'searchUsers'])->name('admin.moderation.users.search');
+    });
 });
 
 /*
@@ -115,6 +198,7 @@ Route::group(['prefix' => 'servers'], function () {
         Route::get('/view/{server:id}/startup', [Admin\Servers\ServerViewController::class, 'startup'])->name('admin.servers.view.startup');
         Route::get('/view/{server:id}/database', [Admin\Servers\ServerViewController::class, 'database'])->name('admin.servers.view.database');
         Route::get('/view/{server:id}/mounts', [Admin\Servers\ServerViewController::class, 'mounts'])->name('admin.servers.view.mounts');
+        Route::get('/view/{server:id}/subdomains', [Admin\SubdomainsAddon\SubdomainsAddonConfigController::class, 'subdomains'])->name('admin.servers.view.subdomains');
     });
 
     Route::get('/view/{server:id}/manage', [Admin\Servers\ServerViewController::class, 'manage'])->name('admin.servers.view.manage');
@@ -129,14 +213,19 @@ Route::group(['prefix' => 'servers'], function () {
     Route::post('/view/{server:id}/manage/suspension', [Admin\ServersController::class, 'manageSuspension'])->name('admin.servers.view.manage.suspension');
     Route::post('/view/{server:id}/manage/reinstall', [Admin\ServersController::class, 'reinstallServer'])->name('admin.servers.view.manage.reinstall');
     Route::post('/view/{server:id}/manage/transfer', [Admin\Servers\ServerTransferController::class, 'transfer'])->name('admin.servers.view.manage.transfer');
+    Route::post('/view/{server:id}/manage/resetverkey', [Admin\Plugins\SLAdminButtons\SLAdminButtonsController::class, 'resetVerKey'])->name('admin.servers.view.manage.resetverkey');
     Route::post('/view/{server:id}/delete', [Admin\ServersController::class, 'delete']);
 
     Route::patch('/view/{server:id}/details', [Admin\ServersController::class, 'setDetails']);
     Route::patch('/view/{server:id}/database', [Admin\ServersController::class, 'resetDatabasePassword']);
 
     Route::delete('/view/{server:id}/database/{database:id}/delete', [Admin\ServersController::class, 'deleteDatabase'])->name('admin.servers.view.database.delete');
-    Route::delete('/view/{server:id}/mounts/{mount:id}', [Admin\ServersController::class, 'deleteMount'])
-        ->name('admin.servers.view.mounts.delete');
+    Route::delete('/view/{server:id}/mounts/{mount:id}', [Admin\ServersController::class, 'deleteMount'])->name('admin.servers.view.mounts.delete');
+    Route::post('/view/{server:id}/start', [Admin\Servers\ServerPowerController::class, 'start'])->name('admin.servers.start');
+    Route::post('/view/{server:id}/stop', [Admin\Servers\ServerPowerController::class, 'stop'])->name('admin.servers.stop');
+    Route::post('/view/{server:id}/restart', [Admin\Servers\ServerPowerController::class, 'restart'])->name('admin.servers.restart');
+    Route::post('/view/{server:id}/kill', [Admin\Servers\ServerPowerController::class, 'kill'])->name('admin.servers.kill');
+
 });
 
 /*
@@ -226,3 +315,38 @@ Route::group(['prefix' => 'nests'], function () {
     Route::delete('/egg/{egg:id}', [Admin\Nests\EggController::class, 'destroy']);
     Route::delete('/egg/{egg:id}/variables/{variable:id}', [Admin\Nests\EggVariableController::class, 'destroy']);
 });
+
+/*
+|--------------------------------------------------------------------------
+| Permission Manager Routes
+|--------------------------------------------------------------------------
+|
+| Endpoint: /admin/permission-manager/
+|
+*/
+Route::group(['prefix' => 'permission-manager'], function() {
+    Route::get('/', [Admin\AktiCubeDevelopmentTeam\PermissionManagerController::class, 'index'])->name('admin.akticube.permission-manager');
+    Route::get('/new', [Admin\AktiCubeDevelopmentTeam\PermissionManagerController::class, 'createRole'])->name('admin.akticube.permission-manager.roles.new');
+    Route::get('/view/{role:id}', [Admin\AktiCubeDevelopmentTeam\PermissionManagerController::class, 'viewRole'])->name('admin.akticube.permission-manager.roles.view');
+
+    Route::post('/new', [Admin\AktiCubeDevelopmentTeam\PermissionManagerController::class, 'storeRole']);
+
+    Route::patch('/view/{role:id}', [Admin\AktiCubeDevelopmentTeam\PermissionManagerController::class, 'updateRole']);
+
+    Route::delete('/delete/{role:id}', [Admin\AktiCubeDevelopmentTeam\PermissionManagerController::class, 'deleteRole'])->name('admin.akticube.permission-manager.roles.delete');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Laravel Logs Controller Routes [Euphoria Development]
+|--------------------------------------------------------------------------
+|
+| Endpoint: /admin/laravel-logs
+|
+*/
+Route::group(['prefix' => 'laravel-logs'], function () {
+    Route::get('/', [Admin\LaravelController::class, 'showLogs'])->name('admin.laravel-logs.laravel');
+    Route::get('/download', [Admin\LaravelController::class, 'downloadLogs'])->name('admin.laravel-logs.download');
+});
+
+include 'admin-eggchanger.php';

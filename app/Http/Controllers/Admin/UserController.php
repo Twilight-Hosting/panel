@@ -21,6 +21,8 @@ use Pterodactyl\Services\Users\UserDeletionService;
 use Pterodactyl\Http\Requests\Admin\UserFormRequest;
 use Pterodactyl\Http\Requests\Admin\NewUserFormRequest;
 use Pterodactyl\Contracts\Repository\UserRepositoryInterface;
+use Pterodactyl\Models\PermissionRole;
+
 
 class UserController extends Controller
 {
@@ -36,7 +38,7 @@ class UserController extends Controller
         protected Translator $translator,
         protected UserUpdateService $updateService,
         protected UserRepositoryInterface $repository,
-        protected ViewFactory $view,
+        protected ViewFactory $view
     ) {
     }
 
@@ -79,6 +81,7 @@ class UserController extends Controller
         return view('admin.users.view', [
             'user' => $user,
             'languages' => $this->getAvailableLanguages(true),
+            'roles' => PermissionRole::all()
         ]);
     }
 
@@ -86,7 +89,7 @@ class UserController extends Controller
      * Delete a user from the system.
      *
      * @throws \Exception
-     * @throws DisplayException
+     * @throws \Pterodactyl\Exceptions\DisplayException
      */
     public function delete(Request $request, User $user): RedirectResponse
     {
