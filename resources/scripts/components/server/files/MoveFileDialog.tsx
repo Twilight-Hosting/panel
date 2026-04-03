@@ -13,7 +13,6 @@ import { FolderIcon } from '@heroicons/react/outline';
 import { ArrowCircleLeftIcon } from '@heroicons/react/solid';
 import { Dialog, DialogWrapperContext } from '@/components/elements/dialog';
 import asDialog from '@/hoc/asDialog';
-import path from 'path/win32';
 
 interface FormikValues {
     name: string;
@@ -119,10 +118,10 @@ const MoveFileDialog = asDialog({
     const uuid = ServerContext.useStoreState((state) => state.server.data!.uuid);
     const { mutate } = useFileManagerSwr();
     const { clearFlashes, clearAndAddHttpError } = useFlash();
-    const directory =  path ?? ServerContext.useStoreState((state) => state.files.directory);
+    const directory = path ?? ServerContext.useStoreState((state) => state.files.directory);
     const setSelectedFiles = ServerContext.useStoreActions((actions) => actions.files.setSelectedFiles);
     const { close } = useContext(DialogWrapperContext);
-    
+
     const [selectedPath, setSelectedPath] = useState(directory);
 
     const submit = ({ name }: FormikValues, { setSubmitting }: FormikHelpers<FormikValues>) => {

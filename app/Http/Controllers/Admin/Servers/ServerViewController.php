@@ -49,7 +49,7 @@ class ServerViewController extends Controller
             $status = 'offline';
         }
 
-        return view('admin.servers.view.index', compact('server'));
+        return view('admin.servers.view.index', compact(['server', 'status']));
         /*
          * Old method stuff: (check if 'status' is required in return)
         $server->loadMissing(['egg.nest', 'location', 'node', 'user']);
