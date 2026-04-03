@@ -50,22 +50,6 @@ class ServerViewController extends Controller
         }
 
         return view('admin.servers.view.index', compact(['server', 'status']));
-        /*
-         * Old method stuff: (check if 'status' is required in return)
-        $server->loadMissing(['egg.nest', 'location', 'node', 'user']);
-
-        try {
-            $details = $this->daemonServerRepository->setServer($server)->getDetails();
-            $status = $details['state'] ?? 'offline';
-        } catch (\Exception $exception) {
-            $status = 'offline';
-        }
-
-        return $this->view->make('admin.servers.view.index', [
-            'server' => $server,
-            'status' => $status,
-        ]);
-        */
     }
 
     /**
