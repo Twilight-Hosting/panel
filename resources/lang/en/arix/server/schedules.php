@@ -56,6 +56,11 @@ return [
         'enabled' => 'Schedule Enabled',
         'enabled-description' => 'This schedule will be executed automatically if enabled.',
 
+        'easy-mode' => 'Easy Mode',
+        'easy-mode-description' => 'Switch to advanced mode for custom cron configuration',
+        'easy' => 'Easy',
+        'advanced' => 'Advanced',
+
         'save-changes' => 'Save changes',
     ],
     'cheatsheet' => [

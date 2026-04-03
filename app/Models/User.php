@@ -81,6 +81,7 @@ use Pterodactyl\Notifications\SendPasswordReset as ResetPasswordNotification;
  *
  * @mixin \Eloquent
  */
+
 #[Attributes\Identifiable('user')]
 class User extends Model implements
     AuthenticatableContract,
@@ -129,6 +130,7 @@ class User extends Model implements
         'name_last',
         'password',
         'language',
+        'language_set',
         'use_totp',
         'totp_secret',
         'totp_authenticated_at',
@@ -144,6 +146,7 @@ class User extends Model implements
         'root_admin' => 'boolean',
         'use_totp' => 'boolean',
         'gravatar' => 'boolean',
+        'language_set' => 'boolean',
         'totp_authenticated_at' => 'datetime',
     ];
 
@@ -159,6 +162,7 @@ class User extends Model implements
         'external_id' => null,
         'root_admin' => false,
         'language' => 'en',
+        'language_set' => false,
         'use_totp' => false,
         'totp_secret' => null,
         'role_id' => null,
@@ -177,6 +181,7 @@ class User extends Model implements
         'password' => 'sometimes|nullable|string',
         'root_admin' => 'boolean',
         'language' => 'string',
+        'language_set' => 'boolean',
         'use_totp' => 'boolean',
         'totp_secret' => 'nullable|string',
         'role_id' => 'nullable|integer'
@@ -274,6 +279,14 @@ class User extends Model implements
     public function sshKeys(): HasMany
     {
         return $this->hasMany(UserSSHKey::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\Pterodactyl\Models\ServerOrder, $this>
+     */
+    public function serverOrders(): HasMany
+    {
+        return $this->hasMany(ServerOrder::class);
     }
 
     /**

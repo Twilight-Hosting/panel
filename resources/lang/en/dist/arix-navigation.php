@@ -22,10 +22,6 @@ return [
     'schedules' => 'Schedules',
     'users' => 'Users',
     'startup' => 'Startup',
-    'plugins' => 'Plugins',
-    'properties' => 'Properties',
-    'versions' => 'Versions',
-    'subdomains' => 'Subdomains',
     'admin-view' => 'Admin view',
 
     'general' => 'General',

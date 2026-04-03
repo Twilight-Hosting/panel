@@ -38,6 +38,70 @@
             <![endif]-->
         @show
         @yield('blueprint.import')
+
+        <style>
+            .arix{
+                position: relative;
+                font-weight: 500;
+                color: #ffffff;
+                overflow: hidden;
+                z-index: 2;
+            }
+            .arix a{
+                background-color: transparent !important;
+            }
+            .arix::after {
+                opacity: 1;
+                content: '';
+                position: absolute;
+                inset: 0;
+                z-index: -1;
+                background: #EEAECA;
+                filter: blur(20px);
+                background: linear-gradient(225deg,rgba(238, 174, 202, 1) 0%, rgba(125, 107, 242, 1) 25%, rgba(74, 53, 207, 1) 50%, rgba(53, 138, 207, 1) 75%, rgba(53, 207, 125, 1) 100%);
+                animation: arixAnimationNav 10s infinite linear;
+                transition: 0.3s;
+            }
+            .arix:hover::after{
+                opacity: 0.7;
+            }
+            .arix span, .arix svg {
+                font-weight: 500;
+                color: #ffffff;
+            }
+            @keyframes arixAnimationNav {
+                0%, 100% {
+                    transform: scale(3) rotate(0deg) translateX(-25%) translateY(10px);
+                }
+                33% {
+                    transform: scale(3) rotate(10deg) translateX(10px);
+                }
+                66% {
+                    transform: scale(4) rotate(4deg) translateX(25%);
+                }
+            }
+
+            :root {
+                --primary: {{ $siteConfiguration['arix']['primary'] }};
+                --primary-border: color-mix(in srgb, var(--primary) 75%, white 25%);
+
+                --text: {{ $siteConfiguration['arix']['gray200'] }};
+                --text-secondary: {{ $siteConfiguration['arix']['gray300'] }};
+
+                --box: {{ $siteConfiguration['arix']['gray700'] }};
+                --box-header: {{ $siteConfiguration['arix']['gray700'] }};
+                
+                --active-border: {{ $siteConfiguration['arix']['gray500'] }};
+                --active: {{ $siteConfiguration['arix']['gray600'] }};
+
+                --input: {{ $siteConfiguration['arix']['gray600'] }};
+                --input-border: {{ $siteConfiguration['arix']['gray500'] }};
+
+                --sidebar: {{ $siteConfiguration['arix']['gray700'] }};
+
+                --background: {{ $siteConfiguration['arix']['gray800'] }};
+            }
+        </style>
     </head>
     <body class="hold-transition skin-blue fixed sidebar-mini">
         <div class="wrapper">
@@ -212,6 +276,7 @@
             {!! Theme::js('vendor/select2/select2.full.min.js?t={cache-version}') !!}
             {!! Theme::js('js/admin/functions.js?t={cache-version}') !!}
             <script src="/js/autocomplete.js" type="application/javascript"></script>
+
             <script src="https://unpkg.com/lucide@latest"></script>
             <script>
                 lucide.createIcons();
