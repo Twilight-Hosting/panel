@@ -163,6 +163,14 @@ Route::group(['prefix' => 'users'], function () {
     Route::delete('/view/{user:id}', [Admin\UserController::class, 'delete'])->name('admin.users.delete');
 });
 
+/*
+|--------------------------------------------------------------------------
+| Moderation Controller Routes
+|--------------------------------------------------------------------------
+|
+| Endpoint: /admin/moderation
+|
+*/
 Route::group(['prefix' => 'moderation'], function () {
     Route::get('/', [Admin\Moderation\ModerationController::class, 'index'])->name('admin.moderation');
     Route::get('/create', [Admin\Moderation\ModerationController::class, 'create'])->name('admin.moderation.create');
