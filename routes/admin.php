@@ -46,6 +46,9 @@ Route::group(['prefix' => 'arix'], function () {
     Route::get('/components', [Admin\Arix\ArixComponentsController::class, 'index'])->name('admin.arix.components');
     Route::post('/components', [Admin\Arix\ArixComponentsController::class, 'store']);
 
+    Route::get('/dashboard', [Admin\Arix\ArixDashboardController::class, 'index'])->name('admin.arix.dashboard');
+    Route::post('/dashboard', [Admin\Arix\ArixDashboardController::class, 'store']);
+
     Route::get('/announcement', [Admin\Arix\ArixAnnouncementController::class, 'index'])->name('admin.arix.announcement');
     Route::post('/announcement', [Admin\Arix\ArixAnnouncementController::class, 'store']);
 
@@ -61,8 +64,13 @@ Route::group(['prefix' => 'arix'], function () {
     Route::get('/colors', [Admin\Arix\ArixColorsController::class, 'index'])->name('admin.arix.colors');
     Route::post('/colors', [Admin\Arix\ArixColorsController::class, 'store']);
 
+    Route::get('/social', [Admin\Arix\ArixSocialController::class, 'index'])->name('admin.arix.social');
+    Route::post('/social', [Admin\Arix\ArixSocialController::class, 'store']);
+
     Route::get('/advanced', [Admin\Arix\ArixAdvancedController::class, 'index'])->name('admin.arix.advanced');
     Route::post('/advanced', [Admin\Arix\ArixAdvancedController::class, 'store']);
+    
+    Route::post('/advanced/preset', [Admin\Arix\ArixAdvancedController::class, 'preset'])->name('admin.arix.advanced.preset');
 });
 
 /*

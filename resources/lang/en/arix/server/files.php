@@ -15,6 +15,7 @@ return [
     'copy' => 'Copy',
     'download' => 'Download',
     'update' => 'Update',
+
     'file-mode' => 'File Mode',
     'you-cant-recover' => 'You will not be able to recover the contents of',
     'once-deleted' => 'once deleted.',
@@ -39,6 +40,12 @@ return [
     'rename-description' => 'Enter the new name and directory of this file or folder, relative to the current directory.',
     'new-location' => 'New location',
     'drag-and-drop' => 'Drag and drop files to upload.',
+    'folders-not-supported' => 'Folder uploads are not supported at this time.',
+    'upload-files' => 'Upload Files',
+    'folder-too-big' => 'Folder size exceeds 10MB limit. Please select a smaller folder.',
+    'upload-folders' => 'Upload Folders',
+    'upload-from-url' => 'Upload from URL',
+    'filename' => 'Filename',
 
     'edit' => [
         'youre-editing' => 'You\'re editing a',
@@ -47,4 +54,21 @@ return [
         'save-content' => 'Save Content',
         'create-file' => 'Create File',
     ],
+
+    'open-code-editor' => 'Open Code Editor',
+
+    'code-editor' => [
+        'explorer' => 'Explorer',
+        'reload' => 'Reload',
+        'new' => 'New',
+        'browse-files' => 'Browse Files',
+        'save' => 'Save',
+        'save-dirty' => 'Save *',
+        'saving' => 'Saving...',
+        'no-file-selected' => 'No file selected',
+        'no-files-found' => 'No files found',
+        'loading' => 'Loading...',
+
+        'file-be-created' => 'This file will be created as',
+    ]
 ];

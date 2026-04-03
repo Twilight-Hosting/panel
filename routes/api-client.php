@@ -68,6 +68,9 @@ Route::group([
 Route::get('/', [Client\ClientController::class, 'index'])->name('api:client.index');
 Route::get('/permissions', [Client\ClientController::class, 'permissions']);
 
+Route::get('/server-orders', [Client\ClientController::class, 'getServerOrders'])->name('api:client.server-orders.index');
+Route::put('/server-orders', [Client\ClientController::class, 'updateServerOrder'])->name('api:client.server-orders.update');
+
 Route::prefix('/account')->middleware(AccountSubject::class)->group(function () {
     Route::prefix('/')->withoutMiddleware(RequireTwoFactorAuthentication::class)->group(function () {
         Route::get('/', [Client\AccountController::class, 'index'])->name('api:client.account');
@@ -76,8 +79,10 @@ Route::prefix('/account')->middleware(AccountSubject::class)->group(function () 
         Route::post('/two-factor/disable', [Client\TwoFactorController::class, 'delete']);
     });
 
+    Route::put('/profile', [Client\AccountController::class, 'updateProfileInformation'])->name('api:client.account.update-profile');
     Route::put('/email', [Client\AccountController::class, 'updateEmail'])->name('api:client.account.update-email');
     Route::put('/password', [Client\AccountController::class, 'updatePassword'])->name('api:client.account.update-password');
+    Route::put('/language', [Client\AccountController::class, 'updateLanguage'])->name('api:client.account.update-language');
 
     Route::get('/activity', Client\ActivityLogController::class)->name('api:client.account.activity');
 
