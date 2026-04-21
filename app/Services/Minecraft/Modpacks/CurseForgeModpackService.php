@@ -35,7 +35,7 @@ class CurseForgeModpackService extends AbstractModpackService
 
         $this->client = new Client([
             'headers' => [
-                'User-Agent' => $this->userAgent,
+                'User-Agent' => preg_replace('/[^a-zA-Z(). \/:-]/', '', $this->userAgent),
                 'X-API-Key' => config('services.curseforge_api_key'),
             ],
             'base_uri' => 'https://api.curseforge.com/v1/',
@@ -73,12 +73,16 @@ class CurseForgeModpackService extends AbstractModpackService
         $modpacks = [];
 
         foreach ($response['data'] as $curseforgeModpack) {
+            $iconUrl = $curseforgeModpack['logo']['thumbnailUrl'] ;
+            if (empty($iconUrl)) {
+                $iconUrl = $curseforgeModpack['logo']['url'];
+            }
             $modpacks[] = [
                 'id' => (string) $curseforgeModpack['id'],
                 'name' => $curseforgeModpack['name'],
                 'description' => $curseforgeModpack['summary'],
                 'url' => $curseforgeModpack['links']['websiteUrl'],
-                'icon_url' => $curseforgeModpack['logo']['thumbnailUrl'],
+                'icon_url' => $iconUrl,
             ];
         }
 

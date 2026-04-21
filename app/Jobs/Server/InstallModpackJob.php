@@ -2,7 +2,7 @@
 
 namespace Pterodactyl\Jobs\Server;
 
-use Pterodactyl\Jobs\Job;
+use Illuminate\Bus\Queueable;
 use Pterodactyl\Models\Egg;
 use Pterodactyl\Models\User;
 use Pterodactyl\Models\Server;
@@ -13,12 +13,12 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Pterodactyl\Repositories\Wings\DaemonFileRepository;
 use Pterodactyl\Repositories\Wings\DaemonPowerRepository;
 use Pterodactyl\Repositories\Wings\DaemonServerRepository;
-use Pterodactyl\Services\Minecraft\MinecraftSoftwareService;
 use Pterodactyl\Services\Servers\ReinstallServerService;
 use Pterodactyl\Services\Servers\StartupModificationService;
 
-class InstallModpackJob extends Job implements ShouldQueue
+class InstallModpackJob implements ShouldQueue
 {
+    use Queueable;
     use Dispatchable;
     use InteractsWithQueue;
     use SerializesModels;
