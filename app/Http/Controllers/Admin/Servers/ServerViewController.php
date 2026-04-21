@@ -9,11 +9,9 @@ use Pterodactyl\Models\Server;
 use Pterodactyl\Exceptions\DisplayException;
 use Pterodactyl\Http\Controllers\Controller;
 use Pterodactyl\Services\Servers\EnvironmentService;
-use Illuminate\Contracts\View\Factory as ViewFactory;
 use Pterodactyl\Repositories\Eloquent\NestRepository;
 use Pterodactyl\Repositories\Eloquent\NodeRepository;
 use Pterodactyl\Repositories\Eloquent\MountRepository;
-use Pterodactyl\Repositories\Eloquent\ServerRepository;
 use Pterodactyl\Traits\Controllers\JavascriptInjection;
 use Pterodactyl\Repositories\Eloquent\LocationRepository;
 use Pterodactyl\Repositories\Wings\DaemonServerRepository;
@@ -32,9 +30,7 @@ class ServerViewController extends Controller
         private MountRepository $mountRepository,
         private NestRepository $nestRepository,
         private NodeRepository $nodeRepository,
-        private ServerRepository $repository,
         private EnvironmentService $environmentService,
-        private ViewFactory $view,
         private DaemonServerRepository $daemonServerRepository
     ) {
     }
@@ -53,19 +49,15 @@ class ServerViewController extends Controller
             $status = 'offline';
         }
 
-        return $this->view->make('admin.servers.view.index', [
-            'server' => $server,
-            'status' => $status,
-        ]);
+        return view('admin.servers.view.index', compact(['server', 'status']));
     }
-
 
     /**
      * Returns the server details page.
      */
     public function details(Request $request, Server $server): View
     {
-        return $this->view->make('admin.servers.view.details', compact('server'));
+        return view('admin.servers.view.details', compact('server'));
     }
 
     /**
@@ -75,7 +67,7 @@ class ServerViewController extends Controller
     {
         $allocations = $server->node->allocations->toBase();
 
-        return $this->view->make('admin.servers.view.build', [
+        return view('admin.servers.view.build', [
             'server' => $server,
             'assigned' => $allocations->where('server_id', $server->id)->sortBy('port')->sortBy('ip'),
             'unassigned' => $allocations->where('server_id', null)->sortBy('port')->sortBy('ip'),
@@ -102,7 +94,7 @@ class ServerViewController extends Controller
             })->keyBy('id'),
         ]);
 
-        return $this->view->make('admin.servers.view.startup', compact('server', 'nests'));
+        return view('admin.servers.view.startup', compact('server', 'nests'));
     }
 
     /**
@@ -110,7 +102,7 @@ class ServerViewController extends Controller
      */
     public function database(Request $request, Server $server): View
     {
-        return $this->view->make('admin.servers.view.database', [
+        return view('admin.servers.view.database', [
             'hosts' => $this->databaseHostRepository->all(),
             'server' => $server,
         ]);
@@ -123,7 +115,7 @@ class ServerViewController extends Controller
     {
         $server->load('mounts');
 
-        return $this->view->make('admin.servers.view.mounts', [
+        return view('admin.servers.view.mounts', [
             'mounts' => $this->mountRepository->getMountListForServer($server),
             'server' => $server,
         ]);
@@ -152,7 +144,7 @@ class ServerViewController extends Controller
             'nodeData' => $this->nodeRepository->getNodesForServerCreation(),
         ]);
 
-        return $this->view->make('admin.servers.view.manage', [
+        return view('admin.servers.view.manage', [
             'server' => $server,
             'locations' => $this->locationRepository->all(),
             'canTransfer' => $canTransfer,
@@ -164,6 +156,6 @@ class ServerViewController extends Controller
      */
     public function delete(Request $request, Server $server): View
     {
-        return $this->view->make('admin.servers.view.delete', compact('server'));
+        return view('admin.servers.view.delete', compact('server'));
     }
 }

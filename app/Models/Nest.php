@@ -44,6 +44,8 @@ class Nest extends Model
 
     /**
      * Gets all eggs associated with this service.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\Pterodactyl\Models\Egg, $this>
      */
     public function eggs(): HasMany
     {
@@ -52,6 +54,8 @@ class Nest extends Model
 
     /**
      * Gets all servers associated with this nest.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\Pterodactyl\Models\Server, $this>
      */
     public function servers(): HasMany
     {
