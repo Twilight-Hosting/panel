@@ -197,6 +197,7 @@ Route::group(['prefix' => 'moderation'], function () {
 */
 Route::group(['prefix' => 'servers'], function () {
     Route::get('/', [Admin\Servers\ServerController::class, 'index'])->name('admin.servers');
+    Route::get('/export', [Admin\Servers\ServerController::class, 'export'])->name('admin.servers.export');
     Route::get('/new', [Admin\Servers\CreateServerController::class, 'index'])->name('admin.servers.new');
     Route::get('/view/{server:id}', [Admin\Servers\ServerViewController::class, 'index'])->name('admin.servers.view');
 

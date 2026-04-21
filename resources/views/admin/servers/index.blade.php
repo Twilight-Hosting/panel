@@ -26,6 +26,12 @@
                                 <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
                                 <a href="{{ route('admin.servers.new') }}"><button type="button" class="btn btn-sm btn-primary" style="border-radius: 0 3px 3px 0;margin-left:-1px;">Create New</button></a>
                             </div>
+
+                            <div style="display: inline-block; margin-left: 15px;">
+                                <a href="{{ route('admin.servers.export') }}" class="btn btn-sm btn-success">
+                                    <i class="fa fa-download"></i> Export
+                                </a>
+                            </div>
                         </div>
                     </form>
                 </div>
