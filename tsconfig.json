@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es2015",
     "module": "es2020",
-    "jsx": "react-jsx",
+    "jsx": "react",
     "moduleResolution": "node",
     "lib": [
       "es2015",
@@ -17,7 +17,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
-    "verbatimModuleSyntax": false,
+    "importsNotUsedAsValues": "preserve",
     "paths": {
       "@/*": [
         "./resources/scripts/*"

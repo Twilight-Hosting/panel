@@ -20,11 +20,9 @@ class NestRepository extends EloquentRepository implements NestRepositoryInterfa
     /**
      * Return a nest or all nests with their associated eggs and variables.
      *
-     * @return \Illuminate\Database\Eloquent\Collection<int, \Pterodactyl\Models\Nest>|\Pterodactyl\Models\Nest
-     *
      * @throws \Pterodactyl\Exceptions\Repository\RecordNotFoundException
      */
-    public function getWithEggs(?int $id = null): Collection|Nest
+    public function getWithEggs(int $id = null): Collection|Nest
     {
         $instance = $this->getBuilder()->with('eggs', 'eggs.variables');
 
@@ -43,11 +41,9 @@ class NestRepository extends EloquentRepository implements NestRepositoryInterfa
     /**
      * Return a nest or all nests and the count of eggs and servers for that nest.
      *
-     * @return \Illuminate\Database\Eloquent\Collection<int, \Pterodactyl\Models\Nest>|\Pterodactyl\Models\Nest
-     *
      * @throws \Pterodactyl\Exceptions\Repository\RecordNotFoundException
      */
-    public function getWithCounts(?int $id = null): Collection|Nest
+    public function getWithCounts(int $id = null): Collection|Nest
     {
         $instance = $this->getBuilder()->withCount(['eggs', 'servers']);
 
@@ -75,6 +71,7 @@ class NestRepository extends EloquentRepository implements NestRepositoryInterfa
             throw new RecordNotFoundException();
         }
 
-        return $instance; // @phpstan-ignore return.type
+        /* @var Nest $instance */
+        return $instance;
     }
 }

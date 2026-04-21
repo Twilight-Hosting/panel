@@ -6,6 +6,7 @@ use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Prologue\Alerts\AlertsMessageBag;
 use Illuminate\Contracts\Console\Kernel;
+use Illuminate\View\Factory as ViewFactory;
 use Pterodactyl\Http\Controllers\Controller;
 use Pterodactyl\Traits\Helpers\AvailableLanguages;
 use Pterodactyl\Services\Helpers\SoftwareVersionService;
@@ -24,6 +25,7 @@ class IndexController extends Controller
         private Kernel $kernel,
         private SettingsRepositoryInterface $settings,
         private SoftwareVersionService $versionService,
+        private ViewFactory $view
     ) {
     }
 
@@ -32,7 +34,7 @@ class IndexController extends Controller
      */
     public function index(): View
     {
-        return view('admin.settings.index', [
+        return $this->view->make('admin.settings.index', [
             'version' => $this->versionService,
             'languages' => $this->getAvailableLanguages(true),
         ]);

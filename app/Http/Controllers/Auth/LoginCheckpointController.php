@@ -2,7 +2,6 @@
 
 namespace Pterodactyl\Http\Controllers\Auth;
 
-use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
 use Pterodactyl\Models\User;
@@ -25,7 +24,7 @@ class LoginCheckpointController extends AbstractLoginController
     public function __construct(
         private Encrypter $encrypter,
         private Google2FA $google2FA,
-        private ValidationFactory $validation,
+        private ValidationFactory $validation
     ) {
         parent::__construct();
     }
@@ -72,20 +71,8 @@ class LoginCheckpointController extends AbstractLoginController
             }
         } else {
             $decrypted = $this->encrypter->decrypt($user->totp_secret);
-            $oldTimestamp = $user->totp_authenticated_at
-                ? (int) floor($user->totp_authenticated_at->unix() / $this->google2FA->getKeyRegeneration())
-                : null;
 
-            $verified = $this->google2FA->verifyKeyNewer(
-                $decrypted,
-                $request->input('authentication_code') ?? '',
-                $oldTimestamp,
-                config('pterodactyl.auth.2fa.window') ?? 1,
-            );
-
-            if ($verified !== false) {
-                $user->update(['totp_authenticated_at' => Carbon::now()]);
-
+            if ($this->google2FA->verifyKey($decrypted, (string) $request->input('authentication_code') ?? '', config('pterodactyl.auth.2fa.window'))) {
                 Event::dispatch(new ProvidedAuthenticationToken($user));
 
                 return $this->sendLoginResponse($user, $request);
@@ -119,9 +106,9 @@ class LoginCheckpointController extends AbstractLoginController
      * will return false if the data is invalid, or if more time has passed than
      * was configured when the session was written.
      */
-    protected function hasValidSessionData(?array $data): bool
+    protected function hasValidSessionData(array $data): bool
     {
-        $validator = $this->validation->make($data ?? [], [
+        $validator = $this->validation->make($data, [
             'user_id' => 'required|integer|min:1',
             'token_value' => 'required|string',
             'expires_at' => 'required',

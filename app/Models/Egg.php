@@ -2,11 +2,8 @@
 
 namespace Pterodactyl\Models;
 
-use Pterodactyl\Contracts\Models\Identifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Pterodactyl\Models\Traits\HasRealtimeIdentifier;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * @property int $id
@@ -49,13 +46,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property \Pterodactyl\Models\Egg|null $scriptFrom
  * @property \Pterodactyl\Models\Egg|null $configFrom
  */
-#[Attributes\Identifiable('eegg')]
-class Egg extends Model implements Identifiable
+class Egg extends Model
 {
-    /** @use HasFactory<\Database\Factories\EggFactory> */
-    use HasFactory;
-    use HasRealtimeIdentifier;
-
     /**
      * The resource name for this model when it is transformed into an
      * API representation using fractal.
@@ -174,7 +166,7 @@ class Egg extends Model implements Identifiable
      */
     public function getCopyScriptEntryAttribute(): string
     {
-        if (is_null($this->copy_script_from)) {
+        if (!is_null($this->script_entry) || is_null($this->copy_script_from)) {
             return $this->script_entry;
         }
 
@@ -187,7 +179,7 @@ class Egg extends Model implements Identifiable
      */
     public function getCopyScriptContainerAttribute(): string
     {
-        if (is_null($this->copy_script_from)) {
+        if (!is_null($this->script_container) || is_null($this->copy_script_from)) {
             return $this->script_container;
         }
 
@@ -270,8 +262,6 @@ class Egg extends Model implements Identifiable
 
     /**
      * Gets nest associated with an egg.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\Pterodactyl\Models\Nest, $this>
      */
     public function nest(): BelongsTo
     {
@@ -280,8 +270,6 @@ class Egg extends Model implements Identifiable
 
     /**
      * Gets all servers associated with this egg.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\Pterodactyl\Models\Server, $this>
      */
     public function servers(): HasMany
     {
@@ -290,8 +278,6 @@ class Egg extends Model implements Identifiable
 
     /**
      * Gets all variables associated with this egg.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\Pterodactyl\Models\EggVariable, $this>
      */
     public function variables(): HasMany
     {
@@ -300,8 +286,6 @@ class Egg extends Model implements Identifiable
 
     /**
      * Get the parent egg from which to copy scripts.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<self, $this>
      */
     public function scriptFrom(): BelongsTo
     {
@@ -310,8 +294,6 @@ class Egg extends Model implements Identifiable
 
     /**
      * Get the parent egg from which to copy configuration settings.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<self, $this>
      */
     public function configFrom(): BelongsTo
     {

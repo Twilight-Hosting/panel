@@ -7,9 +7,7 @@ use Symfony\Component\Yaml\Yaml;
 use Illuminate\Container\Container;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Encryption\Encrypter;
-use Pterodactyl\Contracts\Models\Identifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Pterodactyl\Models\Traits\HasRealtimeIdentifier;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
@@ -41,11 +39,9 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property \Pterodactyl\Models\Server[]|\Illuminate\Database\Eloquent\Collection $servers
  * @property \Pterodactyl\Models\Allocation[]|\Illuminate\Database\Eloquent\Collection $allocations
  */
-#[Attributes\Identifiable('node')]
-class Node extends Model implements Identifiable
+class Node extends Model
 {
     use Notifiable;
-    use HasRealtimeIdentifier;
 
     /**
      * The resource name for this model when it is transformed into an
@@ -85,7 +81,7 @@ class Node extends Model implements Identifiable
      */
     protected $fillable = [
         'public', 'name', 'alert', 'daemon_text', 'container_text', 'location_id',
-        'description', 'fqdn', 'scheme', 'behind_proxy',
+        'fqdn', 'scheme', 'behind_proxy',
         'memory', 'memory_overallocate', 'disk',
         'disk_overallocate', 'upload_size', 'daemonBase',
         'daemonSFTP', 'daemonListen',
@@ -111,7 +107,7 @@ class Node extends Model implements Identifiable
         'daemonSFTP' => 'required|numeric|between:1,65535',
         'daemonListen' => 'required|numeric|between:1,65535',
         'maintenance_mode' => 'boolean',
-        'upload_size' => 'int|min:1',
+        'upload_size' => 'int|between:1,1024',
     ];
 
     /**
@@ -199,9 +195,6 @@ class Node extends Model implements Identifiable
         return $this->maintenance_mode;
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough<\Pterodactyl\Models\Mount, \Pterodactyl\Models\MountNode, $this>
-     */
     public function mounts(): HasManyThrough
     {
         return $this->hasManyThrough(Mount::class, MountNode::class, 'node_id', 'id', 'id', 'mount_id');
@@ -209,8 +202,6 @@ class Node extends Model implements Identifiable
 
     /**
      * Gets the location associated with a node.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\Pterodactyl\Models\Location, $this>
      */
     public function location(): BelongsTo
     {
@@ -219,8 +210,6 @@ class Node extends Model implements Identifiable
 
     /**
      * Gets the servers associated with a node.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\Pterodactyl\Models\Server, $this>
      */
     public function servers(): HasMany
     {
@@ -229,8 +218,6 @@ class Node extends Model implements Identifiable
 
     /**
      * Gets the allocations associated with a node.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\Pterodactyl\Models\Allocation, $this>
      */
     public function allocations(): HasMany
     {
@@ -245,7 +232,6 @@ class Node extends Model implements Identifiable
         $memoryLimit = $this->memory * (1 + ($this->memory_overallocate / 100));
         $diskLimit = $this->disk * (1 + ($this->disk_overallocate / 100));
 
-        // @phpstan-ignore-next-line property.notFound, property.notFound
         return ($this->sum_memory + $memory) <= $memoryLimit && ($this->sum_disk + $disk) <= $diskLimit;
     }
 }

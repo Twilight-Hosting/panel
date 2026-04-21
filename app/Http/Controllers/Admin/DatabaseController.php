@@ -2,10 +2,12 @@
 
 namespace Pterodactyl\Http\Controllers\Admin;
 
+use Exception;
 use Illuminate\View\View;
 use Pterodactyl\Models\DatabaseHost;
 use Illuminate\Http\RedirectResponse;
 use Prologue\Alerts\AlertsMessageBag;
+use Illuminate\View\Factory as ViewFactory;
 use Pterodactyl\Http\Controllers\Controller;
 use Pterodactyl\Services\Databases\Hosts\HostUpdateService;
 use Pterodactyl\Http\Requests\Admin\DatabaseHostFormRequest;
@@ -28,6 +30,7 @@ class DatabaseController extends Controller
         private HostDeletionService $deletionService,
         private HostUpdateService $updateService,
         private LocationRepositoryInterface $locationRepository,
+        private ViewFactory $view
     ) {
     }
 
@@ -36,7 +39,7 @@ class DatabaseController extends Controller
      */
     public function index(): View
     {
-        return view('admin.databases.index', [
+        return $this->view->make('admin.databases.index', [
             'locations' => $this->locationRepository->getAllWithNodes(),
             'hosts' => $this->repository->getWithViewDetails(),
         ]);
@@ -49,7 +52,7 @@ class DatabaseController extends Controller
      */
     public function view(int $host): View
     {
-        return view('admin.databases.view', [
+        return $this->view->make('admin.databases.view', [
             'locations' => $this->locationRepository->getAllWithNodes(),
             'host' => $this->repository->find($host),
             'databases' => $this->databaseRepository->getDatabasesForHost($host),

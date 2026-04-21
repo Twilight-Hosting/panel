@@ -26,9 +26,6 @@ class RecoveryToken extends Model
         'token' => 'required|string',
     ];
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\Pterodactyl\Models\User, $this>
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

@@ -4,11 +4,10 @@ namespace Pterodactyl\Services\Servers;
 
 use Illuminate\Support\Arr;
 use Pterodactyl\Models\Server;
-use Pterodactyl\Jobs\RevokeSftpAccessJob;
 use Illuminate\Database\ConnectionInterface;
 use Pterodactyl\Traits\Services\ReturnsUpdatedModels;
 use Pterodactyl\Repositories\Wings\DaemonServerRepository;
-use Pterodactyl\Repositories\Wings\DaemonRevocationRepository;
+use Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException;
 
 class DetailsModificationService
 {
@@ -17,11 +16,8 @@ class DetailsModificationService
     /**
      * DetailsModificationService constructor.
      */
-    public function __construct(
-        private ConnectionInterface $connection,
-        private DaemonServerRepository $serverRepository,
-        private DaemonRevocationRepository $revocationRepository,
-    ) {
+    public function __construct(private ConnectionInterface $connection, private DaemonServerRepository $serverRepository)
+    {
     }
 
     /**
@@ -32,7 +28,7 @@ class DetailsModificationService
     public function handle(Server $server, array $data): Server
     {
         return $this->connection->transaction(function () use ($data, $server) {
-            $original = $server->user;
+            $owner = $server->owner_id;
 
             $server->forceFill([
                 'external_id' => Arr::get($data, 'external_id'),
@@ -44,8 +40,14 @@ class DetailsModificationService
             // If the owner_id value is changed we need to revoke any tokens that exist for the server
             // on the Wings instance so that the old owner no longer has any permission to access the
             // websockets.
-            if (! $server->refresh()->user->is($original)) {
-                RevokeSftpAccessJob::dispatch($original->uuid, $server);
+            if ($server->owner_id !== $owner) {
+                try {
+                    $this->serverRepository->setServer($server)->revokeUserJTI($owner);
+                } catch (DaemonConnectionException $exception) {
+                    // Do nothing. A failure here is not ideal, but it is likely to be caused by Wings
+                    // being offline, or in an entirely broken state. Remember, these tokens reset every
+                    // few minutes by default, we're just trying to help it along a little quicker.
+                }
             }
 
             return $server;

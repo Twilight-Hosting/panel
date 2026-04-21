@@ -35,7 +35,7 @@ class NestController extends Controller
      */
     public function index(): View
     {
-        return view('admin.nests.index', [
+        return $this->view->make('admin.nests.index', [
             'nests' => $this->repository->getWithCounts(),
         ]);
     }
@@ -45,7 +45,7 @@ class NestController extends Controller
      */
     public function create(): View
     {
-        return view('admin.nests.new');
+        return $this->view->make('admin.nests.new');
     }
 
     /**
@@ -68,7 +68,7 @@ class NestController extends Controller
      */
     public function view(int $nest): View
     {
-        return view('admin.nests.view', [
+        return $this->view->make('admin.nests.view', [
             'nest' => $this->repository->getWithEggServers($nest),
         ]);
     }

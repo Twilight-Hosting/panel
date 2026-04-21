@@ -6,7 +6,6 @@ use Pterodactyl\Models\Server;
 use Illuminate\Http\JsonResponse;
 use Pterodactyl\Facades\Activity;
 use Pterodactyl\Models\Allocation;
-use Illuminate\Database\ConnectionInterface;
 use Pterodactyl\Exceptions\DisplayException;
 use Pterodactyl\Repositories\Eloquent\ServerRepository;
 use Pterodactyl\Transformers\Api\Client\AllocationTransformer;
@@ -24,7 +23,6 @@ class NetworkAllocationController extends ClientApiController
      * NetworkAllocationController constructor.
      */
     public function __construct(
-        protected readonly ConnectionInterface $connection,
         private FindAssignableAllocationService $assignableAllocationService,
         private ServerRepository $serverRepository
     ) {
@@ -94,17 +92,16 @@ class NetworkAllocationController extends ClientApiController
      */
     public function store(NewAllocationRequest $request, Server $server): array
     {
-        $allocation = Activity::event('server:allocation.create')->transaction(function ($log) use ($server) {
-            if ($server->allocations()->lockForUpdate()->count() >= $server->allocation_limit) {
-                throw new DisplayException('Cannot assign additional allocations to this server: limit has been reached.');
-            }
+        if ($server->allocations()->count() >= $server->allocation_limit) {
+            throw new DisplayException('Cannot assign additional allocations to this server: limit has been reached.');
+        }
 
-            $allocation = $this->assignableAllocationService->handle($server);
+        $allocation = $this->assignableAllocationService->handle($server);
 
-            $log->subject($allocation)->property('allocation', $allocation->toString());
-
-            return $allocation;
-        });
+        Activity::event('server:allocation.create')
+            ->subject($allocation)
+            ->property('allocation', $allocation->toString())
+            ->log();
 
         return $this->fractal->item($allocation)
             ->transformWith($this->getTransformer(AllocationTransformer::class))

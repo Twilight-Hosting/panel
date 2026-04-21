@@ -7,11 +7,9 @@ use Illuminate\Support\Facades\Event;
 use Pterodactyl\Events\ActivityLogged;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\MassPrunable;
-use Pterodactyl\Contracts\Models\Identifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Pterodactyl\Models\Traits\HasRealtimeIdentifier;
 use Illuminate\Database\Eloquent\Model as IlluminateModel;
 
 /**
@@ -28,7 +26,7 @@ use Illuminate\Database\Eloquent\Model as IlluminateModel;
  * @property \Illuminate\Support\Collection|null $properties
  * @property \Carbon\Carbon $timestamp
  * @property IlluminateModel|\Eloquent $actor
- * @property \Illuminate\Database\Eloquent\Collection<int, \Pterodactyl\Models\ActivityLogSubject> $subjects
+ * @property \Illuminate\Database\Eloquent\Collection|\Pterodactyl\Models\ActivityLogSubject[] $subjects
  * @property int|null $subjects_count
  * @property \Pterodactyl\Models\ApiKey|null $apiKey
  *
@@ -50,11 +48,9 @@ use Illuminate\Database\Eloquent\Model as IlluminateModel;
  *
  * @mixin \Eloquent
  */
-#[Attributes\Identifiable('actl')]
-class ActivityLog extends Model implements Identifiable
+class ActivityLog extends Model
 {
     use MassPrunable;
-    use HasRealtimeIdentifier;
 
     public const RESOURCE_NAME = 'activity_log';
 
@@ -86,30 +82,21 @@ class ActivityLog extends Model implements Identifiable
         'properties' => ['array'],
     ];
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo<\Illuminate\Database\Eloquent\Model, $this>
-     */
     public function actor(): MorphTo
     {
         $morph = $this->morphTo();
-        if (method_exists($morph, 'withTrashed')) { // @phpstan-ignore function.alreadyNarrowedType
+        if (method_exists($morph, 'withTrashed')) {
             return $morph->withTrashed();
         }
 
         return $morph;
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\Pterodactyl\Models\ActivityLogSubject, $this>
-     */
     public function subjects(): HasMany
     {
         return $this->hasMany(ActivityLogSubject::class);
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne<\Pterodactyl\Models\ApiKey, $this>
-     */
     public function apiKey(): HasOne
     {
         return $this->hasOne(ApiKey::class, 'id', 'api_key_id');

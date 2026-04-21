@@ -4,7 +4,6 @@ namespace Pterodactyl\Services\Users;
 
 use Pterodactyl\Models\User;
 use Illuminate\Contracts\Hashing\Hasher;
-use Pterodactyl\Events\User\PasswordChanged;
 use Pterodactyl\Traits\Services\HasUserLevels;
 
 class UserUpdateService
@@ -32,10 +31,6 @@ class UserUpdateService
         }
 
         $user->forceFill($data)->saveOrFail();
-
-        if (isset($data['password'])) {
-            PasswordChanged::dispatch($user);
-        }
 
         return $user->refresh();
     }

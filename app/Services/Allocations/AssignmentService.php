@@ -54,7 +54,7 @@ class AssignmentService
             $underlying = gethostbyname($data['allocation_ip']);
             $parsed = Network::parse($underlying);
         } catch (\Exception $exception) {
-            // @phpstan-ignore-next-line variable.undefined
+            /* @noinspection PhpUndefinedVariableInspection */
             throw new DisplayException("Could not parse provided allocation IP address ({$underlying}): {$exception->getMessage()}", $exception);
         }
 

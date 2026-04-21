@@ -6,6 +6,7 @@ use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Prologue\Alerts\AlertsMessageBag;
 use Illuminate\Contracts\Console\Kernel;
+use Illuminate\View\Factory as ViewFactory;
 use Pterodactyl\Http\Controllers\Controller;
 use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Pterodactyl\Contracts\Repository\SettingsRepositoryInterface;
@@ -21,6 +22,7 @@ class AdvancedController extends Controller
         private ConfigRepository $config,
         private Kernel $kernel,
         private SettingsRepositoryInterface $settings,
+        private ViewFactory $view
     ) {
     }
 
@@ -37,7 +39,7 @@ class AdvancedController extends Controller
             $showRecaptchaWarning = true;
         }
 
-        return view('admin.settings.advanced', [
+        return $this->view->make('admin.settings.advanced', [
             'showRecaptchaWarning' => $showRecaptchaWarning,
         ]);
     }

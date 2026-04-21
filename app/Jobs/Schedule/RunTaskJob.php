@@ -2,10 +2,12 @@
 
 namespace Pterodactyl\Jobs\Schedule;
 
+use Exception;
+use Pterodactyl\Jobs\Job;
 use Carbon\CarbonImmutable;
 use Pterodactyl\Models\Task;
-use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Pterodactyl\Services\Backups\InitiateBackupService;
@@ -13,10 +15,10 @@ use Pterodactyl\Repositories\Wings\DaemonPowerRepository;
 use Pterodactyl\Repositories\Wings\DaemonCommandRepository;
 use Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException;
 
-class RunTaskJob implements ShouldQueue
+class RunTaskJob extends Job implements ShouldQueue
 {
-    use Queueable;
     use DispatchesJobs;
+    use InteractsWithQueue;
     use SerializesModels;
 
     /**

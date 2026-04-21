@@ -7,7 +7,6 @@ use Carbon\CarbonImmutable;
 use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Pterodactyl\Contracts\Extensions\HashidsInterface;
 
 /**
@@ -28,13 +27,10 @@ use Pterodactyl\Contracts\Extensions\HashidsInterface;
  * @property \Carbon\Carbon $updated_at
  * @property string $hashid
  * @property \Pterodactyl\Models\Server $server
- * @property \Illuminate\Database\Eloquent\Collection<int, \Pterodactyl\Models\Task> $tasks
+ * @property \Pterodactyl\Models\Task[]|\Illuminate\Support\Collection $tasks
  */
 class Schedule extends Model
 {
-    /** @use HasFactory<\Database\Factories\ScheduleFactory> */
-    use HasFactory;
-
     /**
      * The resource name for this model when it is transformed into an
      * API representation using fractal.
@@ -138,8 +134,6 @@ class Schedule extends Model
 
     /**
      * Return tasks belonging to a schedule.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\Pterodactyl\Models\Task, $this>
      */
     public function tasks(): HasMany
     {
@@ -148,8 +142,6 @@ class Schedule extends Model
 
     /**
      * Return the server model that a schedule belongs to.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\Pterodactyl\Models\Server, $this>
      */
     public function server(): BelongsTo
     {

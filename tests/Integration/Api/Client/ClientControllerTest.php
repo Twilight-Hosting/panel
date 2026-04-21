@@ -2,7 +2,6 @@
 
 namespace Pterodactyl\Tests\Integration\Api\Client;
 
-use Ramsey\Uuid\Uuid;
 use Pterodactyl\Models\User;
 use Pterodactyl\Models\Server;
 use Pterodactyl\Models\Subuser;
@@ -54,8 +53,8 @@ class ClientControllerTest extends ClientApiIntegrationTestCase
         $servers = [
             $this->createServerModel(['user_id' => $users[0]->id, 'name' => 'Julia']),
             $this->createServerModel(['user_id' => $users[1]->id, 'uuidShort' => '12121212', 'name' => 'Janice']),
-            $this->createServerModel(['user_id' => $users[1]->id, 'uuid' => Uuid::uuid4()->toString(), 'external_id' => 'ext123', 'name' => 'Julia']),
-            $this->createServerModel(['user_id' => $users[1]->id, 'uuid' => Uuid::uuid4()->toString(), 'name' => 'Jennifer']),
+            $this->createServerModel(['user_id' => $users[1]->id, 'uuid' => '88788878-12356789', 'external_id' => 'ext123', 'name' => 'Julia']),
+            $this->createServerModel(['user_id' => $users[1]->id, 'uuid' => '88788878-abcdefgh', 'name' => 'Jennifer']),
         ];
 
         $this->actingAs($users[1])->getJson('/api/client?filter[*]=Julia')
@@ -78,14 +77,16 @@ class ClientControllerTest extends ClientApiIntegrationTestCase
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.attributes.identifier', $servers[1]->uuidShort);
 
-        $this->actingAs($users[1])->getJson("/api/client?filter[*]={$servers[2]->uuidShort}")
+        $this->actingAs($users[1])->getJson('/api/client?filter[*]=88788878')
             ->assertOk()
-            ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.attributes.identifier', $servers[2]->uuidShort);
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('data.0.attributes.identifier', $servers[2]->uuidShort)
+            ->assertJsonPath('data.1.attributes.identifier', $servers[3]->uuidShort);
 
         $this->actingAs($users[1])->getJson('/api/client?filter[*]=88788878-abcd')
             ->assertOk()
-            ->assertJsonCount(0, 'data');
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.attributes.identifier', $servers[3]->uuidShort);
 
         $this->actingAs($users[0])->getJson('/api/client?filter[*]=Julia&type=admin-all')
             ->assertOk()

@@ -3,8 +3,6 @@
 namespace Pterodactyl\Models;
 
 use Illuminate\Database\Eloquent\Relations\Pivot;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * \Pterodactyl\Models\ActivityLogSubject.
@@ -14,13 +12,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $subject_id
  * @property string $subject_type
  * @property \Pterodactyl\Models\ActivityLog|null $activityLog
- * @property \Illuminate\Database\Eloquent\Model $subject
+ * @property \Illuminate\Database\Eloquent\Model|\Eloquent $subject
  *
  * @method static \Illuminate\Database\Eloquent\Builder|ActivityLogSubject newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ActivityLogSubject newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ActivityLogSubject query()
  *
- * @mixin \Illuminate\Database\Eloquent\Model
+ * @mixin \Eloquent
  */
 class ActivityLogSubject extends Pivot
 {
@@ -31,21 +29,15 @@ class ActivityLogSubject extends Pivot
 
     protected $guarded = ['id'];
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\Pterodactyl\Models\ActivityLog, $this>
-     */
-    public function activityLog(): BelongsTo
+    public function activityLog()
     {
         return $this->belongsTo(ActivityLog::class);
     }
 
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo<\Illuminate\Database\Eloquent\Model, $this>
-     */
-    public function subject(): MorphTo
+    public function subject()
     {
         $morph = $this->morphTo();
-        if (method_exists($morph, 'withTrashed')) { // @phpstan-ignore function.alreadyNarrowedType
+        if (method_exists($morph, 'withTrashed')) {
             return $morph->withTrashed();
         }
 

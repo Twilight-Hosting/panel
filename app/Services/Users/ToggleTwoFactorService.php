@@ -79,7 +79,7 @@ class ToggleTwoFactorService
             }
 
             $this->repository->withoutFreshModel()->update($user->id, [
-                'totp_authenticated_at' => null,
+                'totp_authenticated_at' => Carbon::now(),
                 'use_totp' => (is_null($toggleState) ? !$user->use_totp : $toggleState),
             ]);
 

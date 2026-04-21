@@ -113,8 +113,6 @@ class Allocation extends Model
 
     /**
      * Gets information for the server associated with this allocation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\Pterodactyl\Models\Server, $this>
      */
     public function server(): BelongsTo
     {
@@ -123,8 +121,6 @@ class Allocation extends Model
 
     /**
      * Return the Node model associated with this allocation.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\Pterodactyl\Models\Node, $this>
      */
     public function node(): BelongsTo
     {

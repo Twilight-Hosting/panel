@@ -9,8 +9,10 @@ use Pterodactyl\Models\ApiKey;
 use Illuminate\Http\RedirectResponse;
 use Prologue\Alerts\AlertsMessageBag;
 use Pterodactyl\Services\Acl\Api\AdminAcl;
+use Illuminate\View\Factory as ViewFactory;
 use Pterodactyl\Http\Controllers\Controller;
 use Pterodactyl\Services\Api\KeyCreationService;
+use Pterodactyl\Contracts\Repository\ApiKeyRepositoryInterface;
 use Pterodactyl\Http\Requests\Admin\Api\StoreApplicationApiKeyRequest;
 
 class ApiController extends Controller
@@ -20,7 +22,9 @@ class ApiController extends Controller
      */
     public function __construct(
         private AlertsMessageBag $alert,
+        private ApiKeyRepositoryInterface $repository,
         private KeyCreationService $keyCreationService,
+        private ViewFactory $view,
     ) {
     }
 
@@ -29,8 +33,8 @@ class ApiController extends Controller
      */
     public function index(Request $request): View
     {
-        return view('admin.api.index', [
-            'keys' => ApiKey::query()->where('key_type', ApiKey::TYPE_APPLICATION)->get(),
+        return $this->view->make('admin.api.index', [
+            'keys' => $this->repository->getApplicationKeys($request->user()),
         ]);
     }
 
@@ -44,7 +48,7 @@ class ApiController extends Controller
         $resources = AdminAcl::getResourceList();
         sort($resources);
 
-        return view('admin.api.new', [
+        return $this->view->make('admin.api.new', [
             'resources' => $resources,
             'permissions' => [
                 'r' => AdminAcl::READ,
@@ -76,10 +80,7 @@ class ApiController extends Controller
      */
     public function delete(Request $request, string $identifier): Response
     {
-        ApiKey::query()
-            ->where('key_type', ApiKey::TYPE_APPLICATION)
-            ->where('identifier', $identifier)
-            ->delete();
+        $this->repository->deleteApplicationKey($request->user(), $identifier);
 
         return response('', 204);
     }

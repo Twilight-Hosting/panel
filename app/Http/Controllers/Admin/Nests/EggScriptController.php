@@ -41,7 +41,7 @@ class EggScriptController extends Controller
             ['copy_script_from', '=', $egg->id],
         ]);
 
-        return view('admin.eggs.scripts', [
+        return $this->view->make('admin.eggs.scripts', [
             'copyFromOptions' => $copy,
             'relyOnScript' => $rely,
             'egg' => $egg,

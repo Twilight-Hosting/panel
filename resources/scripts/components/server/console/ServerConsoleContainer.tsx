@@ -49,9 +49,9 @@ const ServerConsoleContainer = () => {
             <div className={'lg:grid grid-cols-3 flex flex-col gap-4'}>
                 {sideGraphs == 3 &&
                     <div className={'flex flex-col gap-4'}>
-                        <SideGraphs />
+                        <SideGraphs /> 
                     </div>
-                }
+                } 
                 <div className={sideGraphs == 1 ? 'lg:col-span-3' : 'lg:col-span-2'}>
                     <Spinner.Suspense>
                         <Console />
@@ -59,9 +59,9 @@ const ServerConsoleContainer = () => {
                 </div>
                 {sideGraphs == 2 &&
                     <div className={'flex flex-col gap-4'}>
-                        <SideGraphs />
+                        <SideGraphs /> 
                     </div>
-                }
+                } 
             </div>
 
             {statsCards == 3 &&
@@ -73,7 +73,7 @@ const ServerConsoleContainer = () => {
             <div className={'grid lg:grid-cols-3 gap-4 mt-4'}>
                 <StatGraphs />
             </div>}
-
+            
             <Features enabled={eggFeatures} />
         </ServerContentBlock>
     );

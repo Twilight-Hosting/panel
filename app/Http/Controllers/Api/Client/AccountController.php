@@ -54,9 +54,7 @@ class AccountController extends ClientApiController
      */
     public function updatePassword(UpdatePasswordRequest $request): JsonResponse
     {
-        $user = Activity::event('user:account.password-changed')->transaction(function () use ($request) {
-            return $this->updateService->handle($request->user(), $request->validated());
-        });
+        $user = $this->updateService->handle($request->user(), $request->validated());
 
         $guard = $this->manager->guard();
         // If you do not update the user in the session you'll end up working with a
@@ -66,9 +64,11 @@ class AccountController extends ClientApiController
         $guard->setUser($user);
 
         // This method doesn't exist in the stateless Sanctum world.
-        if (method_exists($guard, 'logoutOtherDevices')) { // @phpstan-ignore function.alreadyNarrowedType
+        if (method_exists($guard, 'logoutOtherDevices')) {
             $guard->logoutOtherDevices($request->input('password'));
         }
+
+        Activity::event('user:account.password-changed')->log();
 
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }

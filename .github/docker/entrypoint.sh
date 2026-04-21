@@ -26,17 +26,6 @@ else
     echo -e "APP_KEY=$APP_KEY" > /app/var/.env
   fi
 
-  ## generate a random salt for hashids if not provided
-  if [ -z $HASHIDS_SALT ]; then
-     echo -e "Generating hashids salt."
-     HASHIDS_SALT=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9!@#$%^&*()_+?><~' | fold -w 20 | head -n 1)
-     echo -e "Generated hashids salt: $HASHIDS_SALT"
-     echo -e "HASHIDS_SALT=$HASHIDS_SALT" >> /app/var/.env
-  else
-    echo -e "HASHIDS_SALT exists in environment, using that."
-    echo -e "HASHIDS_SALT=$HASHIDS_SALT" >> /app/var/.env
-  fi
-
   ln -s /app/var/.env /app/
 fi
 
@@ -69,13 +58,6 @@ fi
 if [[ -z $DB_PORT ]]; then
   echo -e "DB_PORT not specified, defaulting to 3306"
   DB_PORT=3306
-fi
-
-## check log folder permissions
-echo "Checking log folder permissions."
-if [ "$(stat -c %U:%G /app/storage/logs)" != "nginx" ]; then
-  echo "Fixing log folder permissions."
-  chown -R nginx: /app/storage/logs/
 fi
 
 ## check for DB up before starting the panel
