@@ -56,10 +56,11 @@ class UserController extends Controller
                 ->groupBy('users.id')
         )
             ->allowedFilters(['username', 'email', 'uuid'])
+            ->defaultSort('-root_admin')
             ->allowedSorts(['id', 'uuid'])
             ->paginate(50);
 
-        return $this->view->make('admin.users.index', ['users' => $users]);
+        return view('admin.users.index', ['users' => $users]);
     }
 
     /**
@@ -67,7 +68,7 @@ class UserController extends Controller
      */
     public function create(): View
     {
-        return $this->view->make('admin.users.new', [
+        return view('admin.users.new', [
             'languages' => $this->getAvailableLanguages(true),
         ]);
     }
@@ -77,7 +78,7 @@ class UserController extends Controller
      */
     public function view(User $user): View
     {
-        return $this->view->make('admin.users.view', [
+        return view('admin.users.view', [
             'user' => $user,
             'languages' => $this->getAvailableLanguages(true),
             'roles' => PermissionRole::all()
@@ -92,8 +93,8 @@ class UserController extends Controller
      */
     public function delete(Request $request, User $user): RedirectResponse
     {
-        if ($request->user()->id === $user->id) {
-            throw new DisplayException($this->translator->get('admin/user.exceptions.user_has_servers'));
+        if ($request->user()->is($user)) {
+            throw new DisplayException(__('admin/user.exceptions.delete_self'));
         }
 
         $this->deletionService->handle($user);
@@ -142,12 +143,14 @@ class UserController extends Controller
         // Handle single user requests.
         if ($request->query('user_id')) {
             $user = User::query()->findOrFail($request->input('user_id'));
+            // @phpstan-ignore-next-line property.notFound
             $user->md5 = md5(strtolower($user->email));
 
             return $user;
         }
 
         return $users->map(function ($item) {
+            // @phpstan-ignore-next-line property.notFound
             $item->md5 = md5(strtolower($item->email));
 
             return $item;

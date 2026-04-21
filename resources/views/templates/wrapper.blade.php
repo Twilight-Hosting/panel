@@ -11,7 +11,7 @@
             <meta http-equiv="X-UA-Compatible" content="IE=edge">
             <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
             <meta name="csrf-token" content="{{ csrf_token() }}">
-            
+
             <!-- meta data -->
 
             <meta name="theme-color" content="{{ $siteConfiguration['arix']['meta_color'] }}"/>
@@ -60,7 +60,7 @@
             :root{
                 <?php if ($siteConfiguration['arix']['borderInput'] === 'true') {
                     echo '--borderInput: 1px solid;
-';  
+';
                 }?>
                 --radiusBox: {{ $siteConfiguration['arix']['radiusBox'] }};
                 --radiusInput: {{ $siteConfiguration['arix']['radiusInput'] }};
@@ -80,7 +80,7 @@
 
                 --dangerText: {{ $siteConfiguration['arix']['dangerText'] }};
                 --dangerBorder: {{ $siteConfiguration['arix']['dangerBorder'] }};
-                --dangerBackground: {{ $siteConfiguration['arix']['dangerBackground'] }}; 
+                --dangerBackground: {{ $siteConfiguration['arix']['dangerBackground'] }};
 
                 --secondaryText: {{ $siteConfiguration['arix']['secondaryText'] }};
                 --secondaryBorder: {{ $siteConfiguration['arix']['secondaryBorder'] }};
@@ -113,7 +113,7 @@
 
                 --dangerText: {{ $siteConfiguration['arix']['lightmode_dangerText'] }};
                 --dangerBorder: {{ $siteConfiguration['arix']['lightmode_dangerBorder'] }};
-                --dangerBackground: {{ $siteConfiguration['arix']['lightmode_dangerBackground'] }}; 
+                --dangerBackground: {{ $siteConfiguration['arix']['lightmode_dangerBackground'] }};
 
                 --secondaryText: {{ $siteConfiguration['arix']['lightmode_secondaryText'] }};
                 --secondaryBorder: {{ $siteConfiguration['arix']['lightmode_secondaryBorder'] }};
@@ -125,7 +125,7 @@
                 --gray300: {{ $siteConfiguration['arix']['lightmode_gray300'] }};
                 --gray400: {{ $siteConfiguration['arix']['lightmode_gray400'] }};
                 --gray500: {{ $siteConfiguration['arix']['lightmode_gray500'] }};
-                --gray600: {{ $siteConfiguration['arix']['lightmode_gray600'] }}; 
+                --gray600: {{ $siteConfiguration['arix']['lightmode_gray600'] }};
                 --gray700: color-mix(in srgb, {{ $siteConfiguration['arix']['lightmode_gray700'] }} {{ $siteConfiguration['arix']['backdropPercentage'] }}, transparent);
                 --gray800: {{ $siteConfiguration['arix']['lightmode_gray800'] }};
                 --gray900: {{ $siteConfiguration['arix']['lightmode_gray900'] }};

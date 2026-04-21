@@ -74,7 +74,7 @@ const ClientDropdown = ({ sideBar }: Dropdown) => {
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
     const onClickRef = useRef<DropdownMenu>(null);
-    
+
     const { t } = useTranslation(['arix/navigation']);
 
     const modeToggler = useStoreState((state: ApplicationStore) => state.settings.data!.arix.modeToggler);
@@ -110,7 +110,7 @@ const ClientDropdown = ({ sideBar }: Dropdown) => {
             sideBar={sideBar ? true : false}
             renderToggle={(onClick) => (
                 <div onClick={onClick} className="cursor-pointer flex gap-x-2 items-center">
-                    <UserAvatar /> 
+                    <UserAvatar />
                     <div>
                         <p>{t`account`}</p>
                     </div>
@@ -158,18 +158,18 @@ export default ({ children }: Props) => {
         const fetchData = async () => {
           try {
             const response = await fetch(`https://discord.com/api/guilds/${discord}/widget.json`);
-    
+
             if (!response.ok) {
               throw new Error('Failed to fetch guild data');
             }
-    
+
             const data = await response.json();
             setGuildData(data);
           } catch (error) {
             console.error('Error fetching guild data:', error);
           }
         };
-    
+
         fetchData();
       }, []);
 
@@ -193,7 +193,7 @@ export default ({ children }: Props) => {
                         </Link>
                     </div>
                     <div className={'sm:block hidden'}>
-                        {searchComponent == 1  
+                        {searchComponent == 1
                         ? <ServerSelector />
                         : <SearchContainer /> }
                     </div>

@@ -3,6 +3,8 @@
 namespace Pterodactyl\Models;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Pterodactyl\Contracts\Models\Identifiable;
+use Pterodactyl\Models\Traits\HasRealtimeIdentifier;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
@@ -24,9 +26,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Pterodactyl\Models\Server $server
  * @property \Pterodactyl\Models\AuditLog[] $audits
  */
-class Backup extends Model
+#[Attributes\Identifiable('bkup')]
+class Backup extends Model implements Identifiable
 {
     use SoftDeletes;
+    use HasRealtimeIdentifier;
 
     public const RESOURCE_NAME = 'backup';
 
@@ -69,6 +73,9 @@ class Backup extends Model
         'upload_id' => 'nullable|string',
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\Pterodactyl\Models\Server, $this>
+     */
     public function server(): BelongsTo
     {
         return $this->belongsTo(Server::class);

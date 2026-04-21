@@ -8,6 +8,10 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\TransferException;
 use Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException;
 
+/**
+ * @method \Pterodactyl\Repositories\Wings\DaemonServerRepository setNode(\Pterodactyl\Models\Node $node)
+ * @method \Pterodactyl\Repositories\Wings\DaemonServerRepository setServer(\Pterodactyl\Models\Server $server)
+ */
 class DaemonServerRepository extends DaemonRepository
 {
     /**
@@ -126,6 +130,9 @@ class DaemonServerRepository extends DaemonRepository
      * Revokes a single user's JTI by using their ID. This is simply a helper function to
      * make it easier to revoke tokens on the fly. This ensures that the JTI key is formatted
      * correctly and avoids any costly mistakes in the codebase.
+     *
+     * @deprecated
+     * @see \Pterodactyl\Repositories\Wings\DaemonRevocationRepository::deauthorize()
      *
      * @throws \Pterodactyl\Exceptions\Http\Connection\DaemonConnectionException
      */

@@ -5,8 +5,10 @@ namespace Pterodactyl\Models;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Query\JoinClause;
 use Znck\Eloquent\Traits\BelongsToThrough;
+use Pterodactyl\Contracts\Models\Identifiable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Pterodactyl\Models\Traits\HasRealtimeIdentifier;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
@@ -105,17 +107,18 @@ use Pterodactyl\Exceptions\Http\Server\ServerStateConflictException;
  *
  * @mixin \Eloquent
  */
-class Server extends Model
+#[Attributes\Identifiable('serv')]
+class Server extends Model implements Identifiable
 {
     use BelongsToThrough;
     use Notifiable;
+    use HasRealtimeIdentifier;
 
     /**
      * The resource name for this model when it is transformed into an
      * API representation using fractal.
      */
     public const RESOURCE_NAME = 'server';
-
     public const STATUS_INSTALLING = 'installing';
     public const STATUS_INSTALL_FAILED = 'install_failed';
     public const STATUS_REINSTALL_FAILED = 'reinstall_failed';
@@ -224,6 +227,8 @@ class Server extends Model
 
     /**
      * Gets the user who owns the server.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\Pterodactyl\Models\User, $this>
      */
     public function user(): BelongsTo
     {
@@ -232,6 +237,8 @@ class Server extends Model
 
     /**
      * Gets the subusers associated with a server.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\Pterodactyl\Models\Subuser, $this>
      */
     public function subusers(): HasMany
     {
@@ -240,6 +247,8 @@ class Server extends Model
 
     /**
      * Gets the default allocation for a server.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<\Pterodactyl\Models\Allocation, $this>
      */
     public function allocation(): HasOne
     {
@@ -248,6 +257,8 @@ class Server extends Model
 
     /**
      * Gets all allocations associated with this server.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\Pterodactyl\Models\Allocation, $this>
      */
     public function allocations(): HasMany
     {
@@ -256,6 +267,8 @@ class Server extends Model
 
     /**
      * Gets information for the nest associated with this server.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\Pterodactyl\Models\Nest, $this>
      */
     public function nest(): BelongsTo
     {
@@ -264,6 +277,8 @@ class Server extends Model
 
     /**
      * Gets information for the egg associated with this server.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<\Pterodactyl\Models\Egg, $this>
      */
     public function egg(): HasOne
     {
@@ -272,6 +287,8 @@ class Server extends Model
 
     /**
      * Gets information for the service variables associated with this server.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\Pterodactyl\Models\EggVariable, $this>
      */
     public function variables(): HasMany
     {
@@ -290,6 +307,8 @@ class Server extends Model
 
     /**
      * Gets information for the node associated with this server.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\Pterodactyl\Models\Node, $this>
      */
     public function node(): BelongsTo
     {
@@ -298,6 +317,8 @@ class Server extends Model
 
     /**
      * Gets information for the tasks associated with this server.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\Pterodactyl\Models\Schedule, $this>
      */
     public function schedules(): HasMany
     {
@@ -306,6 +327,8 @@ class Server extends Model
 
     /**
      * Gets all databases associated with a server.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\Pterodactyl\Models\Database, $this>
      */
     public function databases(): HasMany
     {
@@ -315,21 +338,28 @@ class Server extends Model
     /**
      * Returns the location that a server belongs to.
      *
+     * @return \Znck\Eloquent\Relations\BelongsToThrough<\Pterodactyl\Models\Location, \Pterodactyl\Models\Node>
+     *
      * @throws \Exception
      */
     public function location(): \Znck\Eloquent\Relations\BelongsToThrough
     {
-        return $this->belongsToThrough(Location::class, Node::class);
+        return $this->belongsToThrough(Location::class, Node::class); // @phpstan-ignore return.type
     }
 
     /**
      * Returns the associated server transfer.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<\Pterodactyl\Models\ServerTransfer, $this>
      */
     public function transfer(): HasOne
     {
         return $this->hasOne(ServerTransfer::class)->whereNull('successful')->orderByDesc('id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\Pterodactyl\Models\Backup, $this>
+     */
     public function backups(): HasMany
     {
         return $this->hasMany(Backup::class);
@@ -337,6 +367,8 @@ class Server extends Model
 
     /**
      * Returns all mounts that have this server has mounted.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough<\Pterodactyl\Models\Mount, \Pterodactyl\Models\MountServer, $this>
      */
     public function mounts(): HasManyThrough
     {
@@ -345,6 +377,8 @@ class Server extends Model
 
     /**
      * Returns all of the activity log entries where the server is the subject.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\MorphToMany<\Pterodactyl\Models\ActivityLog, $this>
      */
     public function activity(): MorphToMany
     {
