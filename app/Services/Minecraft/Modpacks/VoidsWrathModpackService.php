@@ -88,9 +88,13 @@ class VoidsWrathModpackService extends AbstractModpackService
             return [];
         }
 
-        $modpack = array_find($response, function(array $modpack) use ($modpackId) {
-            return (string)$modpack['id'] === $modpackId;
-        });
+        $modpack = null;
+        foreach ($response as $m) {
+            if ((string)$m['id'] === $modpackId) {
+                $modpack = $m;
+                break;
+            }
+        }
 
         if (!$modpack) {
             return [];
