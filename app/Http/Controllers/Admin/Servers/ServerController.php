@@ -46,8 +46,7 @@ class ServerController extends Controller
 
     private function snapshot_servers(): string
     {
-        // Apply the same filters as the main server list
-        $servers = QueryBuilder::for(Server::query()->with('id', 'user', 'name', 'node', 'egg', 'cpu', 'memory', 'disk', 'created'));
+        $servers = QueryBuilder::for(Server::query()->with('user', 'node', 'egg'));
 
         // Prepare data for export
         $exportData = [];
