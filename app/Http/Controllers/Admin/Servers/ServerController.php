@@ -44,7 +44,7 @@ class ServerController extends Controller
         return response()->download($path, basename($path))->deleteFileAfterSend(true);
     }
 
-    private function snapshot_servers(): string
+    public function snapshot_servers(): string
     {
         $servers = QueryBuilder::for(Server::query()->with('user', 'node', 'egg'));
 
