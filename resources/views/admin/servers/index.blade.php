@@ -24,7 +24,11 @@
                             <input type="text" name="filter[*]" class="form-control pull-right" value="{{ request()->input()['filter']['*'] ?? '' }}" placeholder="Search Servers">
                             <div class="input-group-btn">
                                 <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
-                                <a href="{{ route('admin.servers.new') }}"><button type="button" class="btn btn-sm btn-primary" style="border-radius: 0 3px 3px 0;margin-left:-1px;">Create New</button></a>
+                                <a href="{{ route('admin.servers.new') }}"><button type="button" class="btn btn-sm btn-primary" style="border-radius: 0;margin-left:-1px;">Create New</button></a>
+
+                                <a href="{{ route('admin.servers.export') }}" class="btn btn-sm btn-success" style="border-radius: 0 3px 3px 0">
+                                    <i class="fa fa-download"></i> Export
+                                </a>
                             </div>
                         </div>
                     </form>

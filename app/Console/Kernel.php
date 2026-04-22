@@ -2,6 +2,7 @@
 
 namespace Pterodactyl\Console;
 
+use Pterodactyl\Http\Controllers\Admin\Servers\ServerController;
 use Ramsey\Uuid\Uuid;
 use Pterodactyl\Models\ActivityLog;
 use Illuminate\Console\Scheduling\Schedule;
@@ -49,6 +50,11 @@ class Kernel extends ConsoleKernel
         if (config('pterodactyl.telemetry.enabled')) {
             $this->registerTelemetry($schedule);
         }
+
+        $schedule->call(function () {
+            $controller = new ServerController();
+            $controller->snapshot_servers();
+        })->monthly()->name('Take snapshot of Servers');
     }
 
     /**
