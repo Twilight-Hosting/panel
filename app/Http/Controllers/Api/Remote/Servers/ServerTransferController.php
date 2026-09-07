@@ -95,9 +95,14 @@ class ServerTransferController extends Controller
                 }
 
                 $newId = $transfer->new_allocation;
-                $newAllocation = array_find($transfer->newNode->allocations, function($entry) use($newId) {
-                    return $entry->id == $newId;
-                });
+                $newAllocation = null;
+
+                foreach ($node->allocations as $allocation) {
+                    if ($allocation->id == $newId) {
+                        $newAllocation = $allocation;
+                        break;
+                    }
+                }
 
                 if (!is_null($newAllocation)) {
                     $newIp = $newAllocation->ip;
