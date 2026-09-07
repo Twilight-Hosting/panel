@@ -94,13 +94,25 @@ class ServerTransferController extends Controller
                     break;
                 }
 
-                foreach ($transfer->newNode->allocations as $allocation) {
-                    $newIp = $allocation->ip;
-                    $newPort = $allocation->port;
-                    break;
+                $newId = $transfer->new_allocation;
+                $newAllocation = array_find($transfer->newNode->allocations, function($entry) use($newId) {
+                    return $entry->id == $newId;
+                });
+
+                if (!is_null($newAllocation)) {
+                    $newIp = $newAllocation->ip;
+                    $newPort = $newAllocation->port;
                 }
 
-                $this->sendRequest($oldIp, $oldPort, $newIp, $newPort);
+                if ($oldIp == "" || $oldPort == 0) {
+                    error("Failed to find allocation data for the source of a SL server transfer.");
+                }
+                else if ($newIp == "" || $newPort == 0) {
+                    error("Failed to find allocation data for the target of a SL server transfer.");
+                }
+                else {
+                    $this->sendRequest($oldIp, $oldPort, $newIp, $newPort);
+                }
             } catch (Exception $ex) {
                 error($ex->getMessage());
                 error($ex->getTraceAsString());
